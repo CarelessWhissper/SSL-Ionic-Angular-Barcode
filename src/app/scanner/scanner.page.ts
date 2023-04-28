@@ -13,7 +13,7 @@ import { Storage } from '@ionic/storage';
   styleUrls: ['./scanner.page.scss'],
 })
 export class ScannerPage implements OnInit {
-  scanData: any;
+  scanData: {};
   status: any;
   constructor(
     private barcodeScanner: BarcodeScanner,
