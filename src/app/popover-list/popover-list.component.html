@@ -1,0 +1,11 @@
+
+<ion-list radio-group>
+  <ion-item class="head">
+    <ion-label>Show</ion-label>
+  </ion-item>
+  <ion-item *ngFor="let status of status" (click)="onChangeStatus(status.id)" class="status">
+    <ion-radio value="{{status.id}}"></ion-radio>&nbsp;
+    <ion-label>{{status.name}}</ion-label>
+  </ion-item>
+</ion-list>
+

@@ -1,0 +1,44 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="info()"> 
+        <ion-icon name="information-circle-sharp"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <div id="container">
+
+    <img *ngIf="clickedImage" [src]="clickedImage" />
+    <h2 *ngIf="!clickedImage">Ready</h2>
+
+  </div>
+</ion-content>
+
+<ion-footer class="">
+  <!-- <ion-toolbar>
+    <ion-buttons>
+      <ion-button (click)="captureImage()">
+        <ion-icon slot="icon-only" name="camera"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar> -->
+  <ion-grid>
+    <ion-row no-padding no-margin>
+        <ion-col col-4 no-padding>
+           
+        </ion-col>
+        <ion-col col-4 no-padding style="text-align: center;">
+          <ion-button (click)="captureImage()" full>
+            <ion-icon slot="icon-only" name="camera"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col col-4 no-padding>
+            
+        </ion-col>
+    </ion-row>
+</ion-grid>
+</ion-footer>

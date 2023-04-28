@@ -1,0 +1,60 @@
+<ion-header>
+
+  <!-- <ion-toolbar>
+    <ion-title>scanner</ion-title>
+  </ion-toolbar> -->
+
+</ion-header>
+
+<ion-content>
+  <div class='logo'>
+    <img src="../../assets/logo.png">
+</div>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-card (click)="scan()">
+          <ion-card-content class="card-top-padding">
+            <ion-row class="ion-justify-content-center">
+              <ion-icon name="scan"></ion-icon>
+            </ion-row>
+            <ion-row class="ion-justify-content-center">
+              <ion-text>Scan pakket</ion-text>
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col>
+        <!-- <ion-icon name="reader-outline"></ion-icon>
+          Besparings tips -->
+        <ion-card (click)="pakketten()">
+          <ion-card-content class="card-top-padding">
+            <ion-row class="ion-justify-content-center">
+              <ion-icon name="list"></ion-icon>
+            </ion-row>
+            <ion-row class="ion-justify-content-center">
+              <ion-text>Pakketten</ion-text>
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+
+      <ion-col size="6">
+        <ion-card (click)="settings()">
+          <ion-card-content class="card-top-padding">
+            <ion-row class="ion-justify-content-center">
+              <ion-icon name="settings-outline"></ion-icon>
+            </ion-row>
+            <ion-row class="ion-justify-content-center">
+              <ion-text>Instellingen</ion-text>
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+</ion-content>

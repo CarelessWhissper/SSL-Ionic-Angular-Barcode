@@ -1,0 +1,8 @@
+{
+  "name": "esculaapscanner",
+  "integrations": {
+    "cordova": {},
+    "capacitor": {}
+  },
+  "type": "angular"
+}
