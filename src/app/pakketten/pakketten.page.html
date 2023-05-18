@@ -4,54 +4,63 @@
       <ion-back-button text="" icon="chevron-back-outline"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="primary">
-      <ion-button  (click)="presentListPopover()">
-        <ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
+      <ion-button (click)="presentListPopover()">
+        <ion-icon
+          slot="icon-only"
+          ios="ellipsis-horizontal"
+          md="ellipsis-vertical"
+        ></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title> pakketten </ion-title>
   </ion-toolbar>
-  <ion-searchbar [(ngModel)]="input" (ionChange)="onChangeFase()"></ion-searchbar>
+  <ion-searchbar
+    [(ngModel)]="input"
+    (ionChange)="onChangeFase()"
+  ></ion-searchbar>
 </ion-header>
-
 
 <ion-content>
   <ion-list>
-   
-    <ion-card *ngFor="let paket of pakketten" (click)="open(paket)" >
+    <ion-card *ngFor="let paket of pakketten" (click)="open(paket)">
       <ion-card-header>
-        <ion-row >
+        <ion-row>
           <ion-col>
             <ion-card-title>{{paket.pakket_id}}</ion-card-title>
           </ion-col>
-          <ion-col size="5" style="text-align: right;">
-            <ion-label color="secondary" *ngIf="paket.status == '1'">{{paket.name}}</ion-label>
-            <ion-label color="danger" *ngIf="paket.status == '2'">{{paket.name}}</ion-label>
-            <ion-label color="warning" *ngIf="paket.status == '3'">{{paket.name}}</ion-label>
-            <ion-label color="sucess" *ngIf="paket.status == '4'">{{paket.name}}</ion-label>
+          <ion-col size="5" style="text-align: right">
+            <ion-label color="secondary" *ngIf="paket.status == '1'"
+              >{{paket.name}}</ion-label
+            >
+            <ion-label color="danger" *ngIf="paket.status == '2'"
+              >{{paket.name}}</ion-label
+            >
+            <ion-label color="warning" *ngIf="paket.status == '3'"
+              >{{paket.name}}</ion-label
+            >
+            <ion-label color="sucess" *ngIf="paket.status == '4'"
+              >{{paket.name}}</ion-label
+            >
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col class="no-padding">
             <ion-card-subtitle>{{paket.barcode}}</ion-card-subtitle>
           </ion-col>
-         
         </ion-row>
-        <ion-row  *ngIf="switch == '1' && pakId == paket.id">
-          <ion-col class="no-padding" >
+        <ion-row *ngIf="switch == '1' && pakId == paket.id">
+          <ion-col class="no-padding">
             <ion-card-subtitle>Volume</ion-card-subtitle>
             <ion-card-subtitle>Verzender</ion-card-subtitle>
             <ion-card-subtitle>Ontvanger</ion-card-subtitle>
-            <ion-card-subtitle>LoodLocatie</ion-card-subtitle>
           </ion-col>
-          <ion-col class="no-padding" size="5" style="text-align: right;">
+          <ion-col class="no-padding" size="5" style="text-align: right">
             <ion-card-subtitle>{{paket.volume}} kg</ion-card-subtitle>
             <ion-card-subtitle>{{paket.verzender}}</ion-card-subtitle>
             <ion-card-subtitle>{{paket.ontvager}}</ion-card-subtitle>
-            <ion-card-subtitle></ion-card-subtitle>
           </ion-col>
         </ion-row>
       </ion-card-header>
     </ion-card>
   </ion-list>
 </ion-content>
-
