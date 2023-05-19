@@ -43,7 +43,9 @@ export class ScannerPage implements OnInit {
         console.log(Response);
         this.storage.set("status", Response);
       },
-      async (error) => {}
+      async (error) => {
+        console.log(error)
+      }
     );
 
     this.status = localStorage.getItem("currentStatus");
