@@ -47,20 +47,7 @@ export class SettingsPage implements OnInit {
 
   ngOnInit() { 
 
-    // const isFirstOpen = localStorage.getItem("isFirstOpen");
-
-    // if (!isFirstOpen) {
-    //   // Clear the stored values from local storage
-    //   localStorage.removeItem("login");
-    //   localStorage.removeItem("status");
-    //   localStorage.removeItem("selectedStatus");
-    //   localStorage.removeItem("currentStatus");
-    //   localStorage.removeItem("palletNumber");
-  
-    //   // Set the flag to indicate that the application has been opened
-    //   localStorage.setItem("isFirstOpen", "true");
-    // }
-
+ 
 
 
     // Get the stored values from the local storage
@@ -74,8 +61,18 @@ export class SettingsPage implements OnInit {
     this.Storage.get("status").then((response) => {
       if (response && response.status) {
         this.statusList = Object.values(response.status);
+       
+       
+      
+      }
+      else{
+        console.log("No data in statusList just yet,");
+        alert("the app will restart") 
+        window.location.href = "/login";
       }
     });
+     
+    
   
     // Get the current status from the query parameter
     this.activatedRoute.queryParams.subscribe((params) => {
