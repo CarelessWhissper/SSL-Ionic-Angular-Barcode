@@ -9,6 +9,8 @@ import { Router } from "@angular/router";
 import { Platform } from "@ionic/angular";
 import { Location } from "@angular/common";
 import { Storage } from "@ionic/storage";
+import { ToastController } from '@ionic/angular';
+
 
 @Component({
   selector: "app-scanner",
@@ -26,7 +28,8 @@ export class ScannerPage implements OnInit {
     private platform: Platform,
     private location: Location,
     public http: HttpClient,
-    private storage: Storage
+    private storage: Storage,
+    private toastController: ToastController
   ) {
     this.platform.backButton.subscribeWithPriority(666666, () => {
       if (this.router.url == "/scanner") {
@@ -110,35 +113,64 @@ export class ScannerPage implements OnInit {
     await alert.present();
   }
 
-  
-
-  postBarcodeData(data: any) {
+  async postBarcodeData(data: any) {
     let barcode = {
       barcode: data,
-      // status: this.status && this.status.id ? this.status.id : null,
       status: this.status.id,
     };
     console.log("Posting barcode data: ", barcode);
-
-    this.http
-      .post("https://ssl.app.sr/api/barcode-update-status", barcode)
-      .subscribe(
-        async (response) => {
-          console.log("response :", response);
-          if (Array.isArray(response) && response.length > 0) {
-            // check if the response is an array with at least one element
-            console.log("weee");
-            this.alert(response[0]); // call the alert function with the first element of the response array
-          } else {
-            console.log("Invalid response format: ", response); // print an error message to the console
-          }
-        },
-        async (error) => {
-          this.sameStatusAlert(error); // call the sameStatusAlert function with the error object
-          console.log("Error: ", error);
-        }
-      );
+  
+    try {
+      const response = await this.http
+        .post("https://ssl.app.sr/api/barcode-update-status", barcode)
+        .toPromise();
+  
+      console.log("response :", response);
+  
+      if (Array.isArray(response) && response.length > 0) {
+        // Check if the response is an array with at least one element
+        this.alert(response[0]); // Call the alert function with the first element of the response array
+  
+        // Display a success toast
+        const toast = await this.toastController.create({
+          message: 'Barcode data posted successfully',
+          duration: 2000,
+          color: 'success',
+          position: 'bottom',
+        });
+        toast.present();
+      } else {
+        console.log("Invalid response format: ", response); // Print an error message to the console
+  
+        // Display an error toast
+        const toast = await this.toastController.create({
+          message: 'Invalid response format',
+          duration: 2000,
+          color: 'danger',
+          position: 'bottom',
+        });
+        toast.present();
+      }
+    } catch (error) {
+      this.sameStatusAlert(error); // Call the sameStatusAlert function with the error object
+      console.log("Error: ", error);
+  
+      // Display an error toast
+      const toast = await this.toastController.create({
+        message: 'Error posting barcode data',
+        duration: 2000,
+        color: 'danger',
+        position: 'bottom',
+      });
+      toast.present();
+    }
   }
+
+  
+
+ 
+  
+   
 
   pakketten() {
     this.router.navigateByUrl("/pakketten");
