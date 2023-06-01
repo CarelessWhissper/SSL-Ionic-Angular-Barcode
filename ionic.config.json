@@ -1,8 +1,13 @@
 {
   "name": "esculaapscanner",
   "integrations": {
-    "cordova": {},
-    "capacitor": {}
+    "cordova": {}
   },
-  "type": "angular"
+  "type": "angular",
+  "proxies": [
+    {
+      "path": "/api",
+      "proxyUrl": "https://ssl.app.sr/api"
+    }
+  ]
 }

@@ -4,7 +4,7 @@ import {
   BarcodeScannerOptions,
 } from "@ionic-native/barcode-scanner/ngx";
 import { AlertController } from "@ionic/angular";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Router } from "@angular/router";
 import { Platform } from "@ionic/angular";
 import { Location } from "@angular/common";
@@ -23,7 +23,7 @@ export class ScannerPage implements OnInit {
 
   constructor(
     private barcodeScanner: BarcodeScanner,
-    private AlertController: AlertController,
+    private alertController: AlertController,
     private router: Router,
     private platform: Platform,
     private location: Location,
@@ -33,7 +33,7 @@ export class ScannerPage implements OnInit {
   ) {
     this.platform.backButton.subscribeWithPriority(666666, () => {
       if (this.router.url == "/scanner") {
-        this.exitalert();
+        this.exitAlert();
       } else {
         this.location.back();
       }
@@ -41,33 +41,32 @@ export class ScannerPage implements OnInit {
   }
 
   ngOnInit() {
-    this.http.get("https://ssl.app.sr/api/get-status").subscribe(
-      async (Response) => {
-        console.log(Response);
-        this.storage.set("status", Response);
-      },
-      async (error) => {
-        console.log(error)
-      }
-    );
-
-    this.status = localStorage.getItem("currentStatus");
+    this.getStatus();
   }
+
+  async getStatus() {
+    try {
+      const response = await this.http.get("https://ssl.app.sr/api/get-status").toPromise();
+      console.log(response);
+      this.storage.set("status", response);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   ionViewDidEnter() {
     this.status = localStorage.getItem("currentStatus");
     console.log(this.status);
   }
 
- 
-  
   scan() {
     console.log("scan called");
     const storedStatus = localStorage.getItem("selectedStatus");
     const currentStatus = storedStatus ? JSON.parse(storedStatus) : null;
-    
+
     console.log("currentStatus from storage:", currentStatus);
     this.status = currentStatus;
-  
+
     if (currentStatus == null) {
       console.log("currentStatus is null");
       this.setStatus();
@@ -79,8 +78,9 @@ export class ScannerPage implements OnInit {
         formats: "CODE_93",
         orientation: "portrait",
       };
-  
-      this.barcodeScanner.scan(options)
+
+      this.barcodeScanner
+        .scan(options)
         .then((barcodeData) => {
           console.log(barcodeData);
           this.postBarcodeData(barcodeData.text);
@@ -90,11 +90,12 @@ export class ScannerPage implements OnInit {
         });
     }
   }
-  async alert(Response) {
-    const alert = await this.AlertController.create({
+
+  async alert(response) {
+    const alert = await this.alertController.create({
       header: "Scan succesvol",
       cssClass: "alertCss",
-      message: Response.pakket_id + " status is gewijzigd " + Response.name,
+      message: response.pakket_id + " status is gewijzigd " + response.name,
       buttons: [
         {
           text: "Scan volgende",
@@ -114,76 +115,83 @@ export class ScannerPage implements OnInit {
   }
 
   async postBarcodeData(data: any) {
-    let barcode = {
+    const barcode = {
       barcode: data,
       status: this.status.id,
     };
+
     console.log("Posting barcode data: ", barcode);
-  
+
     try {
-      const response = await this.http
-        .post("https://ssl.app.sr/api/barcode-update-status", barcode)
-        .toPromise();
-  
+      const response = await this.http.post("https://ssl.app.sr/api/barcode-update-status", barcode).toPromise();
+
       console.log("response :", response);
-  
-      if (Array.isArray(response) && response.length > 0) {
-        // Check if the response is an array with at least one element
-        this.alert(response[0]); // Call the alert function with the first element of the response array
-  
-        // Display a success toast
+
+      if (response) {
+        this.alert(response); // Assuming the response is a string or a specific value indicating success
+
         const toast = await this.toastController.create({
-          message: 'Barcode data posted successfully',
+          message: "Barcode data posted successfully",
           duration: 2000,
-          color: 'success',
-          position: 'bottom',
+          color: "success",
+          position: "bottom",
         });
         toast.present();
       } else {
-        console.log("Invalid response format: ", response); // Print an error message to the console
-  
-        // Display an error toast
+        console.log("Invalid response format: ", response);
+
         const toast = await this.toastController.create({
-          message: 'Invalid response format',
+          message: "Invalid response format",
           duration: 2000,
-          color: 'danger',
-          position: 'bottom',
+          color: "danger",
+          position: "bottom",
         });
         toast.present();
       }
     } catch (error) {
-      this.sameStatusAlert(error); // Call the sameStatusAlert function with the error object
+      this.sameStatusAlert(error);
       console.log("Error: ", error);
-  
-      // Display an error toast
-      const toast = await this.toastController.create({
-        message: 'Error posting barcode data',
-        duration: 2000,
-        color: 'danger',
-        position: 'bottom',
-      });
-      toast.present();
+
+      if (error instanceof HttpErrorResponse) {
+        console.log("Error status:", error.status);
+        console.log("Error body:", error.error);
+
+        if (error.status === 400 && error.error && error.error.message) {
+          const errorMessage = error.error.message;
+          // Display the specific error message to the user
+          const toast = await this.toastController.create({
+            message: errorMessage,
+            duration: 2000,
+            color: "danger",
+            position: "bottom",
+          });
+          toast.present();
+        } else {
+          // Display a generic error message
+          const toast = await this.toastController.create({
+            message: "Error posting barcode data",
+            duration: 2000,
+            color: "danger",
+            position: "bottom",
+          });
+          toast.present();
+        }
+      }
     }
   }
-
-  
-
- 
-  
-   
 
   pakketten() {
     this.router.navigateByUrl("/pakketten");
   }
+
   settings() {
     this.router.navigateByUrl("/settings");
   }
-  async exitalert() {
-    const alert = await this.AlertController.create({
-      // header: 'Registratie Successvol',
+
+  async exitAlert() {
+    const alert = await this.alertController.create({
       header: "Wilt u de applicatie verlaten?",
       cssClass: "alertCss",
-      // message: 'U zal een verificatie ontvangen in uw mail',
       buttons: [
         {
           text: "Ja",
@@ -203,9 +211,8 @@ export class ScannerPage implements OnInit {
   }
 
   async setStatus() {
-    const alert = await this.AlertController.create({
+    const alert = await this.alertController.create({
       header: "Er is geen status geselecteerd",
-
       cssClass: "alertCss",
       buttons: [
         {
@@ -225,24 +232,23 @@ export class ScannerPage implements OnInit {
     await alert.present();
   }
 
- 
-  async sameStatusAlert(Response) {
-    if (Response.error) {
-      const alert = await this.AlertController.create({
-        header: "Scan niet succesvol",
-        message: Response.error.message,
-        cssClass: "alertCss",
+  async sameStatusAlert(response) {
+    if (response.error) {
+      const alert = await this.alertController.create({
+        header: 'Scan niet succesvol',
+        message: response.message,
+        cssClass: 'alertCss',
         buttons: [
           {
-            text: "Scan volgende",
+            text: 'Scan volgende',
             handler: () => {
               this.scan();
             },
           },
           {
-            text: "ok",
+            text: 'OK',
             handler: () => {
-              console.log("Yes clicked");
+              console.log('OK clicked');
             },
           },
         ],

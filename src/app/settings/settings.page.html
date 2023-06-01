@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button text="" icon="chevron-back-outline"></ion-back-button>
     </ion-buttons>
-    <ion-title>InstellingenTEST</ion-title>
+    <ion-title>InstellingenLoadTest2</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -41,22 +41,29 @@
     </ion-item>
     <div class="my-container">
       <ion-item *ngIf="showLoodFields" lines="none" class="custom-item">
+        <ion-label position="floating">Lood Locatie Number</ion-label>
         <ion-input
-          label="Number input"
+          [(ngModel)]="loodLocatieNumber"
+          (ionChange)="onLoodLocatieNumberChange()"
           type="number"
           placeholder="Voer loodlocatie# in"
-          [(ngModel)]="loodLocatieNumber"
           required
         ></ion-input>
-    
         <div class="button-container">
-          <ion-button color="success"(click)="onSaveLoodLocatieNumber()" >Opslaan</ion-button>
-          <ion-button color="medium" (click)=" onClearLoodLocatieNumber()">Wissen</ion-button>
+          <ion-button
+            color="success"
+            (click)="onsaveLoodlocatienumber(); saveButtonClicked = true;"
+          >
+            Opslaan
+          </ion-button>
+          <ion-button color="medium" (click)="onClearLoodLocatieNumber()"
+            >Wissen</ion-button
+          >
         </div>
       </ion-item>
     </div>
   </ion-card>
- 
+
   <ion-card>
     <ion-card-header>
       <ion-card-title>Account gegevens</ion-card-title>
