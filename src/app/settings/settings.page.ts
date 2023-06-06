@@ -10,8 +10,6 @@ import { ToastController } from "@ionic/angular";
   styleUrls: ["./settings.page.scss"],
 })
 export class SettingsPage implements OnInit {
- 
-
   name: any;
   email: any;
   role: any;
@@ -59,10 +57,13 @@ export class SettingsPage implements OnInit {
     private router: Router,
     private http: HttpClient,
     private activatedRoute: ActivatedRoute,
-    private toastController: ToastController
+    private toastController: ToastController,
+   
   ) {
     this.currentId = null;
   }
+
+
 
   ngOnInit() {
     // Get the stored values from the local storage
@@ -72,16 +73,24 @@ export class SettingsPage implements OnInit {
       this.role = data.role;
       this.locatie = data.locatie;
     });
-  
+     // Call the function to filter the status list based on the user's location
+     this.filterStatusList();
+
     this.storage.get("status").then((response) => {
       if (response && response.status) {
         this.statusList = Object.values(response.status);
-    
+
         // Update dynamicLoodLocatieNumber with the retrieved value
         if (response.pallet_data && response.pallet_data.lood_locatie_nummer) {
-          console.log("Response lood_locatie_nummer:", response.pallet_data.lood_locatie_nummer);
+          console.log(
+            "Response lood_locatie_nummer:",
+            response.pallet_data.lood_locatie_nummer
+          );
           this.loodLocatieNumber = response.pallet_data.lood_locatie_nummer;
-          console.log("updated number is: ", response.pallet_data.lood_locatie_nummer);
+          console.log(
+            "updated number is: ",
+            response.pallet_data.lood_locatie_nummer
+          );
         }
       } else {
         console.log("No data in statusList just yet,");
@@ -89,42 +98,56 @@ export class SettingsPage implements OnInit {
         window.location.href = "/login";
       }
     });
-  
+
     // Get the current status from the query parameter or browser storage
     this.activatedRoute.queryParams.subscribe((params) => {
       const statusId = params["statusId"];
       const storedStatus = localStorage.getItem("selectedStatus");
-  
+
       if (statusId) {
-        const selectedStatus = this.statusList.find((status) => status.id === +statusId);
+        const selectedStatus = this.statusList.find(
+          (status) => status.id === +statusId
+        );
         if (selectedStatus) {
           this.currentStatus = selectedStatus;
           this.selectedStatusId = selectedStatus.id;
-          localStorage.setItem("selectedStatus", JSON.stringify(this.currentStatus));
-          localStorage.setItem("currentStatus", JSON.stringify(this.currentStatus));
+          localStorage.setItem(
+            "selectedStatus",
+            JSON.stringify(this.currentStatus)
+          );
+          localStorage.setItem(
+            "currentStatus",
+            JSON.stringify(this.currentStatus)
+          );
           console.log("The status has been saved:", this.currentStatus);
         }
       } else if (storedStatus) {
         this.currentStatus = JSON.parse(storedStatus);
-        this.selectedStatusId = this.currentStatus ? this.currentStatus.id : null;
-        console.log("The status has been retrieved from browser storage:", this.currentStatus);
+        this.selectedStatusId = this.currentStatus
+          ? this.currentStatus.id
+          : null;
+        console.log(
+          "The status has been retrieved from browser storage:",
+          this.currentStatus
+        );
       }
-  
+
       // Retrieve the stored pallet number from browser storage
       const storedPalletNumber = localStorage.getItem("palletNumber");
       if (this.currentStatus && storedPalletNumber) {
         this.currentStatus.palletNumber = storedPalletNumber;
         console.log("The pallet number is:", storedPalletNumber);
       }
-  
-      // Retrieve the lood locatie number from browser storage
+
       const storedLoodLocatieNumber = localStorage.getItem("loodLocatieNumber");
-      if (storedLoodLocatieNumber) {
-        this.loodLocatieNumber = parseInt(storedLoodLocatieNumber, 10);
+      if (storedLoodLocatieNumber !== null) {
+        this.loodLocatieNumber = +storedLoodLocatieNumber;
         if (this.currentStatus) {
           this.currentStatus.loodLocatieNumber = this.loodLocatieNumber;
         }
         console.log("The lood locatie number is:", this.loodLocatieNumber);
+      } else {
+        console.log("No lood locatie number found in storage");
       }
     });
 
@@ -138,26 +161,46 @@ export class SettingsPage implements OnInit {
     );
   }
 
+  filterStatusList(){
+    //make api call to retrieve status list
+    this.http.get<any>('https://ssl.app.sr/api/get-status').subscribe((data) => {
+      // Filter the status list based on the user's location
+      this.statusList = data.status.filter((status) => {
+        if (this.locatie === 'surinamehoofd' && [1, 2, 3, 4].includes(status.id)) {
+          return true;
+        } else if (this.locatie === 'nederland' && [9, 10, 11].includes(status.id)) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+    });
+  }
+
   onChangeStatus() {
     this.saveButtonClicked = false;
-    const selectedStatus = this.statusList.find(status => status.id === this.selectedStatusId);
+    const selectedStatus = this.statusList.find(
+      (status) => status.id === this.selectedStatusId
+    );
     this.selectedStatusName = selectedStatus ? selectedStatus.name : "";
-  
+
     try {
       if (this.selectedStatusId) {
         this.currentStatus = selectedStatus;
-  
+
         // Update the query parameter with the selected status
-        const queryParams = this.currentStatus ? { statusId: this.currentStatus.id } : {};
+        const queryParams = this.currentStatus
+          ? { statusId: this.currentStatus.id }
+          : {};
         this.router.navigate([], {
           queryParams,
-          queryParamsHandling: "merge"
+          queryParamsHandling: "merge",
         });
-  
+
         // Save the selected status in component variable
         this.currentStatus = selectedStatus;
         console.log("The status has been saved:", this.currentStatus);
-  
+
         if (this.currentStatus.name === "Palletiseren") {
           console.log("Palletiseren has been selected");
           this.showFields = true;
@@ -165,7 +208,8 @@ export class SettingsPage implements OnInit {
           this.currentStatus.palletNumber = this.currentPalletNumber;
         } else if (
           this.currentStatus &&
-          (this.currentStatus.id === 11 || this.currentStatus.name === "Aankomst")
+          (this.currentStatus.id === 11 ||
+            this.currentStatus.name === "Aankomst")
         ) {
           console.log("Aankomst status with the id of 11 has been selected");
           this.showLoodFields = true;
@@ -181,20 +225,13 @@ export class SettingsPage implements OnInit {
         // Hide the palletiseren fields or perform any other necessary actions
         this.router.navigate([], {
           queryParams: { statusId: null }, // Update the query parameter to null
-          queryParamsHandling: "merge"
+          queryParamsHandling: "merge",
         });
       }
     } catch (error) {
       console.error(error);
     }
   }
-  
-  onLoodLocatieNumberChange() {
-    this.currentStatus.loodLocatieNumber = this.loodLocatieNumber;
-    console.log("The lood locatie number has been updated:", this.loodLocatieNumber);
-  }
-  
-  
 
   async onSavePalletNumber() {
     const apiUrl = "https://ssl.app.sr/api/save-pallet";
@@ -261,50 +298,25 @@ export class SettingsPage implements OnInit {
     }
   }
 
-
-
-  public getStatus() {
-    const loodLocatieNumber = localStorage.getItem("loodLocatieNumber");
-    
-    const apiURL = "https://ssl.app.sr/api/get-status";
-    const payload = {
-      lood_locatie_number: loodLocatieNumber,
-    };
-
-    this.http.post(apiURL, payload).subscribe(
-      (data) => {
-        // Handle the response data
-      },
-      (error) => {
-        // Handle the error
-      }
-    );
-  }
-
   async onsaveLoodlocatienumber() {
     const apiURL = "https://ssl.app.sr/api/save-aankomst";
-  
+
     this.storage.get("status").then((response) => {
       if (response && response.pallet_data && response.pallet_data.id) {
         const currentId = response.pallet_data.id;
-  
-        // Check if the loodLocatieNumber exists in the storage
-        if (!response.loodLocatieNumber) {
-          // If it doesn't exist, set it to 1
-          response.loodLocatieNumber = 1;
-        } else {
-          // If it exists, increment the value
-          if (response.loodLocatieNumber > 1) {
-            response.loodLocatieNumber++;
-          }
-        }
-  
+
+        // Retrieve the user-inputted loodLocatieNumber from the component property
+        const loodLocatieNumber = this.loodLocatieNumber;
+
+        // Modify the response object directly
+        response.pallet_data.lood_locatie_nummer = loodLocatieNumber;
+
         const payload = {
           palletiseren_data_id: currentId,
-          lood_locatie_number: response.loodLocatieNumber // Include the updated loodLocatieNumber value in the payload
+          lood_locatie_number: loodLocatieNumber,
         };
-  
-        // Perform your HTTP POST request to update the number
+
+        // Perform the HTTP POST request to save the loodLocatieNumber
         this.http.post(apiURL, payload).subscribe(
           (data) => {
             console.log("Post request successful:", data);
@@ -312,6 +324,9 @@ export class SettingsPage implements OnInit {
               "Lood locatie number updated successfully",
               "success"
             );
+            localStorage.setItem("loodLocatieNumber", this.loodLocatieNumber.toString());
+            // Update the storage with the modified response object
+            this.storage.set("status", response);
           },
           (error) => {
             console.error("Post request failed:", error);
@@ -324,20 +339,21 @@ export class SettingsPage implements OnInit {
             }
           }
         );
-  
-        // Update the storage with the incremented value starting from the second time
-        if (response.loodLocatieNumber > 1) {
-          this.storage.set("status", response);
-        }
       } else {
         console.log("No current ID found in local storage");
         this.showToast("No matching ID found", "danger");
       }
     });
   }
-  
-  
- 
+
+  async onIncremement(){
+     // Increment the loodLocatieNumber by 1
+  this.loodLocatieNumber++;
+
+  // Save the incremented value to the database
+  this.onsaveLoodlocatienumber();
+  }
+
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
       message: message,
@@ -353,9 +369,7 @@ export class SettingsPage implements OnInit {
     this.currentStatus.palletNumber = ""; // Clear the pallet number in the currentStatus object
   }
 
-  onClearLoodLocatieNumber() {
-    this.loodLocatieNumber = 0;
-  }
+ 
 
   toggleDarkMode(event) {
     this.storage.set("mode", event.detail.checked);

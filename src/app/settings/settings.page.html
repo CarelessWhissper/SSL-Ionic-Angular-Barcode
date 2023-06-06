@@ -44,21 +44,21 @@
         <ion-label position="floating">Lood Locatie Number</ion-label>
         <ion-input
           [(ngModel)]="loodLocatieNumber"
-          (ionChange)="onLoodLocatieNumberChange()"
           type="number"
           placeholder="Voer loodlocatie# in"
           required
         ></ion-input>
         <div class="button-container">
           <ion-button
+            class="custom-btn"
             color="success"
             (click)="onsaveLoodlocatienumber(); saveButtonClicked = true;"
           >
             Opslaan
           </ion-button>
-          <ion-button color="medium" (click)="onClearLoodLocatieNumber()"
-            >Wissen</ion-button
-          >
+          <ion-button class="custom-btn" (click)="onIncremement()">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-button>
         </div>
       </ion-item>
     </div>
