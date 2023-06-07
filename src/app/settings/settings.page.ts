@@ -380,13 +380,24 @@ export class SettingsPage implements OnInit {
       document.body.setAttribute("color-theme", "light2");
     }
   }
+ 
+
   logout() {
-    localStorage.removeItem("login");
-    localStorage.removeItem("status");
-    localStorage.removeItem("selectedStatus");
-    localStorage.removeItem("currentStatus");
-    localStorage.removeItem("palletNumber");
-    console.log("Local storage cleared.");
-    this.router.navigateByUrl("/login");
-  }
+  const itemsToRemove = [
+    "login",
+    "status",
+    "selectedStatus",
+    "currentStatus",
+    "palletNumber",
+    "loodLocatieNumber"
+  ];
+
+  itemsToRemove.forEach(item => {
+    localStorage.removeItem(item);
+  });
+
+  console.log("Local storage cleared.");
+  this.router.navigateByUrl("/login");
+}
+
 }
