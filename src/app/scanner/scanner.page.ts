@@ -96,7 +96,12 @@ export class ScannerPage implements OnInit {
     const alert = await this.alertController.create({
       header: "Scan succesvol",
       cssClass: "alertCss",
-      message: response.pakket_naam + " status is gewijzigd " + response.status_naam,
+      message:
+        (response.pakket_id
+          ? response.pakket_id
+          : "het pakket") +
+        " is succesvol bijgewerkt naar " +
+        (response.status ? response.status : "Unknown"),
       buttons: [
         {
           text: "Scan volgende",
@@ -114,6 +119,7 @@ export class ScannerPage implements OnInit {
     });
     await alert.present();
   }
+  
 
   // async postBarcodeData(data: any) {
   //   const barcode = {
@@ -227,12 +233,12 @@ export class ScannerPage implements OnInit {
         console.log("Error status:", error.status);
         console.log("Error body:", error.error);
 
-        if (error.status === 400 && error.error && error.error.message) {
+        if (error.error && error.error.message) {
           const errorMessage = error.error.message;
           // Display the specific error message to the user
           const toast = await this.toastController.create({
             message: errorMessage,
-            duration: 2000,
+            duration: 4000,
             color: "danger",
             position: "bottom",
           });
@@ -241,7 +247,7 @@ export class ScannerPage implements OnInit {
           // Display a generic error message
           const toast = await this.toastController.create({
             message: "Error posting barcode data",
-            duration: 2000,
+            duration: 4000,
             color: "danger",
             position: "bottom",
           });

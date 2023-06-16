@@ -29,11 +29,11 @@ export class SettingsPage implements OnInit {
   OpSlaanButtonClicked = false;
   selectedStatusId: number;
   parsedStatus: any;
-  loodLocatieNumber: any;
-  currentLoodLocatie: number;
+  loodLocatieNumber: string;
+  currentLoodLocatie: string;
   dynamicLoodLocatieNumber: number;
   selectedStatusName: string;
-  httpClient: any;
+ 
 
   // Show palletiseren fields
   showPalletiserenFields() {
@@ -87,6 +87,7 @@ export class SettingsPage implements OnInit {
             response.pallet_data.lood_locatie_nummer
           );
           this.loodLocatieNumber = response.pallet_data.lood_locatie_nummer;
+          
           console.log(
             "updated number is: ",
             response.pallet_data.lood_locatie_nummer
@@ -141,7 +142,7 @@ export class SettingsPage implements OnInit {
 
       const storedLoodLocatieNumber = localStorage.getItem("loodLocatieNumber");
       if (storedLoodLocatieNumber !== null) {
-        this.loodLocatieNumber = +storedLoodLocatieNumber;
+        this.loodLocatieNumber = storedLoodLocatieNumber;
         if (this.currentStatus) {
           this.currentStatus.loodLocatieNumber = this.loodLocatieNumber;
         }
@@ -154,28 +155,43 @@ export class SettingsPage implements OnInit {
     this.palletNumber = localStorage.getItem("palletNumber");
   }
 
-  isAankomstSelected(): boolean {
-    return (
-      this.currentStatus &&
-      (this.currentStatus.id === 11 || this.currentStatus.name === "Aankomst")
-    );
-  }
-
-  filterStatusList(){
-    //make api call to retrieve status list
-    this.http.get<any>('https://ssl.app.sr/api/get-status').subscribe((data) => {
-      // Filter the status list based on the user's location
-      this.statusList = data.status.filter((status) => {
-        if (this.locatie === 'surinamehoofd' && [1, 2, 3, 4].includes(status.id)) {
-          return true;
-        } else if (this.locatie === 'nederland' && [9, 10, 11].includes(status.id)) {
-          return true;
-        } else {
-          return false;
-        }
-      });
+   filterStatusList() {
+  // Make API call to retrieve status list
+  this.http.get<any>('https://ssl.app.sr/api/get-status').subscribe((data) => {
+    // Filter the status list based on the user's location
+    this.statusList = data.status.filter((status) => {
+      if (this.locatie === 'surinamehoofd' && [1, 2, 3, 4].includes(status.id)) {
+        return true;
+      } else if (this.locatie === 'nederland' && [9, 10, 11].includes(status.id)) {
+        return true;
+      } else {
+        return false;
+      }
     });
-  }
+
+    // Update dynamicLoodLocatieNumber with the retrieved value
+    if (data.pallet_data && data.pallet_data.lood_locatie_nummer) {
+      console.log(
+        "Response lood_locatie_nummer:",
+        data.pallet_data.lood_locatie_nummer
+      );
+      this.loodLocatieNumber = data.pallet_data.lood_locatie_nummer;
+
+      console.log(
+        "Updated number is: ",
+        data.pallet_data.lood_locatie_nummer
+      );
+    }
+
+    // Update the currentStatus object with the updated loodLocatieNumber
+    if (this.currentStatus) {
+      this.currentStatus.loodLocatieNumber = this.loodLocatieNumber;
+    }
+  });
+}
+
+
+   
 
   onChangeStatus() {
     this.saveButtonClicked = false;
@@ -218,6 +234,7 @@ export class SettingsPage implements OnInit {
           console.log("Neither Palletiseren nor Aankomst has been selected");
           this.showFields = false;
           this.showLoodFields = false;
+          this.currentLoodLocatie = this.loodLocatieNumber;
         }
       } else {
         // Placeholder option selected, set currentStatus to null
@@ -346,13 +363,6 @@ export class SettingsPage implements OnInit {
     });
   }
 
-  async onIncremement(){
-     // Increment the loodLocatieNumber by 1
-  this.loodLocatieNumber++;
-
-  // Save the incremented value to the database
-  this.onsaveLoodlocatienumber();
-  }
 
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
