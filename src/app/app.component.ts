@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 
-import { Platform, AlertController } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Storage } from '@ionic/storage';
 import { Router, } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
-import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +23,6 @@ export class AppComponent {
     private statusBar: StatusBar,
     private storage: Storage,
     private router: Router,
-    private AlertController: AlertController,
 
 
   ) {

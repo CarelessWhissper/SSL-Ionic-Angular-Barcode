@@ -30,36 +30,40 @@
         placeholder="Insert Pallet number"
         [(ngModel)]="palletNumber"
       ></ion-input>
-      <ion-button
-        color="warning"
+      <ion-button class="mob-btn"
+        color="danger"
         (click)="onSavePalletNumber(); saveButtonClicked = true;"
         >Opslaan</ion-button
       >
-      <ion-button color="medium" (click)="onClearPalletNumber()"
-        >Wissen</ion-button
-      >
+      <ion-button class="custom-button" fill="outline" (click)="onClearPalletNumber()">Wissen</ion-button>
+
     </ion-item>
     <div class="my-container">
       <ion-item *ngIf="showLoodFields" lines="none" class="custom-item">
         <ion-label position="floating">Lood Locatie Number</ion-label>
-        <ion-input
-          [(ngModel)]="loodLocatieNumber"
-          type="text"
-          placeholder="Voer loodlocatie# in"
-          required
-        ></ion-input>
+        <div class="input-container">
+          <ion-input
+            [(ngModel)]="loodLocatieNumber"
+            type="text"
+            placeholder="Voer loodlocatie# in"
+            required
+          ></ion-input>
+        </div>
+        <div class="spacer"></div> 
         <div class="button-container">
           <ion-button
             class="custom-btn"
-            color="success"
+            color="danger"
             (click)="onsaveLoodlocatienumber(); saveButtonClicked = true;"
           >
             Opslaan
           </ion-button>
-        
+          <ion-button class="custom-button"  fill="outline" (click)=" clearLoad()">Wissen</ion-button>
         </div>
       </ion-item>
     </div>
+    
+    
   </ion-card>
 
   <ion-card>
@@ -102,7 +106,10 @@
 
   <ion-card>
     <ion-item lines="none" style="padding-bottom: 5px !important">
-      <ion-label>Dark mode</ion-label>
+      <ion-label>
+        <ion-icon slot="start" name="moon"></ion-icon>
+        Dark mode: {{ mode ? 'On' : 'Off' }}
+      </ion-label>
       <ion-toggle
         slot="end"
         (ionChange)="toggleDarkMode($event)"
@@ -110,9 +117,12 @@
       ></ion-toggle>
     </ion-item>
   </ion-card>
+  
+  
+  
   <section>
-    <ion-button color="danger" expand="block" (click)="logout()">
-      Log out</ion-button
-    >
+    <ion-button class="logout-button" expand="block" (click)="logout()">
+      Log out
+    </ion-button>
   </section>
 </ion-content>

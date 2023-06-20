@@ -317,22 +317,22 @@ export class SettingsPage implements OnInit {
 
   async onsaveLoodlocatienumber() {
     const apiURL = "https://ssl.app.sr/api/save-aankomst";
-
+  
     this.storage.get("status").then((response) => {
-      if (response && response.pallet_data && response.pallet_data.id) {
-        const currentId = response.pallet_data.id;
-
+      if (response && response.pallet_data && response.pallet_data.pakket_id) {
+        const currentId = response.pallet_data.pakket_id;
+  
         // Retrieve the user-inputted loodLocatieNumber from the component property
         const loodLocatieNumber = this.loodLocatieNumber;
-
+  
         // Modify the response object directly
         response.pallet_data.lood_locatie_nummer = loodLocatieNumber;
-
+  
         const payload = {
-          palletiseren_data_id: currentId,
+  
           lood_locatie_number: loodLocatieNumber,
         };
-
+  
         // Perform the HTTP POST request to save the loodLocatieNumber
         this.http.post(apiURL, payload).subscribe(
           (data) => {
@@ -341,14 +341,17 @@ export class SettingsPage implements OnInit {
               "Lood locatie number updated successfully",
               "success"
             );
-            localStorage.setItem("loodLocatieNumber", this.loodLocatieNumber.toString());
+            localStorage.setItem(
+              "loodLocatieNumber",
+              this.loodLocatieNumber.toString()
+            );
             // Update the storage with the modified response object
             this.storage.set("status", response);
           },
           (error) => {
             console.error("Post request failed:", error);
             if (error.status === 404) {
-              this.showToast("Invalid palletiseren data ID", "danger");
+              this.showToast("Invalid pakket ID", "danger");
             } else if (error.status === 500) {
               this.showToast("Failed to update lood locatie number", "danger");
             } else {
@@ -362,6 +365,7 @@ export class SettingsPage implements OnInit {
       }
     });
   }
+  
 
 
   async showToast(message: string, color: string) {
@@ -379,17 +383,24 @@ export class SettingsPage implements OnInit {
     this.currentStatus.palletNumber = ""; // Clear the pallet number in the currentStatus object
   }
 
+  clearLoad(){
+    this.loodLocatieNumber = "";
+    this.currentStatus.loadLocatieNumber = "";
+    console.log("was it cleared? ")
+  }
  
 
   toggleDarkMode(event) {
     this.storage.set("mode", event.detail.checked);
-    if (event.detail.checked == true) {
+    this.mode = event.detail.checked;
+    console.log(this.mode); // Add this line to check the value of the mode property
+    if (event.detail.checked) {
       document.body.setAttribute("color-theme", "dark");
     } else {
-      // document.body.setAttribute('color-theme', 'light');
-      document.body.setAttribute("color-theme", "light2");
+      document.body.setAttribute("color-theme", "light");
     }
   }
+  
  
 
   logout() {

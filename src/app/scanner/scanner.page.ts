@@ -121,71 +121,6 @@ export class ScannerPage implements OnInit {
   }
   
 
-  // async postBarcodeData(data: any) {
-  //   const barcode = {
-  //     barcode: data,
-  //     status: this.status.id,
-  //   };
-
-  //   console.log("Posting barcode data: ", barcode);
-
-  //   try {
-  //     const response = await this.http.post("https://ssl.app.sr/api/barcode-update-status", barcode).toPromise();
-
-  //     console.log("response :", response);
-
-  //     if (response) {
-  //       this.alert(response); // Assuming the response is a string or a specific value indicating success
-
-  //       const toast = await this.toastController.create({
-  //         message: "Barcode data posted successfully",
-  //         duration: 2000,
-  //         color: "success",
-  //         position: "bottom",
-  //       });
-  //       toast.present();
-  //     } else {
-  //       console.log("Invalid response format: ", response);
-
-  //       const toast = await this.toastController.create({
-  //         message: "Invalid response format",
-  //         duration: 2000,
-  //         color: "danger",
-  //         position: "bottom",
-  //       });
-  //       toast.present();
-  //     }
-  //   } catch (error) {
-  //     this.sameStatusAlert(error);
-  //     console.log("Error: ", error);
-
-  //     if (error instanceof HttpErrorResponse) {
-  //       console.log("Error status:", error.status);
-  //       console.log("Error body:", error.error);
-
-  //       if (error.status === 400 && error.error && error.error.message) {
-  //         const errorMessage = error.error.message;
-  //         // Display the specific error message to the user
-  //         const toast = await this.toastController.create({
-  //           message: errorMessage,
-  //           duration: 2000,
-  //           color: "danger",
-  //           position: "bottom",
-  //         });
-  //         toast.present();
-  //       } else {
-  //         // Display a generic error message
-  //         const toast = await this.toastController.create({
-  //           message: "Error posting barcode data",
-  //           duration: 2000,
-  //           color: "danger",
-  //           position: "bottom",
-  //         });
-  //         toast.present();
-  //       }
-  //     }
-  //   }
-  // }
 
   async postBarcodeData(data: any) {
     console.log("Data object:", data);
@@ -219,7 +154,7 @@ export class ScannerPage implements OnInit {
 
         const toast = await this.toastController.create({
           message: "Invalid response format",
-          duration: 2000,
+          duration: 7000,
           color: "danger",
           position: "bottom",
         });
@@ -238,7 +173,7 @@ export class ScannerPage implements OnInit {
           // Display the specific error message to the user
           const toast = await this.toastController.create({
             message: errorMessage,
-            duration: 4000,
+            duration: 7000,
             color: "danger",
             position: "bottom",
           });
@@ -247,7 +182,7 @@ export class ScannerPage implements OnInit {
           // Display a generic error message
           const toast = await this.toastController.create({
             message: "Error posting barcode data",
-            duration: 4000,
+            duration: 7000,
             color: "danger",
             position: "bottom",
           });
