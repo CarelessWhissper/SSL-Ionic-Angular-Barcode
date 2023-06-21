@@ -32,19 +32,22 @@ ion-toolbar {
   margin-left: 40%;
   align-items: center;
    transition: box-shadow 0.3s ease;
+  margin-right: 15px;
   
 }
 
 .custom-btn { 
   flex-grow: 1;
   margin: 0;
-  width: 76.14px;
+  width: 70.14px;
   height: 24.99px;
+  font-size: 12px;
 }
 
 .custom-button {
   --color: light;
   --border-color: light;
+  font-size: 12px;
 }
 
 .custom-item {
@@ -56,4 +59,10 @@ ion-toolbar {
 
 .logout-button {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+
+.mob-btn{
+  width: 76.14px;
+  height: 24.99px;
 }

@@ -36,7 +36,7 @@ export class AppComponent {
   initializeApp() {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
-      this.splashScreen.hide();
+      this.splashScreen.show();
       this.checkLogin();
     });
   }
@@ -47,6 +47,18 @@ export class AppComponent {
       this.router.navigate(['/scanner'])
      }
     })
+  }
+  clearLocalStorage() {
+    console.log("login data saved, but the rest went bye bye")
+    this.storage.get('login').then((loginData) => {
+      this.storage.clear().then(() => {
+        // Restore the login data after clearing local storage
+        if (loginData) {
+          this.storage.set('login', loginData);
+          
+        }
+      });
+    });
   }
 
   mode(){

@@ -154,6 +154,8 @@ export class SettingsPage implements OnInit {
 
     this.palletNumber = localStorage.getItem("palletNumber");
   }
+  
+
 
    filterStatusList() {
   // Make API call to retrieve status list

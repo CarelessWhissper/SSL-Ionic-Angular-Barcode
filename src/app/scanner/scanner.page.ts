@@ -97,9 +97,7 @@ export class ScannerPage implements OnInit {
       header: "Scan succesvol",
       cssClass: "alertCss",
       message:
-        (response.pakket_id
-          ? response.pakket_id
-          : "het pakket") +
+        (response.pakket_id ? response.pakket_id : "het pakket") +
         " is succesvol bijgewerkt naar " +
         (response.status ? response.status : "Unknown"),
       buttons: [
@@ -119,8 +117,6 @@ export class ScannerPage implements OnInit {
     });
     await alert.present();
   }
-  
-
 
   async postBarcodeData(data: any) {
     console.log("Data object:", data);
@@ -133,18 +129,18 @@ export class ScannerPage implements OnInit {
     console.log("Posting barcode data: ", barcode);
 
     try {
-      const response = await this.http
+      const response: any = await this.http
         .post("https://ssl.app.sr/api/barcode-update-status", barcode)
         .toPromise();
 
       console.log("response :", response);
 
-      if (response) {
+      if (response && response.message) {
         this.alert(response); // Assuming the response is a string or a specific value indicating success
 
         const toast = await this.toastController.create({
           message: "Barcode data posted successfully",
-          duration: 2000,
+          duration: 7000,
           color: "success",
           position: "bottom",
         });
@@ -245,27 +241,43 @@ export class ScannerPage implements OnInit {
   }
 
   async sameStatusAlert(response) {
-    if (response.error) {
-      const alert = await this.alertController.create({
-        header: "Scan niet succesvol",
-        message: response.message,
-        cssClass: "alertCss",
-        buttons: [
-          {
-            text: "Scan volgende",
-            handler: () => {
-              this.scan();
-            },
-          },
-          {
-            text: "OK",
-            handler: () => {
-              console.log("OK clicked");
-            },
-          },
-        ],
-      });
-      await alert.present();
+    let errorMessage = "";
+
+    switch (response.status) {
+      case 404:
+        errorMessage = "Barcode niet gevonden";
+        break;
+      case 401:
+        errorMessage = "Het pakket is al reeds gescanned ";
+        break;
+      case 406:
+        errorMessage = "Palletnummer niet beschikbaar";
+        break;
+      default:
+        errorMessage = "Error: " + response.message;
+        break;
     }
+
+    const alert = await this.alertController.create({
+      header: "Scan niet succesvol",
+      message: errorMessage,
+      cssClass: "alertCss",
+      buttons: [
+        {
+          text: "Scan volgende",
+          handler: () => {
+            this.scan();
+          },
+        },
+        {
+          text: "OK",
+          handler: () => {
+            console.log("OK clicked");
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 }
