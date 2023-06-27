@@ -9,16 +9,24 @@
 <ion-content>
   <ion-card>
     <ion-card-header style="padding-bottom: 0px !important">
-      <ion-card-title>Scan naar</ion-card-title>
+      <ion-card-title  >Scan naar</ion-card-title>
     </ion-card-header>
 
-    <ion-select [(ngModel)]="selectedStatusId" (ionChange)="onChangeStatus()">
+    
+    <ion-select [interfaceOptions]="{ cssClass: 'custom' }" [(ngModel)]="selectedStatusId" (ionChange)="onChangeStatus()" placeholder="Selecteer een status">
       <ng-container *ngFor="let status of statusList">
-        <ion-select-option [value]="status.id"
-          >{{ status.name }}</ion-select-option
-        >
+        <ng-container *ngIf="(locatie === 'nederland' && (status.id === 9 || status.id === 10)) || (locatie === 'surinamehoofd' && [3, 11].includes(status.id))">
+          <ion-select-option *ngIf="locatie === 'surinamehoofd' && status.id === 11" class="divider-option" disabled><p>Nederland</p></ion-select-option>
+          <ion-select-option [value]="status.id">{{ status.name }}</ion-select-option>
+          <ion-select-option *ngIf="locatie === 'nederland' && status.id === 10" class="divider-option" disabled>Suriname</ion-select-option>
+        </ng-container>
+        <ng-container *ngIf="(locatie !== 'nederland' || (status.id !== 10 && status.id !== 9)) && (locatie !== 'surinamehoofd' || ![3, 11].includes(status.id))">
+          <ion-select-option [value]="status.id">{{ status.name }}</ion-select-option>
+        </ng-container>
       </ng-container>
     </ion-select>
+    
+    
 
     <ion-item
       *ngIf="showFields"
@@ -30,14 +38,21 @@
         placeholder="Insert Pallet number"
         [(ngModel)]="palletNumber"
       ></ion-input>
-      <ion-button class="mob-btn"
+
+      <ion-button
+        class="mob-btn"
         color="danger"
         (click)="onSavePalletNumber(); saveButtonClicked = true;"
         >Opslaan</ion-button
       >
-      <ion-button class="custom-button" fill="outline" (click)="onClearPalletNumber()">Wissen</ion-button>
-
+      <ion-button
+        class="custom-button"
+        fill="outline"
+        (click)="onClearPalletNumber()"
+        >Wissen</ion-button
+      >
     </ion-item>
+
     <div class="my-container">
       <ion-item *ngIf="showLoodFields" lines="none" class="custom-item">
         <ion-label position="floating">Lood Locatie Number</ion-label>
@@ -49,7 +64,7 @@
             required
           ></ion-input>
         </div>
-        <div class="spacer"></div> 
+        <div class="spacer"></div>
         <div class="button-container">
           <ion-button
             class="custom-btn"
@@ -58,12 +73,15 @@
           >
             Opslaan
           </ion-button>
-          <ion-button class="custom-button"  fill="outline" (click)=" clearLoad()">Wissen</ion-button>
+          <ion-button
+            class="custom-button"
+            fill="outline"
+            (click)=" clearLoad()"
+            >Wissen</ion-button
+          >
         </div>
       </ion-item>
     </div>
-    
-    
   </ion-card>
 
   <ion-card>
@@ -108,7 +126,7 @@
     <ion-item lines="none" style="padding-bottom: 5px !important">
       <ion-label>
         <ion-icon slot="start" name="moon"></ion-icon>
-        Dark mode: {{ mode ? 'On' : 'Off' }}
+        Dark mode: {{ mode ? 'Aan' : 'Uit' }}
       </ion-label>
       <ion-toggle
         slot="end"
@@ -117,11 +135,14 @@
       ></ion-toggle>
     </ion-item>
   </ion-card>
-  
-  
-  
+
   <section>
-    <ion-button color="danger" class="logout-button" expand="block" (click)="logout()">
+    <ion-button
+      color="danger"
+      class="logout-button"
+      expand="block"
+      (click)="logout()"
+    >
       Log out
     </ion-button>
   </section>

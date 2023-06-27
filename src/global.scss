@@ -16,7 +16,7 @@
 @import "~@ionic/angular/css/normalize.css";
 @import "~@ionic/angular/css/structure.css";
 @import "~@ionic/angular/css/typography.css";
-@import '~@ionic/angular/css/display.css';
+@import "~@ionic/angular/css/display.css";
 
 /* Optional CSS utils that can be commented out */
 @import "~@ionic/angular/css/padding.css";
@@ -25,10 +25,31 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
-
 .popover-content sc-ion-popover-md {
-    top: 300px !important;
-    // --background: #121212 !important;
+  top: 300px !important;
+  // --background: #121212 !important;
+}
+
+.custom {
+    background: transparent !important;
+  .divider-option {
+    
+    text-align: left;
+    z-index: 10;
+    content: "Reference ";
+    border-top: 1px solid black;
+    
+    
+    .alert-radio-icon{
+      opacity: 0;
+    }
+    .alert-radio-label{
+      
+      text-align: left;
+      
+      
+    }
+  }
 }
 
 // ion-toolbar {

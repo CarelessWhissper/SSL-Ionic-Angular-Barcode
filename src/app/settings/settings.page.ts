@@ -33,7 +33,7 @@ export class SettingsPage implements OnInit {
   currentLoodLocatie: string;
   dynamicLoodLocatieNumber: number;
   selectedStatusName: string;
- 
+  showPalletNumber: boolean = false;
 
   // Show palletiseren fields
   showPalletiserenFields() {
@@ -57,13 +57,11 @@ export class SettingsPage implements OnInit {
     private router: Router,
     private http: HttpClient,
     private activatedRoute: ActivatedRoute,
-    private toastController: ToastController,
-   
-  ) {
+    private toastController: ToastController  ) {
     this.currentId = null;
   }
 
-
+  
 
   ngOnInit() {
     // Get the stored values from the local storage
@@ -73,73 +71,58 @@ export class SettingsPage implements OnInit {
       this.role = data.role;
       this.locatie = data.locatie;
     });
-     // Call the function to filter the status list based on the user's location
-     this.filterStatusList();
 
+
+  
+    // Call the function to filter the status list based on the user's location
+    this.filterStatusList();
+
+    
+  
     this.storage.get("status").then((response) => {
       if (response && response.status) {
         this.statusList = Object.values(response.status);
-
+  
         // Update dynamicLoodLocatieNumber with the retrieved value
         if (response.pallet_data && response.pallet_data.lood_locatie_nummer) {
-          console.log(
-            "Response lood_locatie_nummer:",
-            response.pallet_data.lood_locatie_nummer
-          );
+          console.log("Response lood_locatie_nummer:", response.pallet_data.lood_locatie_nummer);
           this.loodLocatieNumber = response.pallet_data.lood_locatie_nummer;
-          
-          console.log(
-            "updated number is: ",
-            response.pallet_data.lood_locatie_nummer
-          );
+          console.log("Updated number is: ", response.pallet_data.lood_locatie_nummer);
         }
       } else {
         console.log("No data in statusList just yet,");
-        alert("the app will restart");
+        alert("The app will restart");
         window.location.href = "/login";
       }
     });
-
+  
     // Get the current status from the query parameter or browser storage
     this.activatedRoute.queryParams.subscribe((params) => {
       const statusId = params["statusId"];
       const storedStatus = localStorage.getItem("selectedStatus");
-
+  
       if (statusId) {
-        const selectedStatus = this.statusList.find(
-          (status) => status.id === +statusId
-        );
+        const selectedStatus = this.statusList.find((status) => status.id === +statusId);
         if (selectedStatus) {
           this.currentStatus = selectedStatus;
           this.selectedStatusId = selectedStatus.id;
-          localStorage.setItem(
-            "selectedStatus",
-            JSON.stringify(this.currentStatus)
-          );
-          localStorage.setItem(
-            "currentStatus",
-            JSON.stringify(this.currentStatus)
-          );
+          localStorage.setItem("selectedStatus", JSON.stringify(this.currentStatus));
+          localStorage.setItem("currentStatus", JSON.stringify(this.currentStatus));
           console.log("The status has been saved:", this.currentStatus);
         }
       } else if (storedStatus) {
         this.currentStatus = JSON.parse(storedStatus);
-        this.selectedStatusId = this.currentStatus
-          ? this.currentStatus.id
-          : null;
-        console.log(
-          "The status has been retrieved from browser storage:",
-          this.currentStatus
-        );
+        this.selectedStatusId = this.currentStatus ? this.currentStatus.id : null;
+        console.log("The status has been retrieved from browser storage:", this.currentStatus);
       }
-
+  
       // Retrieve the stored pallet number from browser storage
       const storedPalletNumber = localStorage.getItem("palletNumber");
       if (this.currentStatus && storedPalletNumber) {
         this.currentStatus.palletNumber = storedPalletNumber;
         console.log("The pallet number is:", storedPalletNumber);
       }
-
+  
       const storedLoodLocatieNumber = localStorage.getItem("loodLocatieNumber");
       if (storedLoodLocatieNumber !== null) {
         this.loodLocatieNumber = storedLoodLocatieNumber;
@@ -150,52 +133,99 @@ export class SettingsPage implements OnInit {
       } else {
         console.log("No lood locatie number found in storage");
       }
-    });
-
-    this.palletNumber = localStorage.getItem("palletNumber");
-  }
   
-
-
-   filterStatusList() {
-  // Make API call to retrieve status list
-  this.http.get<any>('https://ssl.app.sr/api/get-status').subscribe((data) => {
-    // Filter the status list based on the user's location
-    this.statusList = data.status.filter((status) => {
-      if (this.locatie === 'surinamehoofd' && [1, 2, 3, 4].includes(status.id)) {
-        return true;
-      } else if (this.locatie === 'nederland' && [9, 10, 11].includes(status.id)) {
-        return true;
+      // Update the showFields flag based on the selected status
+      if (
+        this.currentStatus &&
+        (this.currentStatus.id === 10 || this.currentStatus.name === "Palletiseren")
+      ) {
+        this.showFields = true;
       } else {
-        return false;
+        this.showFields = false;
+      }
+      if (
+        this.currentStatus &&
+        (this.currentStatus.id === 11 || this.currentStatus.name === "Aankomst-NL")
+      ) {
+        this.showLoodFields = true;
+      } else {
+        this.showLoodFields = false;
       }
     });
-
-    // Update dynamicLoodLocatieNumber with the retrieved value
-    if (data.pallet_data && data.pallet_data.lood_locatie_nummer) {
-      console.log(
-        "Response lood_locatie_nummer:",
-        data.pallet_data.lood_locatie_nummer
-      );
-      this.loodLocatieNumber = data.pallet_data.lood_locatie_nummer;
-
-      console.log(
-        "Updated number is: ",
-        data.pallet_data.lood_locatie_nummer
-      );
-    }
-
-    // Update the currentStatus object with the updated loodLocatieNumber
-    if (this.currentStatus) {
-      this.currentStatus.loodLocatieNumber = this.loodLocatieNumber;
-    }
-  });
-}
-
-
+  
+    this.loadPalletNumberFromStorage();
    
+  }
+  
+  loadPalletNumberFromStorage() {
+    const storedPalletNumber = localStorage.getItem("palletNumber");
+    if (storedPalletNumber) {
+      this.palletNumber = storedPalletNumber;
+      console.log("The pallet number is:", this.palletNumber);
+    } else if (this.currentStatus && this.currentStatus.palletNumber) {
+      this.palletNumber = this.currentStatus.palletNumber;
+      setTimeout(() => {
+        this.palletNumber = this.currentStatus.palletNumber;
+        console.log("The pallet number is:", this.palletNumber);
+      }, 0);
+    }
+  }
 
+  filterStatusList() {
+    // Make API call to retrieve status list
+    this.http
+      .get<any>("https://ssl.app.sr/api/get-status")
+      .subscribe((data) => {
+        // Filter the status list based on the user's location
+        if (this.locatie === "surinamehoofd") {
+          this.statusList = data.status.filter((status) =>
+            [1, 2, 3, 11].includes(status.id)
+          );
+        } else if (this.locatie === "nederland") {
+          const customOrder = [9, 10, 4];
+          this.statusList = data.status.filter((status) =>
+            customOrder.includes(status.id)
+          );
+          this.statusList.sort(
+            (a, b) => customOrder.indexOf(a.id) - customOrder.indexOf(b.id)
+          );
+        } else {
+          this.statusList = [];
+        }
+
+        // Update dynamicLoodLocatieNumber with the retrieved value
+        if (data.pallet_data && data.pallet_data.lood_locatie_nummer) {
+          console.log(
+            "Response lood_locatie_nummer:",
+            data.pallet_data.lood_locatie_nummer
+          );
+          this.loodLocatieNumber = data.pallet_data.lood_locatie_nummer;
+
+          console.log(
+            "Updated number is: ",
+            data.pallet_data.lood_locatie_nummer
+          );
+        }
+
+        // Update the currentStatus object with the updated loodLocatieNumber
+        if (this.currentStatus) {
+          this.currentStatus.loodLocatieNumber = this.loodLocatieNumber;
+        }
+      });
+      // this.toggleSurinaamsePakket();
+  }
+
+  
+  
   onChangeStatus() {
+    if (this.selectedStatusId === 10) {
+      // Palletiseren status is selected
+      this.showPalletiserenFields();
+    } else {
+      // Other status is selected
+      this.hidePalletiserenFields();
+    }
+
     this.saveButtonClicked = false;
     const selectedStatus = this.statusList.find(
       (status) => status.id === this.selectedStatusId
@@ -204,7 +234,9 @@ export class SettingsPage implements OnInit {
 
     try {
       if (this.selectedStatusId) {
+        // Save the selected status in component variable
         this.currentStatus = selectedStatus;
+        console.log("The status has been saved:", this.currentStatus);
 
         // Update the query parameter with the selected status
         const queryParams = this.currentStatus
@@ -215,19 +247,15 @@ export class SettingsPage implements OnInit {
           queryParamsHandling: "merge",
         });
 
-        // Save the selected status in component variable
-        this.currentStatus = selectedStatus;
-        console.log("The status has been saved:", this.currentStatus);
-
         if (this.currentStatus.name === "Palletiseren") {
           console.log("Palletiseren has been selected");
           this.showFields = true;
           this.showLoodFields = false;
-          this.currentStatus.palletNumber = this.currentPalletNumber;
+          this.currentStatus.palletNumber = this.palletNumber; // Assign the current palletNumber to currentStatus
         } else if (
           this.currentStatus &&
           (this.currentStatus.id === 11 ||
-            this.currentStatus.name === "Aankomst")
+            this.currentStatus.name === "Aankomst-SR")
         ) {
           console.log("Aankomst status with the id of 11 has been selected");
           this.showLoodFields = true;
@@ -252,89 +280,68 @@ export class SettingsPage implements OnInit {
     }
   }
 
+ 
   async onSavePalletNumber() {
-    const apiUrl = "https://ssl.app.sr/api/save-pallet";
-
-    if (typeof this.currentStatus === "object") {
-      // Save the pallet number in the currentStatus object
+    const storedPalletNumber = localStorage.getItem("palletNumber");
+    if (storedPalletNumber !== this.palletNumber) {
+      localStorage.setItem("palletNumber", this.palletNumber);
       this.currentStatus.palletNumber = this.palletNumber;
-      const palletNumber = this.palletNumber;
+      console.log("The pallet number is saved:", this.palletNumber);
 
-      // Check if the pallet number is empty
-      if (!palletNumber) {
-        alert("Pallet number is empty. Please enter a valid pallet number.");
-        return; // Stop further execution
-      }
-
-      // Get the stored values from the local storage
+      // Save the pallet number to the database
+      const apiUrl = "https://ssl.app.sr/api/save-pallet";
       const data = await this.storage.get("login");
-
-      // Include the location data in the payload
       const playLoad = {
-        pallet_number: palletNumber,
+        pallet_number: this.palletNumber,
         Locatie: data.locatie,
       };
 
-      // Check if the button has been clicked before saving data
-      if (this.saveButtonClicked) {
-        try {
-          const response = await this.http.post(apiUrl, playLoad).toPromise();
-          console.log("Pallet number is saved successfully");
+      try {
+        const response = await this.http.post(apiUrl, playLoad).toPromise();
+        console.log("Pallet number is saved successfully to the database");
 
-          // Display a success toast
-          const toast = await this.toastController.create({
-            message: "Pallet number saved successfully",
-            duration: 2000,
-            color: "success",
-            position: "bottom",
-          });
-          toast.present();
+        // Display a success toast
+        const toast = await this.toastController.create({
+          message: "Pallet number saved successfully",
+          duration: 2000,
+          color: "success",
+          position: "bottom",
+        });
+        toast.present();
+      } catch (error) {
+        console.log("Error saving pallet number to the database: ", error);
 
-          // Save the currentStatus and palletNumber in browser storage
-          localStorage.setItem(
-            "selectedStatus",
-            JSON.stringify(this.currentStatus)
-          );
-          localStorage.setItem("palletNumber", this.currentStatus.palletNumber);
-
-          this.palletNumber = ""; // Reset the input value
-          this.saveButtonClicked = false; // Reset the flag
-        } catch (error) {
-          console.log("Error saving pallet number: ", error);
-
-          // Display an error toast
-          const toast = await this.toastController.create({
-            message: "Error saving pallet number",
-            duration: 2000,
-            color: "danger",
-            position: "bottom",
-          });
-          toast.present();
-        }
-      } else {
-        console.log("Button has not been clicked yet, data not saved.");
+        // Display an error toast
+        const toast = await this.toastController.create({
+          message: "Error saving pallet number",
+          duration: 2000,
+          color: "danger",
+          position: "bottom",
+        });
+        toast.present();
       }
+    } else {
+      console.log("The pallet number is already saved:", this.palletNumber);
     }
   }
 
   async onsaveLoodlocatienumber() {
     const apiURL = "https://ssl.app.sr/api/save-aankomst";
-  
+
     this.storage.get("status").then((response) => {
       if (response && response.pallet_data && response.pallet_data.pakket_id) {
         const currentId = response.pallet_data.pakket_id;
-  
+
         // Retrieve the user-inputted loodLocatieNumber from the component property
         const loodLocatieNumber = this.loodLocatieNumber;
-  
+
         // Modify the response object directly
         response.pallet_data.lood_locatie_nummer = loodLocatieNumber;
-  
+
         const payload = {
-  
           lood_locatie_number: loodLocatieNumber,
         };
-  
+
         // Perform the HTTP POST request to save the loodLocatieNumber
         this.http.post(apiURL, payload).subscribe(
           (data) => {
@@ -367,8 +374,6 @@ export class SettingsPage implements OnInit {
       }
     });
   }
-  
-
 
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
@@ -385,42 +390,42 @@ export class SettingsPage implements OnInit {
     this.currentStatus.palletNumber = ""; // Clear the pallet number in the currentStatus object
   }
 
-  clearLoad(){
+  clearLoad() {
     this.loodLocatieNumber = "";
     this.currentStatus.loadLocatieNumber = "";
-    console.log("was it cleared? ")
+    console.log("was it cleared? ");
   }
- 
 
   toggleDarkMode(event) {
-    this.storage.set("mode", event.detail.checked);
-    this.mode = event.detail.checked;
-    console.log(this.mode); // Add this line to check the value of the mode property
-    if (event.detail.checked) {
-      document.body.setAttribute("color-theme", "dark");
-    } else {
-      document.body.setAttribute("color-theme", "light");
-    }
-  }
+    this.storage.set('mode', event.detail.checked).then(() => {
+      this.mode = event.detail.checked;
   
- 
+      if (event.detail.checked) {
+        document.body.setAttribute('color-theme', 'dark');
+      } else {
+        document.body.removeAttribute('color-theme'); // Remove the attribute to use the default theme
+      }
+    }).catch((error) => {
+      console.error('Error saving mode to storage:', error);
+    });
+  }
 
   logout() {
-  const itemsToRemove = [
-    "login",
-    "status",
-    "selectedStatus",
-    "currentStatus",
-    "palletNumber",
-    "loodLocatieNumber"
-  ];
+    const itemsToRemove = [
+      "login",
+      "status",
+      "selectedStatus",
+      "currentStatus",
+      "palletNumber",
+      "loodLocatieNumber",
+    ];
 
-  itemsToRemove.forEach(item => {
-    localStorage.removeItem(item);
-  });
+    itemsToRemove.forEach((item) => {
+      localStorage.removeItem(item);
+      console.log(item);
+    });
 
-  console.log("Local storage cleared.");
-  this.router.navigateByUrl("/login");
-}
-
+    console.log("Local storage cleared.");
+    this.router.navigateByUrl("/login");
+  }
 }

@@ -1,18 +1,4 @@
-ion-searchbar {
-    // background-color: #121212;
-    // color: #fff !important;
-    // --color: #fff !important;
-    // --background: #1f1f1f;
-}
 
-ion-content {
-    // --ion-background-color: #383a3e;
-}
-
-ion-card {
-    // background-color: #121212;
-
-}
 
 .popover_setting {
     --min-width: 600px !important;
@@ -22,7 +8,20 @@ ion-card {
     background-color: red;
 }
 
-ion-card-title,
-ion-card-subtitle {
-    // color: #fff !important;
+
+.view-btn{
+    text-transform: capitalize;
+}
+
+.aanpassen-btn{
+    text-transform: capitalize;
+}
+
+.custom-searchbar {
+    --background: white;
+    --searchbar-input-background: #f2f2f2;
+  }
+
+.subTitle {
+    text-transform: capitalize;
 }
