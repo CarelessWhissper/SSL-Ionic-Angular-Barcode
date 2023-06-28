@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { PakkettenPageRoutingModule } from './pakketten-routing.module';
 
 import { PakkettenPage } from './pakketten.page';
+import { SortingOptionsComponent } from './SortingOptionsComponent';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { PakkettenPage } from './pakketten.page';
     IonicModule,
     PakkettenPageRoutingModule
   ],
-  declarations: [PakkettenPage]
+  declarations: [PakkettenPage, SortingOptionsComponent],
+  entryComponents: [SortingOptionsComponent] // Add SortingOptionsComponent to the entryComponents array
 })
 export class PakkettenPageModule {}

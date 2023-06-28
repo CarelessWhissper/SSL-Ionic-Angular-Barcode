@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { LoadingController, AlertController, PopoverController } from '@ionic/angular';
-import { Storage } from '@ionic/storage';
-
-
-
+import { Component, OnInit } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import {
+  LoadingController,
+  AlertController,
+  PopoverController,
+} from "@ionic/angular";
+import { Storage } from "@ionic/storage";
+import { SortingOptionsComponent } from "./SortingOptionsComponent";
 
 @Component({
-  selector: 'app-pakketten',
-  templateUrl: './pakketten.page.html',
-  styleUrls: ['./pakketten.page.scss'],
+  selector: "app-pakketten",
+  templateUrl: "./pakketten.page.html",
+  styleUrls: ["./pakketten.page.scss"],
 })
 export class PakkettenPage implements OnInit {
   pakketten: any;
@@ -29,52 +31,62 @@ export class PakkettenPage implements OnInit {
     private storage: Storage
   ) {}
 
- 
-
   async ngOnInit() {
-    this.loader();
-    this.status = await this.storage.get('currentStatus');
+    const loading = await this.loadingController.create({
+      message: 'pakketten worden geladen...',
+    });
+    await loading.present();
   
     try {
+      this.status = JSON.parse(localStorage.getItem('currentStatus'));
+      
+  
       const location = await this.getLocation();
       const params = {
         search: 'all',
         location: location,
       };
-      const response = await this.http.get<any[]>('https://ssl.app.sr/api/packages', { params }).toPromise();
+      const response = await this.http
+        .get<any[]>('https://ssl.app.sr/api/packages', { params })
+        .toPromise();
       this.pakketten = response;
       this.filteredPakketten = response;
-      this.loadingController.dismiss();
     } catch (error) {
       console.log('Error retrieving packages:', error);
+    } finally {
+      await loading.dismiss();
     }
   }
+  
 
-  async showConfirmationDialog(paketId: string, currentStatus: number) {
+  async showConfirmationDialog(id: string, status_id: number) {
+    console.log("the pakket id is", id);
+    console.log("the status of the package is", status_id);
+  
     const alert = await this.alertController.create({
-      header: 'Wilt u de status wijzigen van pakket ' + paketId + '?',
+      header: "Wilt u de status wijzigen van het pakket " + id + "?",
       buttons: [
         {
-          text: 'Ja',
+          text: "Ja",
           handler: () => {
-            this.doChangeStatus(paketId, currentStatus);
-          }
+            console.log("Current status:", status_id); // Log the current status here
+            this.doChangeStatus(id, status_id); // Pass status_id directly
+          },
         },
         {
-          text: 'Nee',
+          text: "Nee",
           handler: () => {
             // Handle "Nee" button action
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
   
     await alert.present();
   }
   
-  
   onChangeSearch() {
-    if (this.input && this.input.trim() !== '') {
+    if (this.input && this.input.trim() !== "") {
       this.filteredPakketten = this.pakketten.filter((pakket) =>
         pakket.pakket_id.toLowerCase().includes(this.input.toLowerCase())
       );
@@ -82,14 +94,16 @@ export class PakkettenPage implements OnInit {
       this.filteredPakketten = this.pakketten;
     }
   }
-  
- 
-  
+
   async getPackages() {
     try {
       const location = await this.getLocation();
       console.log(location);
-      const response = await this.http.get<any[]>(`https://ssl.app.sr/api/packages?search=all&location=${location}`).toPromise();
+      const response = await this.http
+        .get<any[]>(
+          `https://ssl.app.sr/api/packages?search=all&location=${location}`
+        )
+        .toPromise();
       const packages = response;
       console.log(packages);
     } catch (error) {
@@ -101,9 +115,9 @@ export class PakkettenPage implements OnInit {
     return this.storage.get("login").then((data) => {
       const locatie = data.locatie;
       console.log("send me your location ", locatie);
-  
+
       if (locatie === null) {
-       console.log("geen pakketten beschikbaar")
+        console.log("geen pakketten beschikbaar");
       } else if (locatie.toLowerCase() === "surinamehoofd") {
         return "suriname";
       } else {
@@ -112,86 +126,164 @@ export class PakkettenPage implements OnInit {
     });
   }
 
-
   async changeStatus(paket) {
-    const statusto = parseInt(paket.status) + 1;
+    const newStatus = paket.status_id + 1;
+    console.log("Checking if pak.status exists:", paket.status_id);
   
-    const val = await this.storage.get("status");
-    const matchingStatus = val.find(data => parseInt(data.id) === statusto);
-  
-    if (matchingStatus) {
-      const statusName = matchingStatus.name;
-      const alert = await this.alertController.create({
-        header: 'Wilt u zeker de status wijzigen?',
-        buttons: [
-          {
-            text: 'Ja',
-            handler: async () => {
-              await this.doChangeStatus(paket.id, statusto);
-              const successAlert = await this.alertController.create({
-                message: `Pakket ${paket.id} gewijzigd naar ${statusName}`,
-                buttons: ['OK']
-              });
-              await successAlert.present();
-            }
+    const alert = await this.alertController.create({
+      header: "Wilt u zeker de status wijzigen?",
+      buttons: [
+        {
+          text: "Ja",
+          handler: async () => {
+            await this.doChangeStatus(paket.id, newStatus);
+            const successAlert = await this.alertController.create({
+              message: `Pakket ${paket.id} gewijzigd naar status ${newStatus}`,
+              buttons: ["OK"],
+            });
+            await successAlert.present();
           },
-          {
-            text: 'Nee',
-            handler: () => {
-              // Handle "Nee" button action
-            }
-          }
-        ]
-      });
-  
-      await alert.present();
-    }
-  }
-  async doChangeStatus(paketId: string, currentStatus: number) {
-    let data = {
-      "id": paketId,
-      "status": currentStatus + 1
-    };
-  
-    this.loader();
-  
-    return this.http.post('https://ssl.app.sr/api/update-status', data).toPromise();
-  }
-  
-  async loader() {
-    const loading = await this.loadingController.create({
-      spinner: "bubbles",
-      cssClass: 'alertCss',
-      message: 'Even geduld aub...',
+        },
+        {
+          text: "Nee",
+          handler: () => {
+            // Handle "Nee" button action
+          },
+        },
+      ],
     });
   
-    await loading.present();
+    await alert.present();
   }
   
+  async doChangeStatus(paketId: string, status_id: number) {
+    let data = {
+      id: paketId,
+      status_id: status_id,
+    };
+  
+    try {
+      const loading = await this.loadingController.create({
+        spinner: "dots",
+        cssClass: "alertCss",
+        message: "Even geduld aub...",
+      });
+      await loading.present();
+  
+      const response = await this.http.post("https://ssl.app.sr/api/update-status", data).toPromise();
+      console.log(response);
+
+     
+  
+      // Update the status in the pakketten array or perform any other necessary actions
+  
+      await loading.dismiss();
+      this.reloadPage();
+    } catch (error) {
+      console.error("Error changing status:", error);
+      // Handle error scenario
+      await this.loadingController.dismiss();
+    }
+  }
   
 
+  async loader() {
+    const loading = await this.loadingController.create({
+      spinner: "dots",
+      cssClass: "alertCss",
+      message: "Even geduld aub...",
+    });
 
+    await loading.present();
+  }
 
+  async presentAlert(message: string): Promise<void> {
+    const alert = await this.alertController.create({
+      message: message,
+      buttons: ["OK"],
+    });
 
+    await alert.present();
+  }
 
-async presentAlert(message: string): Promise<void> {
-  const alert = await this.alertController.create({
-    message: message,
-    buttons: ['OK']
-  });
+  async presentSortingOptions() {
+    const popover = await this.popoverController.create({
+      component: SortingOptionsComponent,
+      showBackdrop: false,
+      translucent: true,
+      cssClass: "popoverCss",
+    });
 
-  await alert.present();
-}
+    popover.onWillDismiss().then((sortOption) => {
+      if (sortOption && sortOption.data) {
+        if (sortOption.data === "status_name") {
+          this.sortByStatusName();
+        } else if (sortOption.data === "pakket_id") {
+          this.sortByPakketId();
+        }
+      }
+    });
 
- 
+    await popover.present();
+  }
+  async sortByStatusName() {
+    // Implement the sorting logic based on status_name
+    const loader = await this.loadingController.create({
+      message: "Sorting...",
+    });
+    await loader.present(); // Show the loader while retrieving sorted packages
+
+    this.filteredPakketten.sort((a, b) => {
+      const statusA = (a.status_name || "").toUpperCase();
+      const statusB = (b.status_name || "").toUpperCase();
+
+      if (statusA < statusB) {
+        return -1;
+      } else if (statusA > statusB) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+
+    // Hide the loader after sorting is completed
+    await loader.dismiss();
+  }
+
+  async sortByPakketId() {
+    // Implement the sorting logic based on pakket_id
+    const loader = await this.loadingController.create({
+      message: 'Sorting...',
+    });
+    await loader.present(); // Show the loader while retrieving sorted packages
+  
+    this.filteredPakketten.sort((a, b) => {
+      const pakketIdA = (a.pakket_id || '').toUpperCase();
+      const pakketIdB = (b.pakket_id || '').toUpperCase();
+  
+      if (pakketIdA < pakketIdB) {
+        return -1;
+      } else if (pakketIdA > pakketIdB) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  
+    // Hide the loader after sorting is completed
+    await loader.dismiss();
+  }
+  
 
   toggleDetails(pakket: any) {
     pakket.showDetails = !pakket.showDetails;
   }
 
   getEyeIcon(pakket: any): string {
-    return pakket.showDetails ? 'eye-off' : 'eye';
+    return pakket.showDetails ? "eye-off" : "eye";
+  }
+
+  reloadPage() {
+    window.location.reload(); // Reload the page to fetch fresh data
   }
 }
-
-
