@@ -19,43 +19,51 @@
 
 <ion-content>
   <ion-list>
-    <ion-card *ngFor="let pakket of filteredPakketten">
+    <ion-card *ngFor="let pakket of filteredPakketten" class="custom-card">
       <ion-card-header>
-        <ion-card-title> Pakketnr: {{ pakket?.pakket_id }}</ion-card-title>
+        <ion-card-title class="card-title"
+          >Pakketnr: {{ pakket?.pakket_id }}</ion-card-title
+        >
       </ion-card-header>
 
       <ion-card-content>
         <ion-card-subtitle class="sub"
-          >status: {{ pakket?.status_name }}</ion-card-subtitle
+          >Status: {{ pakket?.status_name }}</ion-card-subtitle
         >
 
-        <ion-item *ngIf="pakket.showDetails">
+        <ion-item *ngIf="pakket.showDetails" class="card-item">
           <ion-label>Volume: {{ pakket?.volume }}</ion-label>
         </ion-item>
-        <ion-item *ngIf="pakket.showDetails">
+        <ion-item *ngIf="pakket.showDetails" class="card-item">
           <ion-label>Verzender: {{ pakket?.verzender }}</ion-label>
         </ion-item>
-        <ion-item *ngIf="pakket.showDetails">
+        <ion-item *ngIf="pakket.showDetails" class="card-item">
           <ion-label>Ontvanger: {{ pakket?.ontvanger }}</ion-label>
         </ion-item>
       </ion-card-content>
 
-      <ion-button class="view-btn" fill="clear" (click)="toggleDetails(pakket)">
-        <ion-icon
-          [name]="getEyeIcon(pakket)"
-          style="margin-right: 5px"
-        ></ion-icon>
-        Bekijken
-      </ion-button>
-
-      <ion-button
-        class="aanpassen-btn"
-        fill="clear"
-        (click)="showConfirmationDialog(pakket.id, pakket.status_id)"
-      >
-        <ion-icon name="create" style="margin-right: 5px"></ion-icon>
-        Aanpassen
-      </ion-button>
+      <ion-row class="card-buttons">
+        <ion-col>
+          <ion-button
+            class="view-btn"
+            fill="clear"
+            (click)="toggleDetails(pakket)"
+          >
+            <ion-icon [name]="getEyeIcon(pakket)" class="icon"></ion-icon>
+            Bekijken
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button
+            class="aanpassen-btn"
+            fill="clear"
+            (click)="showConfirmationDialog(pakket.id, pakket.status_id)"
+          >
+            <ion-icon name="create" class="icon"></ion-icon>
+            Aanpassen
+          </ion-button>
+        </ion-col>
+      </ion-row>
     </ion-card>
   </ion-list>
 </ion-content>
