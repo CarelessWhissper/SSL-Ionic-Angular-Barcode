@@ -36,11 +36,10 @@ export class PakkettenPage implements OnInit {
       message: 'pakketten worden geladen...',
     });
     await loading.present();
-  
+
     try {
       this.status = JSON.parse(localStorage.getItem('currentStatus'));
-      
-  
+
       const location = await this.getLocation();
       const params = {
         search: 'all',
@@ -57,12 +56,12 @@ export class PakkettenPage implements OnInit {
       await loading.dismiss();
     }
   }
-  
+
 
   async showConfirmationDialog(id: string, status_id: number) {
     console.log("the pakket id is", id);
     console.log("the status of the package is", status_id);
-  
+
     const alert = await this.alertController.create({
       header: "Wilt u de status wijzigen van het pakket " + id + "?",
       buttons: [
@@ -81,10 +80,10 @@ export class PakkettenPage implements OnInit {
         },
       ],
     });
-  
+
     await alert.present();
   }
-  
+
   onChangeSearch() {
     if (this.input && this.input.trim() !== "") {
       this.filteredPakketten = this.pakketten.filter((pakket) =>
@@ -129,19 +128,19 @@ export class PakkettenPage implements OnInit {
   async changeStatus(paket) {
     const newStatus = paket.status_id + 1;
     console.log("Checking if pak.status exists:", paket.status_id);
-  
+
     const alert = await this.alertController.create({
       header: "Wilt u zeker de status wijzigen?",
       buttons: [
         {
           text: "Ja",
           handler: async () => {
-            await this.doChangeStatus(paket.id, newStatus);
-            const successAlert = await this.alertController.create({
-              message: `Pakket ${paket.id} gewijzigd naar status ${newStatus}`,
-              buttons: ["OK"],
-            });
-            await successAlert.present();
+            const success = await this.doChangeStatus(paket.id, newStatus);
+            if (success) {
+              this.presentAlert(`Pakket ${paket.id} gewijzigd naar status ${newStatus}`);
+            } else {
+              this.presentAlert("Er is een fout opgetreden tijdens het wijzigen van de status");
+            }
           },
         },
         {
@@ -152,16 +151,16 @@ export class PakkettenPage implements OnInit {
         },
       ],
     });
-  
+
     await alert.present();
   }
-  
-  async doChangeStatus(paketId: string, status_id: number) {
+
+  async doChangeStatus(paketId: string, status_id: number): Promise<boolean> {
     let data = {
       id: paketId,
       status_id: status_id,
     };
-  
+
     try {
       const loading = await this.loadingController.create({
         spinner: "dots",
@@ -169,23 +168,21 @@ export class PakkettenPage implements OnInit {
         message: "Even geduld aub...",
       });
       await loading.present();
-  
+
       const response = await this.http.post("https://ssl.app.sr/api/update-status", data).toPromise();
       console.log(response);
 
-     
-  
       // Update the status in the pakketten array or perform any other necessary actions
-  
       await loading.dismiss();
-      this.reloadPage();
+      this.reloadPackages();
+      return true;
     } catch (error) {
       console.error("Error changing status:", error);
       // Handle error scenario
       await this.loadingController.dismiss();
+      return false;
     }
   }
-  
 
   async loader() {
     const loading = await this.loadingController.create({
@@ -226,6 +223,7 @@ export class PakkettenPage implements OnInit {
 
     await popover.present();
   }
+
   async sortByStatusName() {
     // Implement the sorting logic based on status_name
     const loader = await this.loadingController.create({
@@ -256,11 +254,11 @@ export class PakkettenPage implements OnInit {
       message: 'Sorting...',
     });
     await loader.present(); // Show the loader while retrieving sorted packages
-  
+
     this.filteredPakketten.sort((a, b) => {
       const pakketIdA = (a.pakket_id || '').toUpperCase();
       const pakketIdB = (b.pakket_id || '').toUpperCase();
-  
+
       if (pakketIdA < pakketIdB) {
         return -1;
       } else if (pakketIdA > pakketIdB) {
@@ -269,11 +267,10 @@ export class PakkettenPage implements OnInit {
         return 0;
       }
     });
-  
+
     // Hide the loader after sorting is completed
     await loader.dismiss();
   }
-  
 
   toggleDetails(pakket: any) {
     pakket.showDetails = !pakket.showDetails;
@@ -283,7 +280,7 @@ export class PakkettenPage implements OnInit {
     return pakket.showDetails ? "eye-off" : "eye";
   }
 
-  reloadPage() {
-    window.location.reload(); // Reload the page to fetch fresh data
+  reloadPackages() {
+    this.ngOnInit(); // Reinitialize the component to fetch fresh data
   }
 }

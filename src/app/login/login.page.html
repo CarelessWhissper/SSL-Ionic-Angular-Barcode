@@ -1,30 +1,29 @@
 <ion-header>
-
 </ion-header>
 
 <ion-content>
-    <div class="padding">
-        <div class=form>
-            <div class='logo'>
-                <img src="../../assets/logo.png">
-            </div>
-            <ion-item no-lines class="input">
-                <ion-input type="email" [(ngModel)]="email" placeholder="Username" (ionChange)="CheckInput()"></ion-input>
-            </ion-item>
-            <ion-item no-lines class="input">
-                <ion-input type={{type}} [(ngModel)]="password" placeholder="Password" (ionChange)="CheckInput()">
-                </ion-input>
-                <ion-icon name="eye-off" (click)="toggleShow()"  *ngIf="showPassword == false"></ion-icon>
-                <ion-icon name="eye" (click)="toggleShow()" *ngIf="showPassword == true"></ion-icon>
-            </ion-item>
-            <div class="validation" *ngIf="validation == 1">
-                <ion-icon style="color: red;" name="warning-outline"> </ion-icon><span style="color: red;">The provided credentials do not match.</span>
-            </div>
-            <ion-row>
-                <ion-col>
-                    <ion-button type="submit" color="success" expand="block" disabled={{buttonDisabled}} (click)="DoLogin()">Login</ion-button>
-                </ion-col>
-            </ion-row>
-        </div>
+  <div class="background-image"></div>
+  <div class="form">
+    <div class="logo">
+      <img src="../../assets/logo.png">
     </div>
+    <ion-item no-lines class="input">
+      <ion-icon name="mail" slot="start"></ion-icon> <!-- Email icon -->
+      <ion-input type="email" [(ngModel)]="email" placeholder="Username" (ionChange)="CheckInput()"></ion-input>
+    </ion-item>
+    <ion-item no-lines class="input">
+      <ion-icon name="lock-closed" slot="start"></ion-icon> <!-- Password icon -->
+      <ion-input type="{{ type }}" [(ngModel)]="password" placeholder="Password" (ionChange)="CheckInput()"></ion-input>
+      <ion-icon name="eye-off" (click)="toggleShow()" *ngIf="showPassword == false"></ion-icon>
+      <ion-icon name="eye" (click)="toggleShow()" *ngIf="showPassword == true"></ion-icon>
+    </ion-item>
+    <div class="validation" *ngIf="validation == 1">
+      <ion-icon style="color: red;" name="warning-outline"></ion-icon><span style="color: red;">The provided credentials do not match.</span>
+    </div>
+    <ion-row class="login-button-row">
+      <ion-col>
+        <ion-button type="submit" color="success"   shape="round" size="small" expand="full" [disabled]="buttonDisabled" (click)="DoLogin()">Login</ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
 </ion-content>

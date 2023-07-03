@@ -30,6 +30,12 @@
   // --background: #121212 !important;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color: #ffffff; /* Text color for dark mode */
+  }
+}
+
 .custom {
     background: transparent !important;
   .divider-option {
@@ -52,33 +58,3 @@
   }
 }
 
-// ion-toolbar {
-//     --background: #121212;
-// }
-
-// ion-content {
-//     --background: #383a3e;
-// }
-
-// .alertCss {
-//     --background: #121212;
-//     .alert-head {
-//         .alert-title {
-//             color: #fff;
-//         }
-//     }
-// }
-
-// .popoverCss {
-
-//     background: #000000b0 !important;
-
-//     ion-list {
-//         // background: #121212 !important;
-//         padding: 0px;
-
-//         ion-item {
-//             --background: #1f1f1f !important;
-//         }
-//     }
-// }

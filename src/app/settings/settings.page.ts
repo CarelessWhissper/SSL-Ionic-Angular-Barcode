@@ -173,48 +173,31 @@ export class SettingsPage implements OnInit {
 
   filterStatusList() {
     // Make API call to retrieve status list
-    this.http
-      .get<any>("https://ssl.app.sr/api/get-status")
-      .subscribe((data) => {
-        // Filter the status list based on the user's location
-        if (this.locatie === "surinamehoofd") {
-          this.statusList = data.status.filter((status) =>
-            [1, 2, 3, 11].includes(status.id)
-          );
-        } else if (this.locatie === "nederland") {
-          const customOrder = [9, 10, 4];
-          this.statusList = data.status.filter((status) =>
-            customOrder.includes(status.id)
-          );
-          this.statusList.sort(
-            (a, b) => customOrder.indexOf(a.id) - customOrder.indexOf(b.id)
-          );
-        } else {
-          this.statusList = [];
-        }
-
-        // Update dynamicLoodLocatieNumber with the retrieved value
-        if (data.pallet_data && data.pallet_data.lood_locatie_nummer) {
-          console.log(
-            "Response lood_locatie_nummer:",
-            data.pallet_data.lood_locatie_nummer
-          );
-          this.loodLocatieNumber = data.pallet_data.lood_locatie_nummer;
-
-          console.log(
-            "Updated number is: ",
-            data.pallet_data.lood_locatie_nummer
-          );
-        }
-
+    this.http.get<any>("https://ssl.app.sr/api/get-status").subscribe((data) => {
+      // Filter the status list based on the user's location
+      if (this.locatie === "surinamehoofd") {
+        this.statusList = data.status.filter((status) => [1, 2, 3, 11].includes(status.id));
+      } else if (this.locatie === "nederland") {
+        const customOrder = [9, 10, 4];
+        this.statusList = data.status.filter((status) => customOrder.includes(status.id));
+        this.statusList.sort((a, b) => customOrder.indexOf(a.id) - customOrder.indexOf(b.id));
+      } else {
+        this.statusList = [];
+      }
+  
+      // Update dynamicLoodLocatieNumber with the retrieved value
+      if (data.pallet_data && data.pallet_data.lood_locatie_nummer) {
+        console.log("Response lood_locatie_nummer:", data.pallet_data.lood_locatie_nummer);
+        this.loodLocatieNumber = data.pallet_data.lood_locatie_nummer;
+        console.log("Updated number is: ", this.loodLocatieNumber);
+  
         // Update the currentStatus object with the updated loodLocatieNumber
         if (this.currentStatus) {
           this.currentStatus.loodLocatieNumber = this.loodLocatieNumber;
         }
-      });
-      // this.toggleSurinaamsePakket();
+      }
+    });
   }
-
   
   
   onChangeStatus() {
