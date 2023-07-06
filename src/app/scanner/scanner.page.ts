@@ -247,9 +247,12 @@ export class ScannerPage implements OnInit {
       case 404:
         errorMessage = "Barcode niet gevonden";
         break;
-      case 401:
+      case 400:
         errorMessage = "Het pakket is al reeds gescanned ";
         break;
+      case 401:
+      errorMessage ="Invalide Status poging , het pakket heeft zijn eind bereikt."  
+      break;
       case 406:
         errorMessage = "Palletnummer niet beschikbaar";
         break;

@@ -176,9 +176,9 @@ export class SettingsPage implements OnInit {
     this.http.get<any>("https://ssl.app.sr/api/get-status").subscribe((data) => {
       // Filter the status list based on the user's location
       if (this.locatie === "surinamehoofd") {
-        this.statusList = data.status.filter((status) => [1, 2, 3, 11].includes(status.id));
+        this.statusList = data.status.filter((status) => [1, 2, 3, 4].includes(status.id));
       } else if (this.locatie === "nederland") {
-        const customOrder = [9, 10, 4];
+        const customOrder = [9, 10, 11];
         this.statusList = data.status.filter((status) => customOrder.includes(status.id));
         this.statusList.sort((a, b) => customOrder.indexOf(a.id) - customOrder.indexOf(b.id));
       } else {

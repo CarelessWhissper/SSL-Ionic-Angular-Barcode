@@ -1,12 +1,5 @@
 
 
-.popover_setting {
-    --min-width: 600px !important;
-    --min-height: 150px !important;
-    --ion-background-color: red;
-    --ion-text-color: #ffffff;
-    background-color: red;
-}
 
 
 .view-btn{
@@ -22,45 +15,50 @@
     --searchbar-input-background: #f2f2f2;
   }
 
+
+  
+
 .subTitle {
     text-transform: capitalize;
 }
 
-
 .custom-card {
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 16px;
-    padding: 16px;
-  }
-  
-  .card-title {
-    font-size: 20px;
-    font-weight: bold;
-  }
-  
-  .sub {
-    font-size: 16px;
-    margin-bottom: 8px;
-  }
-  
-  .card-item {
-    padding-left: 0;
-  }
-  
-  .card-buttons {
-    margin-top: 16px;
-    justify-content: space-between;
-  }
-  
-  .view-btn,
-  .aanpassen-btn {
-    --ion-text-color: var(--ion-color-primary);
-    font-size: 14px;
-  }
-  
-  .icon {
-    font-size: 20px;
-    margin-right: 5px;
-  }
-  
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 8px; /* Adjust the margin to desired spacing */
+  padding: 12px; /* Adjust the padding as needed */
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.sub {
+  font-size: 16px;
+  margin-bottom: 1px; /* Adjust the margin to desired spacing */
+  margin-top: 20px;
+  text-transform: capitalize;
+}
+
+.card-item {
+  padding-left: 0;
+  margin-bottom: 4px; /* Adjust the margin to desired spacing */
+}
+
+.card-buttons {
+  margin-top: 1px; /* Adjust the margin to desired spacing */
+  justify-content: space-between;
+}
+
+.view-btn,
+.aanpassen-btn {
+  --ion-text-color: var(--ion-color-primary);
+  font-size: 14px;
+}
+
+.icon {
+  font-size: 20px;
+  margin-right: 2px; /* Adjust the margin to desired spacing */
+}
+

@@ -61,15 +61,18 @@ export class PakkettenPage implements OnInit {
   async showConfirmationDialog(id: string, status_id: number) {
     console.log("the pakket id is", id);
     console.log("the status of the package is", status_id);
-
+  
+    const pakket = this.pakketten.find((pakket) => pakket.id === id);
+    const pakket_id = pakket ? pakket.pakket_id : id;
+  
     const alert = await this.alertController.create({
-      header: "Wilt u de status wijzigen van het pakket " + id + "?",
+      header: `Wilt u de status wijzigen van het pakket ${pakket_id}?`,
       buttons: [
         {
           text: "Ja",
           handler: () => {
-            console.log("Current status:", status_id); // Log the current status here
-            this.doChangeStatus(id, status_id); // Pass status_id directly
+            console.log("Current status:", status_id);
+            this.doChangeStatus(id, status_id);
           },
         },
         {
@@ -80,7 +83,7 @@ export class PakkettenPage implements OnInit {
         },
       ],
     });
-
+  
     await alert.present();
   }
 
