@@ -39,6 +39,8 @@ ion-card:active {
   }
 }
 
+
+
 ion-text {
   font-family: "Gesta-Regular";
 }
@@ -57,3 +59,72 @@ ion-text {
   }
 }
 
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom right, #5550B5, #281f50);
+}
+
+.glass {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(10px);
+  opacity: 0.8;
+}
+
+.logo {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.glass-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  transition: transform 0.3s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+}
+
+.glass-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.glass-card ion-icon {
+  font-size: 40px;
+  transition: color 0.3s ease;
+}
+
+.glass-card:hover ion-icon {
+  color: #ffdb58;
+}
+
+.glass-card ion-text {
+  color: #000000; /* Update the color to a darker color, such as black */
+  font-family: "Gesta-Regular";
+  transition: color 0.3s ease;
+}
+.glass-card:hover ion-text {
+  color: #ffdb58;
+}

@@ -125,7 +125,7 @@
   <ion-card>
     <ion-item lines="none" style="padding-bottom: 5px !important">
       <ion-label>
-        <ion-icon slot="start" name="moon"></ion-icon>
+        <ion-icon slot="start" [name]="mode ? 'moon' : 'sunny'"></ion-icon>
         Dark mode: {{ mode ? 'Aan' : 'Uit' }}
       </ion-label>
       <ion-toggle
@@ -135,6 +135,7 @@
       ></ion-toggle>
     </ion-item>
   </ion-card>
+  
 
   <section>
     <ion-button

@@ -41,18 +41,26 @@
   }
 }
 
-/* Dark mode styling */
-.ion-color-dark ion-input {
-  border-color: #999999 !important;
-  --ion-color-border-hover: #999999 !important;
-  --ion-color-border-activated: #999999 !important;
-}
-ion-content ion-input {
-  --border-color: #999999 !important;
-}
+// /* Dark mode styling */
+// .ion-color-dark ion-input {
+//   border-color: #999999 !important;
+//   --ion-color-border-hover: #999999 !important;
+//   --ion-color-border-activated: #999999 !important;
+// }
+// ion-content ion-input {
+//   --border-color: #999999 !important;
+// }
 
-ion-card.custom-card {
-  --background: var(--ion-background-color);
+
+/*
+
+pakketten menu
+
+*/
+
+
+.ion-color-dark ion-card.custom-card {
+  --background: #272469;
   --border-color: var(--ion-border-color);
   --border-width: 1px;
   --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
