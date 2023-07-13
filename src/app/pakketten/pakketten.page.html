@@ -1,13 +1,18 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button text="" icon="chevron-back-outline"></ion-back-button>
+      <ion-back-button class="goBack" text="" icon="chevron-back-outline"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="primary">
-      <ion-button (click)="presentSortingOptions()">
-        <ion-icon slot="icon-only" name="funnel-outline"></ion-icon>
+      <ion-button class="sorting-button" (click)="presentSortingOptions()">
+        <ion-icon class="sort"
+          slot="icon-only"
+          class="sorting-icon"
+          name="funnel-outline"
+        ></ion-icon>
       </ion-button>
     </ion-buttons>
+
     <ion-title> pakketten </ion-title>
   </ion-toolbar>
   <ion-searchbar
@@ -20,6 +25,9 @@
 <ion-content>
   <ion-list>
     <ion-card *ngFor="let pakket of filteredPakketten" class="custom-card">
+    
+        <img  class="img-card" src="https://www.pngmart.com/files/11/Blank-Package-PNG-Transparent-Image.png">
+     
       <ion-card-header>
         <ion-card-title class="card-title"
           >Pakketnr: {{ pakket?.pakket_id }}</ion-card-title
@@ -27,6 +35,7 @@
       </ion-card-header>
 
       <ion-card-content>
+        <div class="background"></div>
         <ion-card-subtitle class="sub"
           >Status: {{ pakket?.status_name }}</ion-card-subtitle
         >

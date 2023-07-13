@@ -1,8 +1,6 @@
-import { Component, OnInit } from "@angular/core";
-import {
-  BarcodeScanner,
-  BarcodeScannerOptions,
-} from "@ionic-native/barcode-scanner/ngx";
+import { BarcodeScanner, BarcodeScannerOptions } from '@ionic-native/barcode-scanner/ngx';
+import { Component, OnInit ,Renderer2 } from "@angular/core";
+
 import { AlertController } from "@ionic/angular";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Router } from "@angular/router";
@@ -10,6 +8,7 @@ import { Platform } from "@ionic/angular";
 import { Location } from "@angular/common";
 import { Storage } from "@ionic/storage";
 import { ToastController } from "@ionic/angular";
+
 
 @Component({
   selector: "app-scanner",
@@ -19,6 +18,10 @@ import { ToastController } from "@ionic/angular";
 export class ScannerPage implements OnInit {
   scanData: {};
   status: any;
+  isDarkMode:boolean;
+
+
+  private colorSchemeListener: () => void;
 
   constructor(
     private barcodeScanner: BarcodeScanner,
@@ -28,7 +31,8 @@ export class ScannerPage implements OnInit {
     private location: Location,
     public http: HttpClient,
     private storage: Storage,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private renderer: Renderer2
   ) {
     this.platform.backButton.subscribeWithPriority(666666, () => {
       if (this.router.url == "/scanner") {
@@ -37,11 +41,19 @@ export class ScannerPage implements OnInit {
         this.location.back();
       }
     });
+
+  
   }
 
   ngOnInit() {
     this.getStatus();
+   
+
+ 
   }
+  
+  
+  
 
   async getStatus() {
     try {

@@ -1,6 +1,6 @@
+import { Storage } from '@ionic/storage';
 import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
-import { Storage } from "@ionic/storage";
 import { Router, ActivatedRoute } from "@angular/router";
 import { ToastController } from "@ionic/angular";
 
@@ -34,6 +34,7 @@ export class SettingsPage implements OnInit {
   dynamicLoodLocatieNumber: number;
   selectedStatusName: string;
   showPalletNumber: boolean = false;
+  
 
   // Show palletiseren fields
   showPalletiserenFields() {
@@ -57,10 +58,22 @@ export class SettingsPage implements OnInit {
     private router: Router,
     private http: HttpClient,
     private activatedRoute: ActivatedRoute,
-    private toastController: ToastController  ) {
+    private toastController: ToastController
+  ) {
     this.currentId = null;
+    
+    this.storage.get('mode').then((mode) => {
+      if (mode) {
+        document.body.setAttribute('color-theme', 'dark');
+      } else {
+        document.body.removeAttribute('color-theme');
+      }
+      this.mode = mode;
+    }).catch((error) => {
+      console.error('Error retrieving mode from storage:', error);
+    });
   }
-
+  
   
 
   ngOnInit() {
@@ -176,10 +189,10 @@ export class SettingsPage implements OnInit {
     this.http.get<any>("https://ssl.app.sr/api/get-status").subscribe((data) => {
       // Filter the status list based on the user's location
       if (this.locatie === "surinamehoofd") {
-        this.statusList = data.status.filter((status) => [1, 2, 3, 4].includes(status.id));
+        this.statusList = data.status.filter((status) => [1, 2, 3,11].includes(status.id));
       } else if (this.locatie === "nederland") {
-        const customOrder = [9, 10, 11];
-        this.statusList = data.status.filter((status) => customOrder.includes(status.id));
+        const customOrder = [9, 10, 4];
+        this.statusList = data.status.filter((status: { id: number; }) => customOrder.includes(status.id));
         this.statusList.sort((a, b) => customOrder.indexOf(a.id) - customOrder.indexOf(b.id));
       } else {
         this.statusList = [];
@@ -380,18 +393,34 @@ export class SettingsPage implements OnInit {
   }
 
   toggleDarkMode(event) {
-    this.storage.set('mode', event.detail.checked).then(() => {
-      this.mode = event.detail.checked;
-  
-      if (event.detail.checked) {
-        document.body.setAttribute('color-theme', 'dark');
-      } else {
-        document.body.removeAttribute('color-theme'); // Remove the attribute to use the default theme
-      }
-    }).catch((error) => {
-      console.error('Error saving mode to storage:', error);
-    });
+    this.storage
+      .set("mode", event.detail.checked)
+      .then(() => {
+        document.body.setAttribute("color-theme", event.detail.checked ? "dark" : "light");
+      })
+      .catch((error) => {
+        console.error("Error saving mode to storage:", error);
+      });
   }
+  ionViewWillEnter() {
+    this.storage
+      .get("mode")
+      .then((val) => {
+        this.mode = val === true;
+        if (this.mode) {
+          document.body.setAttribute("color-theme", "dark");
+        } else {
+          document.body.removeAttribute("color-theme");
+        }
+      })
+      .catch((error) => {
+        console.error("Error retrieving mode from storage:", error);
+        document.body.removeAttribute("color-theme");
+        this.mode = false;
+      });
+  }
+  
+  
 
   logout() {
     const itemsToRemove = [
@@ -411,4 +440,5 @@ export class SettingsPage implements OnInit {
     console.log("Local storage cleared.");
     this.router.navigateByUrl("/login");
   }
+  
 }

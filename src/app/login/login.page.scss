@@ -54,6 +54,20 @@ ion-content {
   }
   .custom-login-button {
     --background: #DCF1FA !important;
+    text-transform: capitalize;
   }
   
- 
+ .lgn-btn{
+  --background: #93e9be;
+  --background-hover: #9ce0be;
+  --background-activated: #88f4be;
+  --background-focused: #88f4be;  
+  text-transform: capitalize;
+}
+
+body[color-theme=dark] .lgn-btn {
+  --background: #4a4a4a;
+  --background-hover: #555555;
+  --background-activated: #3f3f3f;
+  --background-focused: #3f3f3f;
+}

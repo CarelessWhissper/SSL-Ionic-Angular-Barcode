@@ -1,30 +1,24 @@
-
-
-
-
-.view-btn{
-    text-transform: capitalize;
+.view-btn {
+  text-transform: capitalize;
 }
 
-.aanpassen-btn{
-    text-transform: capitalize;
+.aanpassen-btn {
+  text-transform: capitalize;
 }
 
 .custom-searchbar {
-    --background: white;
-    --searchbar-input-background: #f2f2f2;
-  }
-
-
-  
+  --background: rgba(255, 255, 255, 0.8);
+  --searchbar-input-background: #f2f2f2;
+}
 
 .subTitle {
-    text-transform: capitalize;
+  text-transform: capitalize;
 }
 
 .custom-card {
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  
   margin-bottom: 8px; /* Adjust the margin to desired spacing */
   padding: 12px; /* Adjust the padding as needed */
 }
@@ -53,7 +47,7 @@
 
 .view-btn,
 .aanpassen-btn {
-  --ion-text-color: var(--ion-color-primary);
+  
   font-size: 14px;
 }
 
@@ -62,3 +56,27 @@
   margin-right: 2px; /* Adjust the margin to desired spacing */
 }
 
+ion-button.sorting-button {
+ 
+ 
+  --border-radius: 4px;
+  --padding-start: 8px;
+  --padding-end: 8px;
+}
+
+
+ion-icon.sorting-icon {
+  
+  --font-size: 24px;
+}
+
+.view-btn, .aanpassen-btn,.sorting-icon, .goBack{
+color: #343231;
+}
+
+.img-card{
+  width: 80px; /* Adjust the desired width */
+  height: auto;
+  float: right;
+  margin-right: 10px; /* Adjust the desired margin */
+}

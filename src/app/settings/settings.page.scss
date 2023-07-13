@@ -1,3 +1,4 @@
+
 ion-card-subtitle {
   font-size: 16px;
 }
@@ -10,9 +11,7 @@ section {
 ion-select {
   --placeholder-opacity: 1;
 }
-ion-toolbar {
-  background-color: #cf3c4f !important;
-}
+
 .my-container {
  justify-content: space-between;
   
@@ -61,7 +60,9 @@ ion-toolbar {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-
+ion-back-button {
+  color: #15202b;
+}
 .mob-btn{
   width: 76.14px;
   height: 24.99px;
@@ -76,3 +77,62 @@ ion-toolbar {
 
 
 
+.custom-item {
+
+  
+  padding: 16px; /* Adjust the padding as needed */
+  margin-bottom: 16px; /* Adjust the margin-bottom as needed */
+ 
+}
+
+.custom-card {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px; /* Adjust the padding as needed */
+  margin-bottom: 16px; /* Adjust the margin-bottom as needed */
+}
+
+.glass-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(173, 216, 230, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1;
+}
+
+.card-container {
+  position: relative;
+  z-index: 2;
+  background-color: transparent;
+}
+
+.card-container ion-card {
+  background-color: rgba(255, 255, 255, 0.9); /* Adjust the opacity and color as desired */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  padding: 12px;
+}
+
+button.button-native::after{
+  display: none;
+}
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:#FAF9F6;
+}
+
+
+.logout-button{
+  text-transform: capitalize;
+}

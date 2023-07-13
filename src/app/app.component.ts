@@ -1,111 +1,103 @@
-import { Component } from '@angular/core';
-import { Platform } from '@ionic/angular';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { Storage } from '@ionic/storage';
-import { Router } from '@angular/router';
+
+import { Component, OnInit } from "@angular/core";
+import { Platform } from "@ionic/angular";
+
+import { Storage } from "@ionic/storage";
+import { Router } from "@angular/router";
+
+declare const SplashScreen: any;
+declare const StatusBar: any;
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss']
+  selector: "app-root",
+  templateUrl: "app.component.html",
+  styleUrls: ["app.component.scss"],
 })
-export class AppComponent {
-  store: Storage;
-  key: any;
-  today: any;
-  expireDay: any;
-  mode: boolean; // Add the mode property with a boolean type
+export class AppComponent implements OnInit {
+  mode: boolean = true;
 
   constructor(
     private platform: Platform,
-    private splashScreen: SplashScreen,
-    private statusBar: StatusBar,
+
     private storage: Storage,
-    private router: Router,
-  ) {
-    this.store = storage;
-    this.mode = true; // Set the initial mode to false (light mode)
+    private router: Router
+  ) {}
+
+  ngOnInit() {
     this.initializeApp();
     this.checkLogin();
+    SplashScreen.show({
+      showDuration: 5000,
+      autoHide: true,
+    });
+    StatusBar.show();
+    this.setMode();
   }
 
   initializeApp() {
-    this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
-      this.splashScreen.show();
-      this.checkLogin();
-    });
+    this.platform.ready().then(() => {});
   }
 
   checkLogin() {
-    this.storage.get('login').then((val) => {
+    this.storage.get("login").then((val) => {
       if (val != null) {
-        this.router.navigate(['/scanner'])
+        this.router.navigate(["/scanner"]);
       }
     });
   }
 
   clearLocalStorage() {
     console.log("login data saved, but the rest went bye bye");
-    this.storage.get('login').then((loginData) => {
-      const itemsToRemove = [
-        "status",
-        "selectedStatus",
-        "currentStatus",
-        "palletNumber",
-        "loodLocatieNumber"
-      ];
-  
-      itemsToRemove.forEach((item) => {
-        localStorage.removeItem(item);
-        this.storage.remove(item);
-        console.log(item);
-      });
-  
-      // Remove palletNumber from localStorage as well as loodlocatienummer
-      localStorage.removeItem("palletNumber");
-      localStorage.removeItem("loodLocatieNumber");
-  
-      // Restore the login data after clearing local storage
+    const itemsToRemove = [
+      "status",
+      "selectedStatus",
+      "currentStatus",
+      "palletNumber",
+      "loodLocatieNumber",
+    ];
+
+    itemsToRemove.forEach((item) => {
+      localStorage.removeItem(item);
+      this.storage.remove(item);
+      console.log(item);
+    });
+
+    localStorage.removeItem("palletNumber");
+    localStorage.removeItem("loodLocatieNumber");
+
+    this.storage.get("login").then((loginData) => {
       if (loginData) {
-        this.storage.set('login', loginData);
+        this.storage.set("login", loginData);
       }
     });
   }
-  
+
   setMode() {
-    this.storage.get('mode').then((val) => {
-      if (val === true) {
-        document.body.setAttribute('color-theme', 'dark');
-        this.mode = true;
-      } else {
-        document.body.removeAttribute('color-theme'); // Remove the attribute to use the default theme
+    this.storage
+      .get("mode")
+      .then((val) => {
+        this.mode = val === true;
+        if (this.mode) {
+          document.body.setAttribute("color-theme", "dark");
+        } else {
+          document.body.removeAttribute("color-theme");
+        }
+      })
+      .catch(() => {
+        document.body.setAttribute("color-theme", "light");
         this.mode = false;
-      }
-    }).catch(() => {
-      document.body.removeAttribute('color-theme'); // Remove the attribute to use the default theme
-      this.mode = false;
-    });
-  }
-  
-  toggleDarkMode(event) {
-    this.storage.set('mode', event.detail.checked).then(() => {
-      this.mode = event.detail.checked;
-  
-      if (event.detail.checked) {
-        document.body.setAttribute('color-theme', 'dark');
-      } else {
-        document.body.removeAttribute('color-theme'); // Remove the attribute to use the default theme
-      }
-    }).catch((error) => {
-      console.error('Error saving mode to storage:', error);
-    });
+      });
   }
   
   
+  toggleDarkMode(event: { detail: { checked: boolean } }) {
+    localStorage.setItem('mode', String(event.detail.checked));
+    this.mode = event.detail.checked;
+    document.body.setAttribute('color-theme', this.mode ? 'dark' : 'light');
+  }
+
   logout() {
-    this.clearLocalStorage(); // Call the clearLocalStorage() method to remove the necessary data
+    this.clearLocalStorage();
     console.log("Local storage cleared.");
     this.router.navigateByUrl("/login");
   }
