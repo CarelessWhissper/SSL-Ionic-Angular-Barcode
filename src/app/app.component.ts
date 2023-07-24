@@ -1,12 +1,11 @@
-
 import { Component, OnInit } from "@angular/core";
 import { Platform } from "@ionic/angular";
+import { SplashScreen } from "@ionic-native/splash-screen/ngx";
+
+import { StatusBar } from "@ionic-native/status-bar/ngx";
 
 import { Storage } from "@ionic/storage";
 import { Router } from "@angular/router";
-
-declare const SplashScreen: any;
-declare const StatusBar: any;
 
 @Component({
   selector: "app-root",
@@ -18,19 +17,18 @@ export class AppComponent implements OnInit {
 
   constructor(
     private platform: Platform,
-
+    private splashScreen: SplashScreen,
     private storage: Storage,
-    private router: Router
+    private router: Router,
+    private statusBar: StatusBar
   ) {}
 
   ngOnInit() {
     this.initializeApp();
     this.checkLogin();
-    SplashScreen.show({
-      showDuration: 5000,
-      autoHide: true,
-    });
-    StatusBar.show();
+    this.splashScreen.hide();
+
+    this.statusBar.styleDefault();
     this.setMode();
   }
 
@@ -77,28 +75,29 @@ export class AppComponent implements OnInit {
       .get("mode")
       .then((val) => {
         this.mode = val === true;
-        if (this.mode) {
-          document.body.setAttribute("color-theme", "dark");
-        } else {
-          document.body.removeAttribute("color-theme");
-        }
+        document.body.setAttribute("color-theme", this.mode ? "dark" : "light");
       })
       .catch(() => {
         document.body.setAttribute("color-theme", "light");
         this.mode = false;
       });
   }
-  
-  
-  toggleDarkMode(event: { detail: { checked: boolean } }) {
-    localStorage.setItem('mode', String(event.detail.checked));
-    this.mode = event.detail.checked;
-    document.body.setAttribute('color-theme', this.mode ? 'dark' : 'light');
-  }
 
+  toggleDarkMode(event: any) {
+    this.storage
+      .set("mode", event.detail.checked)
+      .then(() => {
+        this.mode = event.detail.checked;
+        document.body.setAttribute("color-theme", this.mode ? "dark" : "light");
+      })
+      .catch((error) => {
+        console.error("Error saving mode to storage:", error);
+      });
+  }
   logout() {
     this.clearLocalStorage();
     console.log("Local storage cleared.");
     this.router.navigateByUrl("/login");
   }
+
 }

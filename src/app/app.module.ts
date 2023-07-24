@@ -14,11 +14,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { IonicStorageModule } from '@ionic/storage';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 
-import { PopoverListComponent } from './popover-list/popover-list.component';
+
 
 @NgModule({
-  declarations: [AppComponent, PopoverListComponent],
-  entryComponents: [PopoverListComponent],
+  declarations: [AppComponent],
+  
   imports: [
     BrowserModule,
     IonicModule.forRoot(),

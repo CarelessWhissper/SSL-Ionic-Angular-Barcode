@@ -59,6 +59,7 @@
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
+    "cordova-plugin-splashscreen": "^5.0.2",
     "jasmine-core": "^3.4.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.1.0",
@@ -76,5 +77,10 @@
   "license": "ISC",
   "config": {
     "strict-ssl": false
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-splashscreen": {}
+    }
   }
 }

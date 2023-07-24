@@ -1,5 +1,8 @@
-import { BarcodeScanner, BarcodeScannerOptions } from '@ionic-native/barcode-scanner/ngx';
-import { Component, OnInit ,Renderer2 } from "@angular/core";
+import {
+  BarcodeScanner,
+  BarcodeScannerOptions,
+} from "@ionic-native/barcode-scanner/ngx";
+import { Component, OnInit, Renderer2 } from "@angular/core";
 
 import { AlertController } from "@ionic/angular";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
@@ -9,7 +12,6 @@ import { Location } from "@angular/common";
 import { Storage } from "@ionic/storage";
 import { ToastController } from "@ionic/angular";
 
-
 @Component({
   selector: "app-scanner",
   templateUrl: "./scanner.page.html",
@@ -18,8 +20,7 @@ import { ToastController } from "@ionic/angular";
 export class ScannerPage implements OnInit {
   scanData: {};
   status: any;
-  isDarkMode:boolean;
-
+  isDarkMode: boolean;
 
   private colorSchemeListener: () => void;
 
@@ -41,19 +42,11 @@ export class ScannerPage implements OnInit {
         this.location.back();
       }
     });
-
-  
   }
 
   ngOnInit() {
     this.getStatus();
-   
-
- 
   }
-  
-  
-  
 
   async getStatus() {
     try {
@@ -104,14 +97,40 @@ export class ScannerPage implements OnInit {
     }
   }
 
+  // async alert(response) {
+  //   const alert = await this.alertController.create({
+  //     header: "Scan succesvol",
+  //     cssClass: "alertCss",
+  //     message:
+  //       (response.pakket_id ? response.pakket_id : "het pakket") +
+  //       " is succesvol bijgewerkt naar " +
+  //       (response.status ? response.status : "Unknown"),
+  //     buttons: [
+  //       {
+  //         text: "Scan volgende",
+  //         handler: () => {
+  //           this.scan();
+  //         },
+  //       },
+  //       {
+  //         text: "ok",
+  //         handler: () => {
+  //           console.log("Yes clicked");
+  //         },
+  //       },
+  //     ],
+  //   });
+  //   await alert.present();
+  // }
+
   async alert(response) {
+    const pakketId = response.pakket_id ? response.pakket_id : "het pakket";
+    const status = response.status ? response.status : "Unknown";
+  
     const alert = await this.alertController.create({
       header: "Scan succesvol",
       cssClass: "alertCss",
-      message:
-        (response.pakket_id ? response.pakket_id : "het pakket") +
-        " is succesvol bijgewerkt naar " +
-        (response.status ? response.status : "Unknown"),
+      message: `${pakketId} is succesvol bijgewerkt naar ${status}`,
       buttons: [
         {
           text: "Scan volgende",
@@ -129,6 +148,7 @@ export class ScannerPage implements OnInit {
     });
     await alert.present();
   }
+  
 
   async postBarcodeData(data: any) {
     console.log("Data object:", data);
@@ -263,8 +283,9 @@ export class ScannerPage implements OnInit {
         errorMessage = "Het pakket is al reeds gescanned ";
         break;
       case 401:
-      errorMessage ="Invalide Status poging , het pakket heeft zijn eind bereikt."  
-      break;
+        errorMessage =
+          "Invalide Status poging , het pakket heeft zijn eind bereikt.";
+        break;
       case 406:
         errorMessage = "Palletnummer niet beschikbaar";
         break;

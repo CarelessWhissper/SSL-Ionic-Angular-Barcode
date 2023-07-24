@@ -392,16 +392,21 @@ export class SettingsPage implements OnInit {
     console.log("was it cleared? ");
   }
 
-  toggleDarkMode(event) {
+  toggleDarkMode(event: any) {
     this.storage
       .set("mode", event.detail.checked)
       .then(() => {
-        document.body.setAttribute("color-theme", event.detail.checked ? "dark" : "light");
+        this.mode = event.detail.checked;
+        document.body.setAttribute(
+          "color-theme",
+          this.mode ? "dark" : "light"
+        );
       })
       .catch((error) => {
         console.error("Error saving mode to storage:", error);
       });
   }
+  
   ionViewWillEnter() {
     this.storage
       .get("mode")

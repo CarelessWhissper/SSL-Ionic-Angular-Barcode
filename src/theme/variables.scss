@@ -46,7 +46,7 @@ body[color-theme="dark"] {
   --ion-color-success-shade: #29c467;
   --ion-color-success-tint: #44e283;
 
-  --ion-color-warning: #5A89B8;
+  --ion-color-warning: #5a89b8;
   --ion-color-warning-rgb: 255, 213, 52;
   --ion-color-warning-contrast: #000000;
   --ion-color-warning-contrast-rgb: 0, 0, 0;
@@ -231,7 +231,7 @@ body[color-theme="dark"] ion-content.lgn-btn {
 }
 
 body[color-theme="dark"] ion-content .form {
-  background-color: #475F78;
+  background-color: #475f78;
 }
 
 body[color-theme="dark"] ion-card-subtitle {
@@ -241,17 +241,54 @@ body[color-theme="dark"] ion-card.custom-card {
   border-style: solid;
   border-color: #f8f0e3;
 }
-body[color-theme=dark] .lgn-btn {
+body[color-theme="dark"] .lgn-btn {
   --background: var(--ion-color-danger);
   --background-hover: $dark-theme-background-color;
   --background-activated: $dark-theme-background-color;
   --background-focused: $dark-theme-background-color;
 }
 
-body[color-theme=dark] ion-back-button{
-  color:$dark-theme-text-color;
+body[color-theme="dark"] ion-back-button {
+  color: $dark-theme-text-color;
 }
 
-body[color-theme=dark] .custom-searchbar {
+body[color-theme="dark"] .custom-searchbar {
   color: $dark-theme-background-color;
+}
+
+body[color-theme="dark"] .logo-home {
+  background-image: url("https://s.hs-data.com/bilder/spieler/gross/13029.jpg");
+  background-size: cover;
+}
+
+.logo-home {
+  background-image: url("../../assets/logo.png");
+}
+
+body[color-theme="dark"] .sorting-options-header {
+  background-color: #192734;
+  color: #ffffff;
+  padding: 20px;
+  
+  
+}
+
+body[color-theme="dark"] .sorting-option{
+  background-color: #192734;
+  color: #ffffff;
+  padding: 10px;
+}
+
+
+body[color-theme="dark"] .sorting-option:hover {
+  background-color: #22303C;
+}
+
+body[color-theme="dark"] .sorting-option:active {
+  background-color: #22303C;
+  color: #428cff;
+}
+
+body[color-theme="dark"] ion-list-header{
+  width: 4000px;
 }

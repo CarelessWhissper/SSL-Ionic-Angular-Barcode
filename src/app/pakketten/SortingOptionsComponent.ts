@@ -1,17 +1,26 @@
 import { Component, ViewChild, ElementRef } from "@angular/core";
 import { PopoverController } from "@ionic/angular";
 
+
 @Component({
   selector: "app-sorting-options",
+  styleUrls:["./SortingsOptionsComponent.scss"],
   template: `
-    <ion-list>
-      <ion-list-header class="sorting-options-header">Sorteer op</ion-list-header>
+    <ion-list class="pop">
+      <ion-list-header class="sorting-options-header"> Sorteer op</ion-list-header>
       <ion-item button (click)="selectOption('status_name')" class="sorting-option">
         <ion-label>Status</ion-label>
       </ion-item>
       <ion-item button (click)="selectOption('pakket_id')" class="sorting-option">
-        <ion-label>Naam</ion-label>
+        <ion-label>PakketNummer</ion-label>
       </ion-item>
+      <ion-item button (click)="selectOption('verzender')" class="sorting-option">
+      <ion-label>Verzender</ion-label>
+    </ion-item>
+    <ion-item button (click)="selectOption('ontvanger')" class="sorting-option">
+    <ion-label>Ontvanger</ion-label>
+  </ion-item>
+  
     </ion-list>
   `,
 })
