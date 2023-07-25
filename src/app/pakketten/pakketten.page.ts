@@ -26,7 +26,7 @@ export class PakkettenPage implements OnInit {
     await this.loadData();
   }
 
-  // Load packages data from the API
+  //load packages from the api, based on user location
   async loadData() {
     // Show loading spinner while loading data
     const loading = await this.loadingController.create({
@@ -36,13 +36,35 @@ export class PakkettenPage implements OnInit {
 
     try {
       const location = await this.getLocation();
+      let apiUrl = "https://ssl.app.sr/api/packages"; // Default URL for "suriname" and "nederland"
+
+      // Check for the new locations and set dedicated URLs accordingly using a switch statement
+      switch (location) {
+        case "amsterdam":
+          apiUrl = "https://ssl.app.sr/api/amsterdam";
+          break;
+        case "rotterdam":
+          apiUrl = "https://ssl.app.sr/api/Rotterdam";
+          break;
+        case "denhaag":
+          apiUrl = "https://ssl.app.sr/api/DenHaag";
+        case "utrecht":
+          apiUrl="https://ssl.app.sr/api/Utrecht"
+          break;
+        default:
+          // Keep the default URL for "suriname" and "nederland"
+          break;
+      }
+
       const params = {
         search: "all",
         location: location,
       };
+
       const response = await this.http
-        .get<any[]>("https://ssl.app.sr/api/packages", { params })
+        .get<any[]>(apiUrl, { params })
         .toPromise();
+
       this.pakketten = response;
       this.filteredPakketten = response; // Initially set filteredPakketten to all packages
     } catch (error) {
@@ -52,19 +74,29 @@ export class PakkettenPage implements OnInit {
     }
   }
 
-  // Get the location from storage
   async getLocation(): Promise<string> {
     const data = await this.storage.get("login");
     const locatie = data ? data.locatie : null;
-
+  
     if (locatie === null) {
       console.log("Geen pakketten beschikbaar");
-    } else if (locatie.toLowerCase() === "surinamehoofd") {
-      return "suriname";
     } else {
-      return "nederland";
+      const lowerCaseLocatie = locatie.toLowerCase();
+      switch (lowerCaseLocatie) {
+        case "surinamehoofd":
+          return "suriname";
+        case "amsterdam":
+          return "amsterdam";
+        case "rotterdam":
+          return "rotterdam";
+        case "denhaag":
+          return "denhaag";
+        default:
+          return "nederland";
+      }
     }
   }
+  
 
   // Handle the search input change event
   async onChangeSearch() {

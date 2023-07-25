@@ -10,26 +10,45 @@
   <div class="background"></div>
   <ion-card>
     <ion-card-header style="padding-bottom: 0px !important">
-      <ion-card-title  >Scan naar</ion-card-title>
+      <ion-card-title>Scan naar</ion-card-title>
     </ion-card-header>
 
-    
-    <ion-select [interfaceOptions]="{ cssClass: 'custom' }" [(ngModel)]="selectedStatusId" (ionChange)="onChangeStatus()" placeholder="Selecteer een status">
+    <ion-select
+      [interfaceOptions]="{ cssClass: 'custom' }"
+      [(ngModel)]="selectedStatusId"
+      (ionChange)="onChangeStatus()"
+      placeholder="Selecteer een status"
+    >
       <ng-container *ngFor="let status of statusList">
-        <ng-container *ngIf="(locatie === 'nederland' && (status.id === 9 || status.id === 10)) || (locatie === 'surinamehoofd' && [3, 11].includes(status.id))">
-          <ion-select-option *ngIf="locatie === 'surinamehoofd' && status.id === 11" class="divider-option" disabled><p>Nederland</p></ion-select-option>
-          <ion-select-option class="custom-select-option" [value]="status.id">{{ status.name }}</ion-select-option>
+        <ng-container
+          *ngIf="(locatie === 'nederland' || locatie === 'amsterdam' || locatie === 'rotterdam' || locatie === 'denhaag' || locatie === 'utrecht'  ) && (status.id === 9 || status.id === 10) || (locatie === 'surinamehoofd' && [3, 11].includes(status.id))"
+        >
+          <ion-select-option
+            *ngIf="locatie === 'surinamehoofd' && status.id === 11"
+            class="divider-option"
+            disabled
+            ><p>Nederland</p></ion-select-option
+          >
+          <ion-select-option class="custom-select-option" [value]="status.id"
+            >{{ status.name }}</ion-select-option
+          >
 
-          <ion-select-option *ngIf="locatie === 'nederland' && status.id === 10" class="divider-option" disabled>Suriname</ion-select-option>
+          <ion-select-option
+            *ngIf="locatie === 'nederland' && status.id === 10"
+            class="divider-option"
+            disabled
+            >Suriname</ion-select-option
+          >
         </ng-container>
-        <ng-container *ngIf="(locatie !== 'nederland' || (status.id !== 10 && status.id !== 9)) && (locatie !== 'surinamehoofd' || ![3, 11].includes(status.id))">
-          <ion-select-option class="custom-select-option" [value]="status.id">{{ status.name }}</ion-select-option>
-
+        <ng-container
+          *ngIf="(locatie !== 'nederland' || locatie !== 'amsterdam' || locatie !== 'rotterdam' || locatie !== 'denhaag' || locatie !== 'utrecht' ) && (status.id !== 10 && status.id !== 9) && (locatie !== 'surinamehoofd' || ![3, 11].includes(status.id))"
+        >
+          <ion-select-option class="custom-select-option" [value]="status.id"
+            >{{ status.name }}</ion-select-option
+          >
         </ng-container>
       </ng-container>
     </ion-select>
-    
-    
 
     <ion-item
       *ngIf="showFields"
@@ -124,8 +143,6 @@
       </ion-row>
     </ion-card-header>
   </ion-card>
-  
-  
 
   <ion-card>
     <ion-item lines="none" style="padding-bottom: 5px !important">
@@ -140,7 +157,6 @@
       ></ion-toggle>
     </ion-item>
   </ion-card>
-  
 
   <section>
     <ion-button

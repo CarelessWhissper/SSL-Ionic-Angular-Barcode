@@ -1,4 +1,4 @@
-import { Storage } from '@ionic/storage';
+import { Storage } from "@ionic/storage";
 import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -34,7 +34,6 @@ export class SettingsPage implements OnInit {
   dynamicLoodLocatieNumber: number;
   selectedStatusName: string;
   showPalletNumber: boolean = false;
-  
 
   // Show palletiseren fields
   showPalletiserenFields() {
@@ -61,20 +60,21 @@ export class SettingsPage implements OnInit {
     private toastController: ToastController
   ) {
     this.currentId = null;
-    
-    this.storage.get('mode').then((mode) => {
-      if (mode) {
-        document.body.setAttribute('color-theme', 'dark');
-      } else {
-        document.body.removeAttribute('color-theme');
-      }
-      this.mode = mode;
-    }).catch((error) => {
-      console.error('Error retrieving mode from storage:', error);
-    });
+
+    this.storage
+      .get("mode")
+      .then((mode) => {
+        if (mode) {
+          document.body.setAttribute("color-theme", "dark");
+        } else {
+          document.body.removeAttribute("color-theme");
+        }
+        this.mode = mode;
+      })
+      .catch((error) => {
+        console.error("Error retrieving mode from storage:", error);
+      });
   }
-  
-  
 
   ngOnInit() {
     // Get the stored values from the local storage
@@ -85,22 +85,24 @@ export class SettingsPage implements OnInit {
       this.locatie = data.locatie;
     });
 
-
-  
     // Call the function to filter the status list based on the user's location
     this.filterStatusList();
 
-    
-  
     this.storage.get("status").then((response) => {
       if (response && response.status) {
         this.statusList = Object.values(response.status);
-  
+
         // Update dynamicLoodLocatieNumber with the retrieved value
         if (response.pallet_data && response.pallet_data.lood_locatie_nummer) {
-          console.log("Response lood_locatie_nummer:", response.pallet_data.lood_locatie_nummer);
+          console.log(
+            "Response lood_locatie_nummer:",
+            response.pallet_data.lood_locatie_nummer
+          );
           this.loodLocatieNumber = response.pallet_data.lood_locatie_nummer;
-          console.log("Updated number is: ", response.pallet_data.lood_locatie_nummer);
+          console.log(
+            "Updated number is: ",
+            response.pallet_data.lood_locatie_nummer
+          );
         }
       } else {
         console.log("No data in statusList just yet,");
@@ -108,34 +110,47 @@ export class SettingsPage implements OnInit {
         window.location.href = "/login";
       }
     });
-  
+
     // Get the current status from the query parameter or browser storage
     this.activatedRoute.queryParams.subscribe((params) => {
       const statusId = params["statusId"];
       const storedStatus = localStorage.getItem("selectedStatus");
-  
+
       if (statusId) {
-        const selectedStatus = this.statusList.find((status) => status.id === +statusId);
+        const selectedStatus = this.statusList.find(
+          (status) => status.id === +statusId
+        );
         if (selectedStatus) {
           this.currentStatus = selectedStatus;
           this.selectedStatusId = selectedStatus.id;
-          localStorage.setItem("selectedStatus", JSON.stringify(this.currentStatus));
-          localStorage.setItem("currentStatus", JSON.stringify(this.currentStatus));
+          localStorage.setItem(
+            "selectedStatus",
+            JSON.stringify(this.currentStatus)
+          );
+          localStorage.setItem(
+            "currentStatus",
+            JSON.stringify(this.currentStatus)
+          );
           console.log("The status has been saved:", this.currentStatus);
         }
       } else if (storedStatus) {
         this.currentStatus = JSON.parse(storedStatus);
-        this.selectedStatusId = this.currentStatus ? this.currentStatus.id : null;
-        console.log("The status has been retrieved from browser storage:", this.currentStatus);
+        this.selectedStatusId = this.currentStatus
+          ? this.currentStatus.id
+          : null;
+        console.log(
+          "The status has been retrieved from browser storage:",
+          this.currentStatus
+        );
       }
-  
+
       // Retrieve the stored pallet number from browser storage
       const storedPalletNumber = localStorage.getItem("palletNumber");
       if (this.currentStatus && storedPalletNumber) {
         this.currentStatus.palletNumber = storedPalletNumber;
         console.log("The pallet number is:", storedPalletNumber);
       }
-  
+
       const storedLoodLocatieNumber = localStorage.getItem("loodLocatieNumber");
       if (storedLoodLocatieNumber !== null) {
         this.loodLocatieNumber = storedLoodLocatieNumber;
@@ -146,11 +161,12 @@ export class SettingsPage implements OnInit {
       } else {
         console.log("No lood locatie number found in storage");
       }
-  
+
       // Update the showFields flag based on the selected status
       if (
         this.currentStatus &&
-        (this.currentStatus.id === 10 || this.currentStatus.name === "Palletiseren")
+        (this.currentStatus.id === 10 ||
+          this.currentStatus.name === "Palletiseren")
       ) {
         this.showFields = true;
       } else {
@@ -158,18 +174,18 @@ export class SettingsPage implements OnInit {
       }
       if (
         this.currentStatus &&
-        (this.currentStatus.id === 11 || this.currentStatus.name === "Aankomst-NL")
+        (this.currentStatus.id === 11 ||
+          this.currentStatus.name === "Aankomst-NL")
       ) {
         this.showLoodFields = true;
       } else {
         this.showLoodFields = false;
       }
     });
-  
+
     this.loadPalletNumberFromStorage();
-   
   }
-  
+
   loadPalletNumberFromStorage() {
     const storedPalletNumber = localStorage.getItem("palletNumber");
     if (storedPalletNumber) {
@@ -186,33 +202,49 @@ export class SettingsPage implements OnInit {
 
   filterStatusList() {
     // Make API call to retrieve status list
-    this.http.get<any>("https://ssl.app.sr/api/get-status").subscribe((data) => {
-      // Filter the status list based on the user's location
-      if (this.locatie === "surinamehoofd") {
-        this.statusList = data.status.filter((status) => [1, 2, 3,11].includes(status.id));
-      } else if (this.locatie === "nederland") {
-        const customOrder = [9, 10, 4];
-        this.statusList = data.status.filter((status: { id: number; }) => customOrder.includes(status.id));
-        this.statusList.sort((a, b) => customOrder.indexOf(a.id) - customOrder.indexOf(b.id));
-      } else {
-        this.statusList = [];
-      }
-  
-      // Update dynamicLoodLocatieNumber with the retrieved value
-      if (data.pallet_data && data.pallet_data.lood_locatie_nummer) {
-        console.log("Response lood_locatie_nummer:", data.pallet_data.lood_locatie_nummer);
-        this.loodLocatieNumber = data.pallet_data.lood_locatie_nummer;
-        console.log("Updated number is: ", this.loodLocatieNumber);
-  
-        // Update the currentStatus object with the updated loodLocatieNumber
-        if (this.currentStatus) {
-          this.currentStatus.loodLocatieNumber = this.loodLocatieNumber;
+    this.http
+      .get<any>("https://ssl.app.sr/api/get-status")
+      .subscribe((data) => {
+        // Filter the status list based on the user's location
+        if (this.locatie === "surinamehoofd") {
+          this.statusList = data.status.filter((status) =>
+            [1, 2, 3, 11].includes(status.id)
+          );
+        } else if (
+          this.locatie === "nederland" ||
+          this.locatie === "amsterdam" ||
+          this.locatie === "rotterdam" ||
+          this.locatie === "denhaag" ||
+          this.locatie === "utrecht"
+        ) {
+          const customOrder = [9, 10, 4];
+          this.statusList = data.status.filter((status: { id: number }) =>
+            customOrder.includes(status.id)
+          );
+          this.statusList.sort(
+            (a, b) => customOrder.indexOf(a.id) - customOrder.indexOf(b.id)
+          );
+        } else {
+          this.statusList = [];
         }
-      }
-    });
+
+        // Update dynamicLoodLocatieNumber with the retrieved value
+        if (data.pallet_data && data.pallet_data.lood_locatie_nummer) {
+          console.log(
+            "Response lood_locatie_nummer:",
+            data.pallet_data.lood_locatie_nummer
+          );
+          this.loodLocatieNumber = data.pallet_data.lood_locatie_nummer;
+          console.log("Updated number is: ", this.loodLocatieNumber);
+
+          // Update the currentStatus object with the updated loodLocatieNumber
+          if (this.currentStatus) {
+            this.currentStatus.loodLocatieNumber = this.loodLocatieNumber;
+          }
+        }
+      });
   }
-  
-  
+
   onChangeStatus() {
     if (this.selectedStatusId === 10) {
       // Palletiseren status is selected
@@ -276,7 +308,6 @@ export class SettingsPage implements OnInit {
     }
   }
 
- 
   async onSavePalletNumber() {
     const storedPalletNumber = localStorage.getItem("palletNumber");
     if (storedPalletNumber !== this.palletNumber) {
@@ -397,16 +428,13 @@ export class SettingsPage implements OnInit {
       .set("mode", event.detail.checked)
       .then(() => {
         this.mode = event.detail.checked;
-        document.body.setAttribute(
-          "color-theme",
-          this.mode ? "dark" : "light"
-        );
+        document.body.setAttribute("color-theme", this.mode ? "dark" : "light");
       })
       .catch((error) => {
         console.error("Error saving mode to storage:", error);
       });
   }
-  
+
   ionViewWillEnter() {
     this.storage
       .get("mode")
@@ -424,8 +452,6 @@ export class SettingsPage implements OnInit {
         this.mode = false;
       });
   }
-  
-  
 
   logout() {
     const itemsToRemove = [
@@ -445,5 +471,4 @@ export class SettingsPage implements OnInit {
     console.log("Local storage cleared.");
     this.router.navigateByUrl("/login");
   }
-  
 }
