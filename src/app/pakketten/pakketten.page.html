@@ -73,7 +73,7 @@
           <ion-button
             class="aanpassen-btn"
             fill="clear"
-            (click)="showConfirmationDialog(pakket.pakketten_registratie_id, pakket.status_id)"
+            (click)="showConfirmationDialog(pakket.id, pakket.status_id)"
           >
             <ion-icon name="create" class="icon"></ion-icon>
             Aanpassen
@@ -82,4 +82,9 @@
       </ion-row>
     </ion-card>
   </ion-list>
+  <div *ngIf="noMatchingPackages" class="no-matching-packages-container">
+    <p>Pakket niet gevonden
+    </p>
+    <img src="https://o.remove.bg/downloads/18b0c8cf-1029-4f95-8e75-bb1911ddfe9f/41ce1856-ce64-47eb-9cc9-d50c75ba936b-removebg-preview.png" alt="No matching packages image">
+  </div>
 </ion-content>

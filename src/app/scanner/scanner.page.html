@@ -2,13 +2,16 @@
 
 <ion-content>
   <div class="background">
-    
     <div class="glass"></div>
   </div>
   <div class="logo">
-    <img src="../../assets/logo.png" *ngIf="!isDarkMode" /> <!-- Default logo image -->
-    <img src="https://i.insider.com/616d272a41af0d00193f0672?width=1136&format=jpeg" *ngIf="isDarkMode" /> <!-- Dark mode logo image -->
-    <h1>Testing mode</h1>
+    <img src="../../assets/logo.png" *ngIf="!isDarkMode" />
+    <!-- Default logo image -->
+    <img
+      src="https://i.insider.com/616d272a41af0d00193f0672?width=1136&format=jpeg"
+      *ngIf="isDarkMode"
+    />
+    <!-- Dark mode logo image -->
   </div>
   <ion-grid>
     <ion-row>
@@ -16,7 +19,7 @@
         <ion-card class="glass-card" (click)="scan()">
           <ion-card-content class="card-top-padding">
             <ion-row class="ion-justify-content-center">
-              <ion-icon  name="barcode-outline"></ion-icon>
+              <ion-icon name="barcode-outline"></ion-icon>
             </ion-row>
             <ion-row class="ion-justify-content-center">
               <ion-text>Scan pakket</ion-text>

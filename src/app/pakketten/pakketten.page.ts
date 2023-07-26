@@ -1,6 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { LoadingController, AlertController, PopoverController } from "@ionic/angular";
+import {
+  LoadingController,
+  AlertController,
+  PopoverController,
+} from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { SortingOptionsComponent } from "./SortingOptionsComponent";
 
@@ -13,6 +17,7 @@ export class PakkettenPage implements OnInit {
   pakketten: any[];
   input: string;
   filteredPakketten: any[];
+  noMatchingPackages = false;
 
   constructor(
     public http: HttpClient,
@@ -49,7 +54,7 @@ export class PakkettenPage implements OnInit {
         case "denhaag":
           apiUrl = "https://ssl.app.sr/api/DenHaag";
         case "utrecht":
-          apiUrl="https://ssl.app.sr/api/Utrecht"
+          apiUrl = "https://ssl.app.sr/api/Utrecht";
           break;
         default:
           // Keep the default URL for "suriname" and "nederland"
@@ -77,7 +82,7 @@ export class PakkettenPage implements OnInit {
   async getLocation(): Promise<string> {
     const data = await this.storage.get("login");
     const locatie = data ? data.locatie : null;
-  
+
     if (locatie === null) {
       console.log("Geen pakketten beschikbaar");
     } else {
@@ -96,7 +101,6 @@ export class PakkettenPage implements OnInit {
       }
     }
   }
-  
 
   // Handle the search input change event
   async onChangeSearch() {
@@ -104,104 +108,76 @@ export class PakkettenPage implements OnInit {
     if (this.input && this.input.trim().length >= 5) {
       // Filter packages using the API
       await this.filterPackages();
+  
+      // Check if any matching packages are found
+      this.noMatchingPackages = this.filteredPakketten.length === 0;
     } else {
       this.filteredPakketten = this.pakketten;
+      this.noMatchingPackages = false; // Reset the flag when input is less than 5 characters
     }
   }
-
+  
   // Filter packages based on the search input using the API
+
   async filterPackages() {
     console.log("Filtering packages...");
     const loading = await this.loadingController.create({
       message: "Zoeken...",
     });
     await loading.present();
-
+  
     try {
       const searchInput = this.input.trim();
-
+  
       const params = {
         search: searchInput,
       };
-
+  
       console.log("Filtering with params:", params); // Log the params being used for the API request
-
+  
       const response = await this.http
         .get<any[]>("https://ssl.app.sr/api/display", { params })
         .toPromise();
-
+  
       console.log("Search input:", searchInput);
-      console.log("Filtered packages:", response);
-
-      this.filteredPakketten = response;
+      console.log("Filtered packages:", response); // Log the API response to inspect the pakket_id values
+  
+      // Update the filteredPakketten array with the updated response from the API
+      this.filteredPakketten = response.map((item) => ({
+        id: item.id,
+        pakket_id: item.pakket_id, // Include the pakket_id field in the filtered packages
+        klant_id: item.klant_id,
+        ontvanger_id: item.ontvanger_id,
+        volume: item.volume,
+        status_id: item.status_id,
+        ontvanger: item.ontvanger,
+        verzender: item.verzender,
+        status_name: item.status_name,
+      }));
+  
+      this.noMatchingPackages = this.filteredPakketten.length === 0; // Update the flag based on the search result
     } catch (error) {
       console.log("Error filtering packages:", error);
     } finally {
       await loading.dismiss();
     }
   }
+  
 
-  // // Show a confirmation dialog to change the package status
-  // async showConfirmationDialog(id: string, status_id: number) {
-  //   const pakket = this.pakketten.find((pakket) => pakket.id === id);
-  //   const pakket_id = pakket ? pakket.pakket_id : id;
-
-  //   const alert = await this.alertController.create({
-  //     header: `Wilt u de status wijzigen van het pakket ${pakket_id}?`,
-  //     buttons: [
-  //       {
-  //         text: "Ja",
-  //         handler: () => {
-  //           this.doChangeStatus(id, status_id);
-  //         },
-  //       },
-  //       {
-  //         text: "Nee",
-  //         role: "cancel",
-  //       },
-  //     ],
-  //   });
-
-  //   await alert.present();
-  // }
-
-  // // Change the package status using the API
-  // async doChangeStatus(paketId: string, status_id: number): Promise<boolean> {
-  //   const data = {
-  //     id: paketId,
-  //     status_id: status_id,
-  //   };
-
-  //   try {
-  //     const loading = await this.loadingController.create({
-  //       spinner: "dots",
-  //       cssClass: "alertCss",
-  //       message: "Even geduld aub...",
-  //     });
-  //     await loading.present();
-
-  //     const response = await this.http
-  //       .post("https://ssl.app.sr/api/update-status", data)
-  //       .toPromise();
-  //     await loading.dismiss();
-  //     this.reloadPackages();
-  //     console.log("test this ",response)
-  //     return true;
-  //   } catch (error) {
-  //     console.error("Error changing status:", error);
-  //     await this.loadingController.dismiss();
-  //     return false;
-  //   }
-  // }
 
   async doChangeStatus(paketId: string, status_id: number): Promise<boolean> {
-    console.log("doChangeStatus called with paketId:", paketId, "and status_id:", status_id);
-  
+    console.log(
+      "doChangeStatus called with paketId:",
+      paketId,
+      "and status_id:",
+      status_id
+    );
+
     const data = {
       id: paketId,
       status_id: status_id,
     };
-  
+
     try {
       const loading = await this.loadingController.create({
         spinner: "dots",
@@ -209,10 +185,12 @@ export class PakkettenPage implements OnInit {
         message: "Even geduld aub...",
       });
       await loading.present();
-  
-      const response = await this.http.post("https://ssl.app.sr/api/update-status", data).toPromise();
+
+      const response = await this.http
+        .post("https://ssl.app.sr/api/update-status", data)
+        .toPromise();
       console.log("API response:", response);
-  
+
       await loading.dismiss();
       this.reloadPackages();
       console.log("doChangeStatus completed successfully");
@@ -223,13 +201,20 @@ export class PakkettenPage implements OnInit {
       return false;
     }
   }
-  
+
   async showConfirmationDialog(id: string, status_id: number) {
-    console.log("showConfirmationDialog called with id:", id, "and status_id:", status_id);
+    console.log(
+      "showConfirmationDialog called with id:",
+      id,
+      "and status_id:",
+      status_id
+    );
   
-    const pakket = this.pakketten.find((pakket) => pakket.id === id);
-    const pakket_id = pakket ? pakket.pakket_id : id;
-    console.log("Selected package ID (pakket_id):", pakket_id);
+    // Get the corresponding pakket from the data source (this.filteredPakketten) using id
+    const pakket = this.filteredPakketten.find((pakket) => pakket.id === id);
+  
+    // Check if the pakket is found and get the pakket_id
+    const pakket_id = pakket ? pakket.pakket_id : null;
   
     const alert = await this.alertController.create({
       header: `Wilt u de status wijzigen van het pakket ${pakket_id}?`,
@@ -246,6 +231,7 @@ export class PakkettenPage implements OnInit {
         },
       ],
     });
+    console.log(pakket_id);
   
     await alert.present();
   }

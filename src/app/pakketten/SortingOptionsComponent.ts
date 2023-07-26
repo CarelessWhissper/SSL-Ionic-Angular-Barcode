@@ -12,7 +12,7 @@ import { PopoverController } from "@ionic/angular";
         <ion-label>Status</ion-label>
       </ion-item>
       <ion-item button (click)="selectOption('pakket_id')" class="sorting-option">
-        <ion-label>PakketNummer</ion-label>
+        <ion-label>Pakket nummer</ion-label>
       </ion-item>
       <ion-item button (click)="selectOption('verzender')" class="sorting-option">
       <ion-label>Verzender</ion-label>

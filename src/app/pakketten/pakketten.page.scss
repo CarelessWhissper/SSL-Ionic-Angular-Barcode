@@ -80,3 +80,18 @@ color: #343231;
   float: right;
   margin-right: 10px; /* Adjust the desired margin */
 }
+
+/* Add this CSS to your component's stylesheet or global styles */
+.no-matching-packages-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Adjust the height to fill the screen */
+}
+
+.no-matching-packages-container p {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
