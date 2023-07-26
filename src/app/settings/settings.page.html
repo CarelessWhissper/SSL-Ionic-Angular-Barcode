@@ -39,6 +39,30 @@
             disabled
             >Suriname</ion-select-option
           >
+          <ion-select-option
+            *ngIf="locatie === 'rotterdam' && status.id === 10"
+            class="divider-option"
+            disabled
+            >Suriname</ion-select-option
+          >
+          <ion-select-option
+            *ngIf="locatie === 'amsterdam' && status.id === 10"
+            class="divider-option"
+            disabled
+            >Suriname</ion-select-option
+          >
+          <ion-select-option
+            *ngIf="locatie === 'utrecht' && status.id === 10"
+            class="divider-option"
+            disabled
+            >Suriname</ion-select-option
+          >
+          <ion-select-option
+            *ngIf="locatie === 'denhaag' && status.id === 10"
+            class="divider-option"
+            disabled
+            >Suriname</ion-select-option
+          >
         </ng-container>
         <ng-container
           *ngIf="(locatie !== 'nederland' || locatie !== 'amsterdam' || locatie !== 'rotterdam' || locatie !== 'denhaag' || locatie !== 'utrecht' ) && (status.id !== 10 && status.id !== 9) && (locatie !== 'surinamehoofd' || ![3, 11].includes(status.id))"

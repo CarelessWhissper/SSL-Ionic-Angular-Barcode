@@ -141,11 +141,96 @@ export class PakkettenPage implements OnInit {
     }
   }
 
-  // Show a confirmation dialog to change the package status
+  // // Show a confirmation dialog to change the package status
+  // async showConfirmationDialog(id: string, status_id: number) {
+  //   const pakket = this.pakketten.find((pakket) => pakket.id === id);
+  //   const pakket_id = pakket ? pakket.pakket_id : id;
+
+  //   const alert = await this.alertController.create({
+  //     header: `Wilt u de status wijzigen van het pakket ${pakket_id}?`,
+  //     buttons: [
+  //       {
+  //         text: "Ja",
+  //         handler: () => {
+  //           this.doChangeStatus(id, status_id);
+  //         },
+  //       },
+  //       {
+  //         text: "Nee",
+  //         role: "cancel",
+  //       },
+  //     ],
+  //   });
+
+  //   await alert.present();
+  // }
+
+  // // Change the package status using the API
+  // async doChangeStatus(paketId: string, status_id: number): Promise<boolean> {
+  //   const data = {
+  //     id: paketId,
+  //     status_id: status_id,
+  //   };
+
+  //   try {
+  //     const loading = await this.loadingController.create({
+  //       spinner: "dots",
+  //       cssClass: "alertCss",
+  //       message: "Even geduld aub...",
+  //     });
+  //     await loading.present();
+
+  //     const response = await this.http
+  //       .post("https://ssl.app.sr/api/update-status", data)
+  //       .toPromise();
+  //     await loading.dismiss();
+  //     this.reloadPackages();
+  //     console.log("test this ",response)
+  //     return true;
+  //   } catch (error) {
+  //     console.error("Error changing status:", error);
+  //     await this.loadingController.dismiss();
+  //     return false;
+  //   }
+  // }
+
+  async doChangeStatus(paketId: string, status_id: number): Promise<boolean> {
+    console.log("doChangeStatus called with paketId:", paketId, "and status_id:", status_id);
+  
+    const data = {
+      id: paketId,
+      status_id: status_id,
+    };
+  
+    try {
+      const loading = await this.loadingController.create({
+        spinner: "dots",
+        cssClass: "alertCss",
+        message: "Even geduld aub...",
+      });
+      await loading.present();
+  
+      const response = await this.http.post("https://ssl.app.sr/api/update-status", data).toPromise();
+      console.log("API response:", response);
+  
+      await loading.dismiss();
+      this.reloadPackages();
+      console.log("doChangeStatus completed successfully");
+      return true;
+    } catch (error) {
+      console.error("Error changing status:", error);
+      await this.loadingController.dismiss();
+      return false;
+    }
+  }
+  
   async showConfirmationDialog(id: string, status_id: number) {
+    console.log("showConfirmationDialog called with id:", id, "and status_id:", status_id);
+  
     const pakket = this.pakketten.find((pakket) => pakket.id === id);
     const pakket_id = pakket ? pakket.pakket_id : id;
-
+    console.log("Selected package ID (pakket_id):", pakket_id);
+  
     const alert = await this.alertController.create({
       header: `Wilt u de status wijzigen van het pakket ${pakket_id}?`,
       buttons: [
@@ -161,37 +246,10 @@ export class PakkettenPage implements OnInit {
         },
       ],
     });
-
+  
     await alert.present();
   }
-
-  // Change the package status using the API
-  async doChangeStatus(paketId: string, status_id: number): Promise<boolean> {
-    const data = {
-      id: paketId,
-      status_id: status_id,
-    };
-
-    try {
-      const loading = await this.loadingController.create({
-        spinner: "dots",
-        cssClass: "alertCss",
-        message: "Even geduld aub...",
-      });
-      await loading.present();
-
-      const response = await this.http
-        .post("https://ssl.app.sr/api/update-status", data)
-        .toPromise();
-      await loading.dismiss();
-      this.reloadPackages();
-      return true;
-    } catch (error) {
-      console.error("Error changing status:", error);
-      await this.loadingController.dismiss();
-      return false;
-    }
-  }
+  
 
   // Show the sorting options popover
   async presentSortingOptions() {

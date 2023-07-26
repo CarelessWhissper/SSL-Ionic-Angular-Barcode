@@ -1,11 +1,16 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button class="goBack" text="" icon="chevron-back-outline"></ion-back-button>
+      <ion-back-button
+        class="goBack"
+        text=""
+        icon="chevron-back-outline"
+      ></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="primary">
       <ion-button class="sorting-button" (click)="presentSortingOptions()">
-        <ion-icon class="sort"
+        <ion-icon
+          class="sort"
           slot="icon-only"
           class="sorting-icon"
           name="funnel-outline"
@@ -16,18 +21,20 @@
     <ion-title> pakketten </ion-title>
   </ion-toolbar>
   <ion-searchbar
-  class="custom-searchbar"
-  [(ngModel)]="input"
-  (ionChange)="onChangeSearch()"
-></ion-searchbar>
+    class="custom-searchbar"
+    [(ngModel)]="input"
+    (ionChange)="onChangeSearch()"
+  ></ion-searchbar>
 </ion-header>
 
 <ion-content>
   <ion-list>
     <ion-card *ngFor="let pakket of filteredPakketten" class="custom-card">
-    
-        <img  class="img-card" src="https://www.pngmart.com/files/11/Blank-Package-PNG-Transparent-Image.png">
-     
+      <img
+        class="img-card"
+        src="https://www.pngmart.com/files/11/Blank-Package-PNG-Transparent-Image.png"
+      />
+
       <ion-card-header>
         <ion-card-title class="card-title"
           >Pakketnr: {{ pakket?.pakket_id }}</ion-card-title
@@ -66,7 +73,7 @@
           <ion-button
             class="aanpassen-btn"
             fill="clear"
-            (click)="showConfirmationDialog(pakket.id, pakket.status_id)"
+            (click)="showConfirmationDialog(pakket.pakketten_registratie_id, pakket.status_id)"
           >
             <ion-icon name="create" class="icon"></ion-icon>
             Aanpassen
