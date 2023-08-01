@@ -1,13 +1,110 @@
-.view-btn {
-  text-transform: capitalize;
-}
+// .view-btn {
+//   text-transform: capitalize;
+// }
 
+// .aanpassen-btn {
+//   text-transform: capitalize;
+// }
+
+// .custom-searchbar {
+//   --background: rgba(255, 255, 255, 0.8);
+//   --searchbar-input-background: #f2f2f2;
+// }
+
+// .subTitle {
+//   text-transform: capitalize;
+// }
+
+// .custom-card {
+//   border-radius: 8px;
+
+  
+//   margin-bottom: 8px; /* Adjust the margin to desired spacing */
+//   padding: 12px; /* Adjust the padding as needed */
+// }
+
+// .card-title {
+//   font-size: 20px;
+//   font-weight: bold;
+// }
+
+// .sub {
+//   font-size: 16px;
+//   margin-bottom: 1px; /* Adjust the margin to desired spacing */
+//   margin-top: 20px;
+//   text-transform: capitalize;
+// }
+
+// .card-item {
+//   padding-left: 0;
+//   margin-bottom: 4px; /* Adjust the margin to desired spacing */
+// }
+
+// .card-buttons {
+//   margin-top: 1px; /* Adjust the margin to desired spacing */
+//   justify-content: space-between;
+// }
+
+// .view-btn,
+// .aanpassen-btn {
+  
+//   font-size: 14px;
+// }
+
+// .icon {
+//   font-size: 20px;
+//   margin-right: 2px; /* Adjust the margin to desired spacing */
+// }
+
+// ion-button.sorting-button {
+ 
+ 
+//   --border-radius: 4px;
+//   --padding-start: 8px;
+//   --padding-end: 8px;
+// }
+
+
+// ion-icon.sorting-icon {
+  
+//   --font-size: 24px;
+// }
+
+// .view-btn, .aanpassen-btn,.sorting-icon, .goBack{
+// color: #343231;
+// }
+
+// .img-card{
+//   width: 80px; /* Adjust the desired width */
+//   height: auto;
+//   float: right;
+//   margin-right: 10px; /* Adjust the desired margin */
+// }
+
+// /* Add this CSS to your component's stylesheet or global styles */
+// .no-matching-packages-container {
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   height: 100vh; /* Adjust the height to fill the screen */
+// }
+
+// .no-matching-packages-container p {
+//   font-size: 20px;
+//   font-weight: bold;
+//   margin-bottom: 20px;
+// }
+
+
+.view-btn,
 .aanpassen-btn {
   text-transform: capitalize;
+  font-size: 14px;
 }
 
 .custom-searchbar {
-  --background: rgba(255, 255, 255, 0.8);
+  --background: #f2f2f2;
   --searchbar-input-background: #f2f2f2;
 }
 
@@ -16,16 +113,17 @@
 }
 
 .custom-card {
-  border-radius: 8px;
-
-  
-  margin-bottom: 8px; /* Adjust the margin to desired spacing */
-  padding: 12px; /* Adjust the padding as needed */
+  border-radius: 16px;
+  background-color: #f2f2f2;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
+  margin-bottom: 16px; /* Adjust the margin to desired spacing */
+  padding: 16px; /* Adjust the padding as needed */
 }
 
 .card-title {
   font-size: 20px;
   font-weight: bold;
+  color: #343231;
 }
 
 .sub {
@@ -33,22 +131,18 @@
   margin-bottom: 1px; /* Adjust the margin to desired spacing */
   margin-top: 20px;
   text-transform: capitalize;
+  color: #343231;
 }
 
 .card-item {
   padding-left: 0;
   margin-bottom: 4px; /* Adjust the margin to desired spacing */
+  --ion-label-color: #343231; /* Set label color to #343231 */
 }
 
 .card-buttons {
   margin-top: 1px; /* Adjust the margin to desired spacing */
   justify-content: space-between;
-}
-
-.view-btn,
-.aanpassen-btn {
-  
-  font-size: 14px;
 }
 
 .icon {
@@ -57,24 +151,23 @@
 }
 
 ion-button.sorting-button {
- 
- 
   --border-radius: 4px;
   --padding-start: 8px;
   --padding-end: 8px;
 }
 
-
 ion-icon.sorting-icon {
-  
   --font-size: 24px;
 }
 
-.view-btn, .aanpassen-btn,.sorting-icon, .goBack{
-color: #343231;
+.view-btn,
+.aanpassen-btn,
+.sorting-icon,
+.goBack {
+  color: #343231;
 }
 
-.img-card{
+.img-card {
   width: 80px; /* Adjust the desired width */
   height: auto;
   float: right;

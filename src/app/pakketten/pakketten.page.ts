@@ -153,6 +153,9 @@ export class PakkettenPage implements OnInit {
         ontvanger: item.ontvanger,
         verzender: item.verzender,
         status_name: item.status_name,
+        bestemming: item.bestemming,
+        verzendadres: item.verzendadres,
+        locatie:item.locatie,
       }));
   
       this.noMatchingPackages = this.filteredPakketten.length === 0; // Update the flag based on the search result
@@ -264,11 +267,11 @@ export class PakkettenPage implements OnInit {
       case "pakket_id":
         this.sortByPakketId();
         break;
-      case "verzender":
-        this.sortByVerzender();
+      case "bestemming":
+        this.sortByBestemming();
         break;
-      case "ontvanger":
-        this.sortByOntvanger();
+      case "verzendadres":
+        this.sortByVerzendAdres();
         break;
       default:
         break;
@@ -294,20 +297,20 @@ export class PakkettenPage implements OnInit {
   }
 
   // Sort packages by sender
-  sortByVerzender() {
+  sortByBestemming() {
     this.sortPackages((a, b) => {
-      const verzenderA = (a.verzender || "").toUpperCase();
-      const verzenderB = (b.verzender || "").toUpperCase();
-      return verzenderA.localeCompare(verzenderB);
+      const bestemmingA = (a.bestemming || "").toUpperCase();
+      const bestemmingB = (b.bestemming || "").toUpperCase();
+      return bestemmingA.localeCompare(bestemmingB);
     });
   }
 
   // Sort packages by recipient
-  sortByOntvanger() {
+  sortByVerzendAdres() {
     this.sortPackages((a, b) => {
-      const ontvangerA = (a.ontvanger || "").toUpperCase();
-      const ontvangerB = (b.ontvanger || "").toUpperCase();
-      return ontvangerA.localeCompare(ontvangerB);
+      const verzendadresA = (a.verzendadres || "").toUpperCase();
+      const verzendadresB = (b.verzendadres || "").toUpperCase();
+      return verzendadresA.localeCompare(verzendadresB);
     });
   }
 

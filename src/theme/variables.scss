@@ -239,7 +239,10 @@ body[color-theme="dark"] ion-card-subtitle {
 }
 body[color-theme="dark"] ion-card.custom-card {
   border-style: solid;
-  border-color: #f8f0e3;
+  border-radius: 16px;
+  background: #192734;
+  opacity: 90%;
+  box-shadow: inset 31px 31px 62px #3c5065, inset -31px -31px 62px #192734;
 }
 body[color-theme="dark"] .lgn-btn {
   --background: var(--ion-color-danger);
@@ -254,6 +257,7 @@ body[color-theme="dark"] ion-back-button {
 
 body[color-theme="dark"] .custom-searchbar {
   color: $dark-theme-background-color;
+  opacity: 70%;
 }
 
 body[color-theme="dark"] .logo-home {
@@ -269,26 +273,37 @@ body[color-theme="dark"] .sorting-options-header {
   background-color: #192734;
   color: #ffffff;
   padding: 20px;
-  
-  
 }
 
-body[color-theme="dark"] .sorting-option{
+body[color-theme="dark"] .sorting-option {
   background-color: #192734;
   color: #ffffff;
   padding: 10px;
 }
 
-
 body[color-theme="dark"] .sorting-option:hover {
-  background-color: #22303C;
+  background-color: #22303c;
 }
 
 body[color-theme="dark"] .sorting-option:active {
-  background-color: #22303C;
+  background-color: #22303c;
   color: #428cff;
 }
 
-body[color-theme="dark"] ion-list-header{
+body[color-theme="dark"] ion-list-header {
   width: 4000px;
+}
+
+body[color-theme="dark"] .sub {
+  color: #f2f2f2;
+}
+
+body[color-theme="dark"] .card-title {
+  color: #f2f2f2;
+}
+body[color-theme="dark"] .logo-img{
+  display: none;
+}
+body[color-theme="light"] .logo-img2{
+  display: none;
 }

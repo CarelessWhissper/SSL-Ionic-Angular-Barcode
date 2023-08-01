@@ -14,12 +14,15 @@ import { PopoverController } from "@ionic/angular";
       <ion-item button (click)="selectOption('pakket_id')" class="sorting-option">
         <ion-label>Pakket nummer</ion-label>
       </ion-item>
-      <ion-item button (click)="selectOption('verzender')" class="sorting-option">
-      <ion-label>Verzender</ion-label>
+      <ion-item button (click)="selectOption('bestemming')" class="sorting-option">
+      <ion-label>Bestemming</ion-label>
     </ion-item>
-    <ion-item button (click)="selectOption('ontvanger')" class="sorting-option">
-    <ion-label>Ontvanger</ion-label>
+    <ion-item button (click)="selectOption('verzendadres')" class="sorting-option">
+    <ion-label>Verzend Adres</ion-label>
   </ion-item>
+  <ion-item button (click)="selectOption('locatie')" class="sorting-option">
+  <ion-label>Locatie</ion-label>
+</ion-item>
   
     </ion-list>
   `,

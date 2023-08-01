@@ -32,7 +32,7 @@
     <ion-card *ngFor="let pakket of filteredPakketten" class="custom-card">
       <img
         class="img-card"
-        src="https://www.pngmart.com/files/11/Blank-Package-PNG-Transparent-Image.png"
+        src="../../assets/box.png.png"
       />
 
       <ion-card-header>
@@ -46,15 +46,19 @@
         <ion-card-subtitle class="sub"
           >Status: {{ pakket?.status_name }}</ion-card-subtitle
         >
+       
 
         <ion-item *ngIf="pakket.showDetails" class="card-item">
           <ion-label>Volume: {{ pakket?.volume }}</ion-label>
         </ion-item>
         <ion-item *ngIf="pakket.showDetails" class="card-item">
-          <ion-label>Verzender: {{ pakket?.verzender }}</ion-label>
+          <ion-label>bestemming: {{ pakket?.bestemming }}</ion-label>
         </ion-item>
         <ion-item *ngIf="pakket.showDetails" class="card-item">
-          <ion-label>Ontvanger: {{ pakket?.ontvanger }}</ion-label>
+          <ion-label>verzendadres: {{ pakket?.verzendadres }}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="pakket.showDetails" class="card-item">
+          <ion-label>locatie: {{ pakket?.locatie }}</ion-label>
         </ion-item>
       </ion-card-content>
 
@@ -85,6 +89,6 @@
   <div *ngIf="noMatchingPackages" class="no-matching-packages-container">
     <p>Pakket niet gevonden
     </p>
-    <img src="https://o.remove.bg/downloads/18b0c8cf-1029-4f95-8e75-bb1911ddfe9f/41ce1856-ce64-47eb-9cc9-d50c75ba936b-removebg-preview.png" alt="No matching packages image">
+    <img src="../../assets/pck.png.gif" alt="No matching packages image">
   </div>
 </ion-content>
