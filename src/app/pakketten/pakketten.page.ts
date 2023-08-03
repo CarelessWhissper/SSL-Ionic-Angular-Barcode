@@ -31,20 +31,17 @@ export class PakkettenPage implements OnInit {
     await this.loadData();
   }
 
-  //load packages from the api, based on user location
   async loadData() {
-    // Show loading spinner while loading data
     const loading = await this.loadingController.create({
       message: "Pakketten worden geladen...",
     });
     await loading.present();
-
+  
     try {
       const location = await this.getLocation();
-      let apiUrl = "https://ssl.app.sr/api/packages"; // Default URL for "suriname" and "nederland"
-
-      // Check for the new locations and set dedicated URLs accordingly using a switch statement
-      switch (location) {
+      let apiUrl;
+  
+      switch (location.toLowerCase()) {
         case "amsterdam":
           apiUrl = "https://ssl.app.sr/api/amsterdam";
           break;
@@ -53,23 +50,24 @@ export class PakkettenPage implements OnInit {
           break;
         case "denhaag":
           apiUrl = "https://ssl.app.sr/api/DenHaag";
+          break;
         case "utrecht":
           apiUrl = "https://ssl.app.sr/api/Utrecht";
           break;
         default:
-          // Keep the default URL for "suriname" and "nederland"
+          apiUrl = "https://ssl.app.sr/api/packages"; // Default URL for "suriname" and "nederland"
           break;
       }
-
+  
       const params = {
         search: "all",
         location: location,
       };
-
+  
       const response = await this.http
         .get<any[]>(apiUrl, { params })
         .toPromise();
-
+  
       this.pakketten = response;
       this.filteredPakketten = response; // Initially set filteredPakketten to all packages
     } catch (error) {
@@ -78,29 +76,18 @@ export class PakkettenPage implements OnInit {
       await loading.dismiss();
     }
   }
-
+  
   async getLocation(): Promise<string> {
     const data = await this.storage.get("login");
     const locatie = data ? data.locatie : null;
-
+    
     if (locatie === null) {
       console.log("Geen pakketten beschikbaar");
-    } else {
-      const lowerCaseLocatie = locatie.toLowerCase();
-      switch (lowerCaseLocatie) {
-        case "surinamehoofd":
-          return "suriname";
-        case "amsterdam":
-          return "amsterdam";
-        case "rotterdam":
-          return "rotterdam";
-        case "denhaag":
-          return "denhaag";
-        default:
-          return "nederland";
-      }
     }
+  
+    return locatie !== null ? locatie.toLowerCase() : "nederland";
   }
+  
 
   // Handle the search input change event
   async onChangeSearch() {
@@ -113,7 +100,7 @@ export class PakkettenPage implements OnInit {
       this.noMatchingPackages = this.filteredPakketten.length === 0;
     } else {
       this.filteredPakketten = this.pakketten;
-      this.noMatchingPackages = false; // Reset the flag when input is less than 5 characters
+      this.noMatchingPackages = false; // Reset the flag when input is less than 3 characters
     }
   }
   

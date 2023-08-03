@@ -301,9 +301,22 @@ body[color-theme="dark"] .sub {
 body[color-theme="dark"] .card-title {
   color: #f2f2f2;
 }
-body[color-theme="dark"] .logo-img{
+body[color-theme="dark"] .logo-img {
   display: none;
 }
-body[color-theme="light"] .logo-img2{
+
+/* No need to set 'display: none' for .logo-img2 in dark mode */
+.logo-img2 {
   display: none;
+}
+body[color-theme="light"] .logo-img2 {
+  display: none;
+}
+
+body[color-theme="dark"] .logo-img2 {
+  display: inline-block;
+}
+
+body[color-theme=""] .logo-img2 {
+  display: none; /* or 'inline' or 'inline-block' based on your layout preference */
 }

@@ -39,6 +39,7 @@ export class ScannerPage implements OnInit {
       if (this.router.url == "/scanner") {
         this.exitAlert();
       } else {
+        
         this.location.back();
       }
     });

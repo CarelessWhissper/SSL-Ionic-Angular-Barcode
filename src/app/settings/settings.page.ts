@@ -451,7 +451,8 @@ export class SettingsPage implements OnInit {
         document.body.removeAttribute("color-theme");
         this.mode = false;
       });
-  }
+  
+    }
 
   logout() {
     const itemsToRemove = [
