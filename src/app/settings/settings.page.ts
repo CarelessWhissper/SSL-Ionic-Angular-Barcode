@@ -3,7 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { ToastController } from "@ionic/angular";
-
+import { Observable, from } from "rxjs";
 @Component({
   selector: "app-settings",
   templateUrl: "./settings.page.html",
@@ -52,6 +52,8 @@ export class SettingsPage implements OnInit {
     this.showLoodFields = false;
   }
 
+  storedStatus: { id: number; name: string } | null = null; // Initialize it as null
+
   constructor(
     private storage: Storage,
     private router: Router,
@@ -61,29 +63,43 @@ export class SettingsPage implements OnInit {
   ) {
     this.currentId = null;
 
-    this.storage
-      .get("mode")
-      .then((mode) => {
-        if (mode) {
-          document.body.setAttribute("color-theme", "dark");
-        } else {
-          document.body.removeAttribute("color-theme");
-        }
-        this.mode = mode;
-      })
-      .catch((error) => {
-        console.error("Error retrieving mode from storage:", error);
-      });
+    this.storage.get("mode").then((mode) => {
+      if (mode) {
+        document.body.setAttribute("color-theme", "dark");
+      } else {
+        document.body.setAttribute("color-theme", "light");
+      }
+      this.mode = mode;
+    }).catch((error) => {
+      console.error("Error retrieving mode from storage:", error);
+    });
+
+    const storedStatusString = localStorage.getItem("selectedStatus");
+    if (storedStatusString) {
+      this.storedStatus = JSON.parse(storedStatusString);
+    }
   }
 
+  dataObservable: Observable<any>;
+
   ngOnInit() {
-    // Get the stored values from the local storage
-    this.storage.get("login").then((data) => {
-      this.name = data.name;
-      this.email = data.email;
-      this.role = data.role;
-      this.locatie = data.locatie;
-    });
+    this.storage.get("login").then(
+      (data) => {
+        if (data) {
+          this.name = data.name;
+          this.email = data.email;
+          this.role = data.role;
+          this.locatie = data.locatie;
+        } else {
+          // Handle missing data
+          console.log("no data found");
+        }
+      },
+      (error) => {
+        console.error("Error fetching data from storage:", error);
+        // Handle the error, e.g., show an error message to the user
+      }
+    );
 
     // Call the function to filter the status list based on the user's location
     this.filterStatusList();
@@ -106,8 +122,17 @@ export class SettingsPage implements OnInit {
         }
       } else {
         console.log("No data in statusList just yet,");
-        alert("The app will restart");
-        window.location.href = "/login";
+      }
+      localStorage.removeItem("palletNumber");
+      const palletNumber = localStorage.getItem("palletNumber");
+
+      if (palletNumber === null) {
+        console.log("palletNumber has been removed from local storage.");
+      } else {
+        console.log(
+          "palletNumber is still present in local storage:",
+          palletNumber
+        );
       }
     });
 
@@ -123,6 +148,7 @@ export class SettingsPage implements OnInit {
         if (selectedStatus) {
           this.currentStatus = selectedStatus;
           this.selectedStatusId = selectedStatus.id;
+
           localStorage.setItem(
             "selectedStatus",
             JSON.stringify(this.currentStatus)
@@ -436,40 +462,33 @@ export class SettingsPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.storage
-      .get("mode")
-      .then((val) => {
-        this.mode = val === true;
-        if (this.mode) {
-          document.body.setAttribute("color-theme", "dark");
-        } else {
-          document.body.removeAttribute("color-theme");
-        }
-      })
-      .catch((error) => {
-        console.error("Error retrieving mode from storage:", error);
-        document.body.removeAttribute("color-theme");
-        this.mode = false;
-      });
-  
-    }
+    this.storage.get("mode").then((mode) => {
+      if (mode) {
+        document.body.setAttribute("color-theme", "dark");
+      } else {
+        document.body.setAttribute("color-theme", "light");
+      }
+      this.mode = mode;
+    }).catch((error) => {
+      console.error("Error retrieving mode from storage:", error);
+    });
+  }
 
   logout() {
     const itemsToRemove = [
       "login",
-      "status",
+      // "status",
       "selectedStatus",
-      "currentStatus",
-      "palletNumber",
-      "loodLocatieNumber",
+      // "currentStatus",
+      // "palletNumber",
     ];
 
-    itemsToRemove.forEach((item) => {
-      localStorage.removeItem(item);
-      console.log(item);
+    itemsToRemove.forEach(async (item) => {
+      await this.storage.remove(item);
+      console.log(`${item} removed from Ionic Storage`);
     });
 
-    console.log("Local storage cleared.");
+    console.log("Ionic Storage cleared.");
     this.router.navigateByUrl("/login");
   }
 }

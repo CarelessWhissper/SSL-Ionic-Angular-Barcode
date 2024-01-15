@@ -141,6 +141,22 @@ body[color-theme="dark"] {
 body[color-theme="dark"] .custom-card ion-card {
   --ion-background-color: #192734;
 }
+body[color-theme="dark"].data-label {
+  --ion-background-color: #faf9f6;
+}
+body[color-theme="dark"] .data-value {
+ color: #faf9f6;
+
+
+}
+
+
+body[color-theme="dark"] .data-label {
+  
+  color: #faf9f6;
+}
+
+
 
 body[color-theme="dark"] ion-card:hover {
   --ion-background-color: #22303c;
@@ -155,7 +171,8 @@ body[color-theme="dark"] .view-btn {
 }
 
 body[color-theme="dark"] .aanpassen-btn {
-  color: #faf9f6;
+  color: #fefdfc;
+  
 }
 body[color-theme="dark"] .sorting-button {
   color: #faf9f6;
@@ -216,9 +233,7 @@ body[color-theme="dark"] {
   }
 }
 
-body[color-theme="dark"] ion-input {
-  color: $dark-theme-text-color;
-}
+
 body[color-theme="dark"] item-item {
   color: $dark-theme-text-color;
 }
@@ -256,8 +271,12 @@ body[color-theme="dark"] ion-back-button {
 }
 
 body[color-theme="dark"] .custom-searchbar {
-  color: $dark-theme-background-color;
-  opacity: 70%;
+  color: #d9edf7 !important;
+}
+
+body[color-theme="light"] .custom-searchbar {
+  color: black !important;
+  background: #F5F5F5 !important;
 }
 
 body[color-theme="dark"] .logo-home {
@@ -279,6 +298,14 @@ body[color-theme="dark"] .sorting-option {
   background-color: #192734;
   color: #ffffff;
   padding: 10px;
+}
+
+body[color-theme="dark"] .lood-value {
+  color: #ffffff;
+}
+
+body[color-theme="dark"] .status-value {
+  color: #ffffff;
 }
 
 body[color-theme="dark"] .sorting-option:hover {
@@ -319,4 +346,14 @@ body[color-theme="dark"] .logo-img2 {
 
 body[color-theme=""] .logo-img2 {
   display: none; /* or 'inline' or 'inline-block' based on your layout preference */
+}
+
+
+.data-row {
+  font-size: 17.5px; /* You can adjust the font size to your preference */
+}
+
+.data-label, .data-value {
+  /* Optionally, you can style the label and value separately */
+  font-weight: bold; /* Example: bold for labels */
 }

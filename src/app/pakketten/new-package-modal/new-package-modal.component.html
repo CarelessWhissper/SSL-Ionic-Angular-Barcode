@@ -1,0 +1,36 @@
+<!-- new-package-modal.component.html -->
+
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Voeg nieuw pakket toe</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-label position="floating">Pakket ID</ion-label>
+      <ion-input [(ngModel)]="newPackage.pakket_id" type="text"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Lood Locatie Nummer</ion-label>
+      <ion-input
+        [(ngModel)]="newPackage.lood_locatie_nummer"
+        type="text"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Status</ion-label>
+      <ion-input [(ngModel)]="newPackage.status" type="number"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="full" (click)="saveNewPackage()">Opslaan</ion-button>
+</ion-content>

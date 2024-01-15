@@ -9,6 +9,7 @@ import { PakkettenPageRoutingModule } from './pakketten-routing.module';
 import { PakkettenPage } from './pakketten.page';
 import { SortingOptionsComponent } from './SortingOptionsComponent';
 
+
 @NgModule({
   imports: [
     CommonModule,

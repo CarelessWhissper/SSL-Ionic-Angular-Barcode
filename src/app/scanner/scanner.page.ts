@@ -1,16 +1,13 @@
+import { Component, OnInit, Renderer2 } from "@angular/core";
 import {
   BarcodeScanner,
   BarcodeScannerOptions,
 } from "@ionic-native/barcode-scanner/ngx";
-import { Component, OnInit, Renderer2 } from "@angular/core";
-
-import { AlertController } from "@ionic/angular";
+import { AlertController, Platform, ToastController } from "@ionic/angular";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Router } from "@angular/router";
-import { Platform } from "@ionic/angular";
 import { Location } from "@angular/common";
 import { Storage } from "@ionic/storage";
-import { ToastController } from "@ionic/angular";
 
 @Component({
   selector: "app-scanner",
@@ -21,8 +18,8 @@ export class ScannerPage implements OnInit {
   scanData: {};
   status: any;
   isDarkMode: boolean;
-
   private colorSchemeListener: () => void;
+  loodLocatieNumber: any;
 
   constructor(
     private barcodeScanner: BarcodeScanner,
@@ -30,16 +27,15 @@ export class ScannerPage implements OnInit {
     private router: Router,
     private platform: Platform,
     private location: Location,
-    public http: HttpClient,
+    private http: HttpClient,
     private storage: Storage,
     private toastController: ToastController,
     private renderer: Renderer2
   ) {
     this.platform.backButton.subscribeWithPriority(666666, () => {
-      if (this.router.url == "/scanner") {
+      if (this.router.url === "/scanner") {
         this.exitAlert();
       } else {
-        
         this.location.back();
       }
     });
@@ -49,24 +45,36 @@ export class ScannerPage implements OnInit {
     this.getStatus();
   }
 
+  async showToast(message: string, color: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      color: color,
+      position: "top",
+    });
+    toast.present();
+  }
+
   async getStatus() {
     try {
       const response = await this.http
         .get("https://ssl.app.sr/api/get-status")
         .toPromise();
       console.log(response);
-      this.storage.set("status", response);
+      const sth = response;
+      console.log(sth, "this is the response with sth");
+      // console.log(response.pallet_data.pakket_id,)
     } catch (error) {
       console.log(error);
     }
   }
 
-  ionViewDidEnter() {
+  async ionViewDidEnter() {
     this.status = localStorage.getItem("currentStatus");
-    console.log(this.status);
+    console.log("the current status: ", this.status);
   }
 
-  scan() {
+  async scan() {
     console.log("scan called");
     const storedStatus = localStorage.getItem("selectedStatus");
     const currentStatus = storedStatus ? JSON.parse(storedStatus) : null;
@@ -74,7 +82,7 @@ export class ScannerPage implements OnInit {
     console.log("currentStatus from storage:", currentStatus);
     this.status = currentStatus;
 
-    if (currentStatus == null) {
+    if (!currentStatus) {
       console.log("currentStatus is null");
       this.setStatus();
     } else {
@@ -86,70 +94,148 @@ export class ScannerPage implements OnInit {
         orientation: "portrait",
       };
 
-      this.barcodeScanner
-        .scan(options)
-        .then((barcodeData) => {
-          console.log("This barcode data:", barcodeData);
-          this.postBarcodeData(barcodeData.text);
-        })
-        .catch((err) => {
-          console.log("Error", err);
-        });
+      try {
+        const barcodeData = await this.barcodeScanner.scan(options);
+        console.log("This barcode data:", barcodeData);
+        this.postBarcodeData(barcodeData.text);
+      } catch (err) {
+        console.log("Error", err);
+      }
     }
   }
 
-  // async alert(response) {
-  //   const alert = await this.alertController.create({
-  //     header: "Scan succesvol",
-  //     cssClass: "alertCss",
-  //     message:
-  //       (response.pakket_id ? response.pakket_id : "het pakket") +
-  //       " is succesvol bijgewerkt naar " +
-  //       (response.status ? response.status : "Unknown"),
-  //     buttons: [
-  //       {
-  //         text: "Scan volgende",
-  //         handler: () => {
-  //           this.scan();
-  //         },
-  //       },
-  //       {
-  //         text: "ok",
-  //         handler: () => {
-  //           console.log("Yes clicked");
-  //         },
-  //       },
-  //     ],
-  //   });
-  //   await alert.present();
-  // }
+  async onsaveLoodlocatienumber(loodLocatieNumber: string) {
+    const apiURL = "https://ssl.app.sr/api/save-aankomst";
+
+    const sth: string | null = await this.storage.get("scan_resp");
+    const sthElse: string | null = await this.storage.get("scan_resp2");
+
+    console.log("the data in storage is: ", sth);
+    console.log("the data in storage is: ", sthElse);
+
+    this.storage.get("status").then(async (response) => {
+      console.log(sth, "check this response");
+      console.log(sthElse, "check this response too");
+
+      // Create a payload with the pakket_id and lood_locatie_number
+      const payload = {
+        id: sthElse,
+        pakket_id: sth,
+        lood_locatie_number: loodLocatieNumber,
+      };
+
+      console.log("what's in the payload: ", payload);
+
+      try {
+        const updateResponse: any = await this.http
+          .post(apiURL, payload)
+          .toPromise();
+      
+        console.log("Update request successful:", updateResponse);
+      
+        // if (response.pallet_data) {
+        //   // Modify the response object directly
+        //   response.pallet_data.lood_locatie_nummer = loodLocatieNumber;
+        // } else {
+        //   console.warn("pallet_data is missing in the response.");
+        // }
+      
+        // Update the storage with the modified response object
+        this.storage.set("status", response);
+      
+        console.log("Lood locatie number updated successfully");
+      
+        // Show a success toast message
+        this.showToast("Lood locatie number updated successfully", "success");
+      } catch (error) {
+        console.error("Update request failed:", error);
+      
+        // Show an error toast message for HTTP request failure
+        this.showToast("Failed to update lood locatie number", "danger");
+      }
+    });
+  }
 
   async alert(response) {
-    const pakketId = response.pakket_id ? response.pakket_id : "het pakket";
-    const status = response.status ? response.status : "Unknown";
-  
+    const pakketId = response.pakket_id || "het pakket";
+    const status = response.status || "Unknown";
+
+    const buttons = [
+      {
+        text: "Voer Lood Locatie Number in",
+        handler: () => {
+          this.enterLoodLocatieNumber(); // Handle the action to enter the number
+        },
+      },
+      {
+        text: "Scan volgende",
+        handler: () => {
+          this.scan();
+        },
+      },
+      {
+        text: "Ok",
+        handler: () => {
+          console.log("Ok clicked");
+        },
+      },
+    ];
+
+    // Conditionally move "Voer Lood Locatie Number in" option
+    if (status !== "Aankomst in SR") {
+      const voerLoodLocatieButton = buttons.find(
+        (button) => button.text === "Voer Lood Locatie Number in"
+      );
+      if (voerLoodLocatieButton) {
+        const index = buttons.indexOf(voerLoodLocatieButton);
+        buttons.splice(index, 1);
+      }
+    }
+
     const alert = await this.alertController.create({
       header: "Scan succesvol",
       cssClass: "alertCss",
       message: `${pakketId} is succesvol bijgewerkt naar ${status}`,
+      buttons: buttons, // Use the updated buttons array
+    });
+
+    await alert.present();
+  }
+
+  async enterLoodLocatieNumber() {
+    const alert = await this.alertController.create({
+      header: "Enter Lood Locatie Number",
+      inputs: [
+        {
+          name: "loodLocatieNumber",
+          type: "text",
+          placeholder: "Enter the desired number",
+        },
+      ],
       buttons: [
         {
-          text: "Scan volgende",
+          text: "Cancel",
+          role: "cancel",
           handler: () => {
-            this.scan();
+            console.log("Enter Lood Locatie Number canceled");
           },
         },
         {
-          text: "ok",
-          handler: () => {
-            console.log("Yes clicked");
+          text: "Save",
+          handler: (data) => {
+            const loodLocatieNumber = data.loodLocatieNumber;
+            // Handle the entered number (e.g., save it or perform further actions)
+            console.log("Entered Lood Locatie Number:", loodLocatieNumber);
+
+            // Now you can save the loodLocatieNumber using your onsaveLoodlocatienumber function
+            this.onsaveLoodlocatienumber(loodLocatieNumber);
           },
         },
       ],
     });
+
     await alert.present();
   }
-  
 
   async postBarcodeData(data: any) {
     console.log("Data object:", data);
@@ -169,6 +255,14 @@ export class ScannerPage implements OnInit {
       console.log("response :", response);
 
       if (response && response.message) {
+        this.storage.set("scan_resp", response.pakket_id);
+        this.storage.set("scan_resp2", response.id);
+
+        console.log("the package name ", response.pakket_id);
+        console.log("the package id: ", response.id);
+
+        //id is undefined here
+
         this.alert(response); // Assuming the response is a string or a specific value indicating success
 
         const toast = await this.toastController.create({
@@ -287,8 +381,18 @@ export class ScannerPage implements OnInit {
         errorMessage =
           "Invalide Status poging , het pakket heeft zijn eind bereikt.";
         break;
+      case 403:
+        errorMessage = "Deze update is niet toegestaan";
+        break;
       case 406:
         errorMessage = "Palletnummer niet beschikbaar";
+        break;
+
+      case 418:
+        errorMessage = "Aan dit pakket is al een lood loc nummer toegewezen";
+        break;
+      case 419:
+        errorMessage = "Pakket heeft al lood locatie nummer toegewezen";
         break;
       default:
         errorMessage = "Error: " + response.message;

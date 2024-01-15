@@ -7,6 +7,9 @@
         icon="chevron-back-outline"
       ></ion-back-button>
     </ion-buttons>
+
+    <ion-title> pakketten </ion-title>
+
     <ion-buttons slot="primary">
       <ion-button class="sorting-button" (click)="presentSortingOptions()">
         <ion-icon
@@ -16,10 +19,17 @@
           name="funnel-outline"
         ></ion-icon>
       </ion-button>
-    </ion-buttons>
 
-    <ion-title> pakketten </ion-title>
+      <ion-button
+        *ngIf="noMatchingPackages"
+        (click)="addNewPackage()"
+        class="transparent-button"
+      >
+        <ion-icon name="add-circle-outline" class="black-icon"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
+
   <ion-searchbar
     class="custom-searchbar"
     [(ngModel)]="input"
@@ -29,66 +39,71 @@
 
 <ion-content>
   <ion-list>
-    <ion-card *ngFor="let pakket of filteredPakketten" class="custom-card">
-      <img
-        class="img-card"
-        src="../../assets/box.png.png"
-      />
-
-      <ion-card-header>
-        <ion-card-title class="card-title"
-          >Pakketnr: {{ pakket?.pakket_id }}</ion-card-title
-        >
-      </ion-card-header>
-
-      <ion-card-content>
-        <div class="background"></div>
-        <ion-card-subtitle class="sub"
-          >Status: {{ pakket?.status_name }}</ion-card-subtitle
-        >
-       
-
-        <ion-item *ngIf="pakket.showDetails" class="card-item">
-          <ion-label>Volume: {{ pakket?.volume }}</ion-label>
-        </ion-item>
-        <ion-item *ngIf="pakket.showDetails" class="card-item">
-          <ion-label>bestemming: {{ pakket?.bestemming }}</ion-label>
-        </ion-item>
-        <ion-item *ngIf="pakket.showDetails" class="card-item">
-          <ion-label>verzendadres: {{ pakket?.verzendadres }}</ion-label>
-        </ion-item>
-        <ion-item *ngIf="pakket.showDetails" class="card-item">
-          <ion-label>locatie: {{ pakket?.locatie }}</ion-label>
-        </ion-item>
-      </ion-card-content>
-
-      <ion-row class="card-buttons">
-        <ion-col>
-          <ion-button
-            class="view-btn"
-            fill="clear"
-            (click)="toggleDetails(pakket)"
+    <ion-card
+      *ngFor="let pakket of filteredPakketten"
+      class="custom-card data-table-card"
+      (click)="toggleCardExpansion(pakket.pakket_id)"
+      [ngClass]="{'expanded': expandedCardId === pakket.pakket_id}"
+    >
+      <div class="data-table">
+        <ion-card-header>
+          <ion-card-title class="card-title"
+            >{{ pakket?.pakket_id }}</ion-card-title
           >
-            <ion-icon [name]="getEyeIcon(pakket)" class="icon"></ion-icon>
-            Bekijken
-          </ion-button>
-        </ion-col>
-        <ion-col>
-          <ion-button
-            class="aanpassen-btn"
-            fill="clear"
-            (click)="showConfirmationDialog(pakket.id, pakket.status_id)"
+          <ion-card-title class="status-value"
+            >{{ pakket?.status_name }}</ion-card-title
           >
-            <ion-icon name="create" class="icon"></ion-icon>
-            Aanpassen
-          </ion-button>
-        </ion-col>
-      </ion-row>
+          <ion-card-title class="lood-value" *ngIf="pakket?.number"
+            >{{ pakket?.number }}</ion-card-title
+          >
+          <ion-card-title class="volume-value"
+            >{{pakket?.volume}}kg</ion-card-title
+          >
+        </ion-card-header>
+        <ion-card-content *ngIf="expandedCardId === pakket.pakket_id">
+          <ion-row class="label-value-row">
+            <ion-col size="4">
+              <div class="data-label">Afzender</div>
+            </ion-col>
+            <ion-col size="8" class="data-value verzender">
+              {{ pakket?.verzender }}
+            </ion-col>
+          </ion-row>
+          <ion-row class="label-value-row">
+            <ion-col size="4">
+              <div class="data-label">Ontvanger</div>
+            </ion-col>
+            <ion-col size="8" class="data-value ontvanger">
+              {{ pakket?.ontvanger }}
+            </ion-col>
+          </ion-row>
+          <ion-row class="label-value-row">
+            <ion-col size="4">
+              <div class="data-label">Adres</div>
+            </ion-col>
+            <ion-col size="8" class="data-value bestemming">
+              {{ pakket?.bestemming }}
+            </ion-col>
+          </ion-row>
+        </ion-card-content>
+
+        <ion-row class="card-buttons">
+          <ion-col>
+            <ion-button
+              class="aanpassen-btn"
+              fill="clear"
+              (click)="showConfirmationDialog(pakket.id, pakket.status_id)"
+            >
+              <ion-icon name="sync" style="margin-right: 4px"></ion-icon> Status
+              Aanpassen
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </div>
     </ion-card>
   </ion-list>
   <div *ngIf="noMatchingPackages" class="no-matching-packages-container">
-    <p>Pakket niet gevonden
-    </p>
-    <img src="../../assets/pck.png.gif" alt="No matching packages image">
+    <p>Pakket niet gevonden</p>
+    <img src="../../assets/pck.png.gif" alt="No matching packages image" />
   </div>
 </ion-content>

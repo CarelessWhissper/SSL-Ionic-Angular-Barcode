@@ -1,190 +1,115 @@
-// .view-btn {
-//   text-transform: capitalize;
-// }
-
-// .aanpassen-btn {
-//   text-transform: capitalize;
-// }
-
-// .custom-searchbar {
-//   --background: rgba(255, 255, 255, 0.8);
-//   --searchbar-input-background: #f2f2f2;
-// }
-
-// .subTitle {
-//   text-transform: capitalize;
-// }
-
-// .custom-card {
-//   border-radius: 8px;
-
-  
-//   margin-bottom: 8px; /* Adjust the margin to desired spacing */
-//   padding: 12px; /* Adjust the padding as needed */
-// }
-
-// .card-title {
-//   font-size: 20px;
-//   font-weight: bold;
-// }
-
-// .sub {
-//   font-size: 16px;
-//   margin-bottom: 1px; /* Adjust the margin to desired spacing */
-//   margin-top: 20px;
-//   text-transform: capitalize;
-// }
-
-// .card-item {
-//   padding-left: 0;
-//   margin-bottom: 4px; /* Adjust the margin to desired spacing */
-// }
-
-// .card-buttons {
-//   margin-top: 1px; /* Adjust the margin to desired spacing */
-//   justify-content: space-between;
-// }
-
-// .view-btn,
-// .aanpassen-btn {
-  
-//   font-size: 14px;
-// }
-
-// .icon {
-//   font-size: 20px;
-//   margin-right: 2px; /* Adjust the margin to desired spacing */
-// }
-
-// ion-button.sorting-button {
- 
- 
-//   --border-radius: 4px;
-//   --padding-start: 8px;
-//   --padding-end: 8px;
-// }
 
 
-// ion-icon.sorting-icon {
-  
-//   --font-size: 24px;
-// }
-
-// .view-btn, .aanpassen-btn,.sorting-icon, .goBack{
-// color: #343231;
-// }
-
-// .img-card{
-//   width: 80px; /* Adjust the desired width */
-//   height: auto;
-//   float: right;
-//   margin-right: 10px; /* Adjust the desired margin */
-// }
-
-// /* Add this CSS to your component's stylesheet or global styles */
-// .no-matching-packages-container {
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: center;
-//   align-items: center;
-//   height: 100vh; /* Adjust the height to fill the screen */
-// }
-
-// .no-matching-packages-container p {
-//   font-size: 20px;
-//   font-weight: bold;
-//   margin-bottom: 20px;
-// }
-
-
-.view-btn,
-.aanpassen-btn {
-  text-transform: capitalize;
-  font-size: 14px;
+/* Remove the border shadow from the search bar */
+ion-searchbar {
+  --background: transparent; /* Set the background to transparent */
+  --border-width: 0; /* Set the border width to 0 */
+  --box-shadow: none; /* Remove the box shadow */
+  --border-color: transparent; /* Set the border color to transparent */
 }
 
-.custom-searchbar {
-  --background: #f2f2f2;
-  --searchbar-input-background: #f2f2f2;
+.status-value {
+  position: absolute;
+  top: 10px; /* Adjust the top value as needed */
+  right: 10px; /* Adjust the right value as needed */
+  font-size: 16px; /* Adjust the font size as needed */
+  color: #151515; /* Adjust the color as needed */
+  margin-top: 15px;
+
 }
 
-.subTitle {
-  text-transform: capitalize;
+.lood-value {
+  position: absolute;
+  top: 10px; /* Adjust the top value as needed */
+  right: 10px; /* Adjust the right value as needed */
+  font-size: 16px; /* Adjust the font size as needed */
+  color: #151515; /* Adjust the color as needed */
+  margin-top: 35px;
 }
 
-.custom-card {
-  border-radius: 16px;
-  background-color: #f2f2f2;
-  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.5);
-  margin-bottom: 16px; /* Adjust the margin to desired spacing */
-  padding: 16px; /* Adjust the padding as needed */
+.card-title{
+  font-size: 24px
 }
 
-.card-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #343231;
-}
-
-.sub {
-  font-size: 16px;
-  margin-bottom: 1px; /* Adjust the margin to desired spacing */
-  margin-top: 20px;
-  text-transform: capitalize;
-  color: #343231;
-}
-
-.card-item {
-  padding-left: 0;
-  margin-bottom: 4px; /* Adjust the margin to desired spacing */
-  --ion-label-color: #343231; /* Set label color to #343231 */
-}
-
-.card-buttons {
-  margin-top: 1px; /* Adjust the margin to desired spacing */
-  justify-content: space-between;
-}
-
-.icon {
-  font-size: 20px;
-  margin-right: 2px; /* Adjust the margin to desired spacing */
-}
-
-ion-button.sorting-button {
-  --border-radius: 4px;
-  --padding-start: 8px;
-  --padding-end: 8px;
-}
-
-ion-icon.sorting-icon {
-  --font-size: 24px;
-}
-
-.view-btn,
-.aanpassen-btn,
-.sorting-icon,
-.goBack {
-  color: #343231;
-}
-
-.img-card {
-  width: 80px; /* Adjust the desired width */
-  height: auto;
-  float: right;
-  margin-right: 10px; /* Adjust the desired margin */
-}
-
-/* Add this CSS to your component's stylesheet or global styles */
-.no-matching-packages-container {
+.data-row {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Adjust the height to fill the screen */
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
-.no-matching-packages-container p {
-  font-size: 20px;
+
+.data-label {
   font-weight: bold;
-  margin-bottom: 20px;
+  font-size: 18px;
+  margin-bottom: 4px;
+  display: inline-block;
+  color: #151515;
+}
+
+.data-value {
+  display: inline-block; /* Display the value inline with the label */
+  font-style:normal;
+}
+ion-card.custom-card {
+  background-color: #f5f5f5;
+  background-size: cover; /* Scales the background image to cover the entire card */
+  background-repeat: no-repeat; /* Prevents the texture from repeating */
+  border-radius: 12px; /* Add rounded corners to mimic a cardboard box */
+  box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.2); /* Optional drop shadow for depth */
+}
+
+ion-card-content{
+  margin: 1px;
+  padding:6px
+  
+}
+ion-card-header{
+  margin: 1px;
+  padding: 6px
+  
+}
+
+.col-row{
+  padding: 6px;
+}
+
+.fixed-width {
+  width: 60px; /* Adjust the width as needed */
+  text-align: left;
+}
+
+/* In your CSS or SCSS */
+.expanded {
+  max-height: 500px; /* Adjust the max-height as needed */
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out; /* Add a transition effect for smooth expansion and collapse */
+  background-color: black;
+  border-radius: 8px;
+}
+.volume-value{
+  font-style: normal;
+  font-size: medium;
+  padding-top: 10px;
+  padding-left: 5px;
+}
+.lood-value{
+  font-style: normal;
+  font-size: medium;
+  padding-top: 10px;
+  padding-right: 20px;
+}
+
+.padded-value{
+  padding-left: 20px;
+}
+.data-value {
+  flex: 2; /* Let the values take up the remaining space */
+  text-align: right; /* Align values to the right */
+  font-size: 18px;
+}
+.label-value-pair {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }

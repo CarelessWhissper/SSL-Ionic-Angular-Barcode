@@ -1,5 +1,5 @@
+
 import { Component, OnInit } from "@angular/core";
-import { IonInput } from "@ionic/angular";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { LoadingController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
@@ -65,7 +65,7 @@ export class LoginPage implements OnInit {
       this.buttonDisabled = false;
     }
   }
-  DoLogin() {
+   DoLogin() {
     this.loader();
     this.validation = null;
     console.log("Login Clicked");
@@ -85,9 +85,15 @@ export class LoginPage implements OnInit {
 
       .subscribe(
         async (Response) => {
-          this.storage.set("login", Response);
+          // After successfully logging in and getting the user data
+          const userData = Response;
+        
+
           this.router.navigate(["scanner"]);
           console.log(Response);
+          this.storage.set('login', userData).then(() => {
+            console.log('User data saved to local storage.');
+          });
           this.loadingController.dismiss();
         },
         async (error) => {

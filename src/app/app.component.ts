@@ -7,6 +7,9 @@ import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { Storage } from "@ionic/storage";
 import { Router } from "@angular/router";
 
+
+
+
 @Component({
   selector: "app-root",
   templateUrl: "app.component.html",
@@ -30,10 +33,25 @@ export class AppComponent implements OnInit {
 
     this.statusBar.styleDefault();
     this.setMode();
+    localStorage.removeItem("palletNumber");
+    const palletNumber = localStorage.getItem("palletNumber");
+
+    if (palletNumber === null) {
+      console.log("palletNumber has been removed from local storage again.");
+    } else {
+      console.log(
+        "palletNumber is still present in local storage again:",
+        palletNumber
+      );
+    }
+     // Initialize the color theme globally
+     this.setMode();
   }
 
   initializeApp() {
-    this.platform.ready().then(() => {});
+    this.platform.ready().then(() => {
+      
+    });
   }
 
   checkLogin() {
@@ -62,6 +80,7 @@ export class AppComponent implements OnInit {
 
     localStorage.removeItem("palletNumber");
     localStorage.removeItem("loodLocatieNumber");
+    localStorage.removeItem("selectedStatus");
 
     this.storage.get("login").then((loginData) => {
       if (loginData) {
@@ -74,6 +93,9 @@ export class AppComponent implements OnInit {
     this.storage
       .get("mode")
       .then((val) => {
+        if (val === undefined || val === null) {
+          val = false; // Set a default value (light mode)
+        }
         this.mode = val === true;
         document.body.setAttribute("color-theme", this.mode ? "dark" : "light");
       })
@@ -82,7 +104,7 @@ export class AppComponent implements OnInit {
         this.mode = false;
       });
   }
-
+  
   toggleDarkMode(event: any) {
     this.storage
       .set("mode", event.detail.checked)

@@ -17,7 +17,7 @@
       [interfaceOptions]="{ cssClass: 'custom' }"
       [(ngModel)]="selectedStatusId"
       (ionChange)="onChangeStatus()"
-      placeholder="Selecteer een status"
+      [placeholder]="storedStatus ? storedStatus.name : 'Selecteer een status'"
     >
       <ng-container *ngFor="let status of statusList">
         <ng-container
@@ -99,35 +99,7 @@
       >
     </ion-item>
 
-    <div class="my-container">
-      <ion-item *ngIf="showLoodFields" lines="none" class="custom-item">
-        <ion-label position="floating">Lood Locatie Number</ion-label>
-        <div class="input-container">
-          <ion-input
-            [(ngModel)]="loodLocatieNumber"
-            type="text"
-            placeholder="Voer loodlocatie# in"
-            required
-          ></ion-input>
-        </div>
-        <div class="spacer"></div>
-        <div class="button-container">
-          <ion-button
-            class="custom-btn"
-            color="danger"
-            (click)="onsaveLoodlocatienumber(); saveButtonClicked = true;"
-          >
-            Opslaan
-          </ion-button>
-          <ion-button
-            class="custom-button"
-            fill="outline"
-            (click)=" clearLoad()"
-            >Wissen</ion-button
-          >
-        </div>
-      </ion-item>
-    </div>
+   
   </ion-card>
 
   <ion-card>
