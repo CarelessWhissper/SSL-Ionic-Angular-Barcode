@@ -19,22 +19,15 @@
           name="funnel-outline"
         ></ion-icon>
       </ion-button>
-
-      <ion-button
-        *ngIf="noMatchingPackages"
-        (click)="addNewPackage()"
-        class="transparent-button"
-      >
-        <ion-icon name="add-circle-outline" class="black-icon"></ion-icon>
-      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 
   <ion-searchbar
-    class="custom-searchbar"
-    [(ngModel)]="input"
-    (ionChange)="onChangeSearch()"
-  ></ion-searchbar>
+  class="custom-searchbar"
+  [(ngModel)]="input"
+ 
+  (keydown)="onKeyDown($event)"
+></ion-searchbar>
 </ion-header>
 
 <ion-content>
@@ -103,7 +96,24 @@
     </ion-card>
   </ion-list>
   <div *ngIf="noMatchingPackages" class="no-matching-packages-container">
-    <p>Pakket niet gevonden</p>
-    <img src="../../assets/pck.png.gif" alt="No matching packages image" />
+    <p style="display: flex; justify-content: center; font-weight: bold">
+      pakket niet gevonden
+    </p>
+
+    <img src="../../assets/bg.png" alt="No matching packages image" />
   </div>
+  <!-- Display a button when no matching packages are found -->
+  
+  <ion-row
+    *ngIf="noMatchingPackages && getSelectedStatus()?.id == 11"
+    style="justify-content: center"
+  >
+    <ion-col size="12" class="ion-text-center">
+      <ion-button (click)="addNewPackage()" class="custom-button">
+        Voeg pakket toe
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+
 </ion-content>

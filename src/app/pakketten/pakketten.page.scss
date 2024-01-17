@@ -113,3 +113,7 @@ ion-card-header{
   align-items: center;
   margin-bottom: 8px;
 }
+
+.custom-button::part(native) {
+  text-transform: lowercase !important;
+}

@@ -11,6 +11,8 @@ import { ChangeDetectorRef } from "@angular/core";
 
 import { ModalController } from "@ionic/angular";
 import { NewPackageModalComponent } from "./new-package-modal/new-package-modal.component";
+import { debounceTime } from "rxjs/operators";
+import { Subject } from "rxjs";
 
 @Component({
   selector: "app-pakketten",
@@ -36,11 +38,31 @@ export class PakkettenPage implements OnInit {
 
   async ngOnInit() {
     await this.loadData();
+    this.searchInputSubject.pipe(debounceTime(300)).subscribe(async (input) => {
+      await this.filterPackages(input);
+    });
+  }
+
+  getSelectedStatus(): { id: number; name: string } | null {
+    return JSON.parse(localStorage.getItem("selectedStatus")) || null;
   }
 
   private storedSearchInput: string = "";
+  // Define a subject for the search input changes
+  private searchInputSubject = new Subject<string>();
+
+  loadingData: boolean = false;
+ 
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      clearTimeout(this.typingTimer); // Clear the previous timer
+      this.searchInputSubject.next(this.input); // Trigger the search immediately
+    }
+  }
+  
 
   async loadData() {
+    this.loadingData = true;
     const loading = await this.loadingController.create({
       message: "Pakketten worden geladen...",
     });
@@ -83,6 +105,7 @@ export class PakkettenPage implements OnInit {
       console.log("Error retrieving packages:", error);
     } finally {
       await loading.dismiss();
+      this.loadingData = false;
     }
   }
 
@@ -98,56 +121,46 @@ export class PakkettenPage implements OnInit {
   }
 
   // Handle the search input change event
-  async onChangeSearch() {
-    console.log("Search input:", this.input);
-    if (this.input && this.input.trim().length >= 0) {
-      // Store the current search input
-      this.storedSearchInput = this.input;
-
-      // Filter packages using the API
-      await this.filterPackages();
-
-      // Check if any matching packages are found
-      this.noMatchingPackages = this.filteredPakketten.length === 0;
-    } else {
-      this.filteredPakketten = this.pakketten;
-      this.noMatchingPackages = false; // Reset the flag when input is less than 3 characters
-    }
-  }
-
+ 
   // Filter packages based on the search input using the API
 
   private typingTimer: any;
 
   async filterPackages(searchInput?: string) {
+    if (this.loadingData) {
+      // Data is still loading, do not perform search
+      return;
+    }
+  
     console.log("Filtering packages...");
-
+    this.loadingData = true;
+  
     const startTime = new Date().getTime();
     const loading = await this.loadingController.create({
       message: "Zoeken...",
     });
-    await loading.present();
-
+  
+    // Show loading indicator immediately
+    loading.present();
+  
     try {
-      const input = searchInput || this.input.trim();
-
-      const params = {
-        search: input,
-      };
-
-      console.log("Filtering with params:", params); // Log the params being used for the API request
-
-      const response = await this.http
-        .get<any[]>("https://ssl.app.sr/api/display", { params })
-        .toPromise();
-
+      const input = searchInput ? searchInput.trim() : ""; // Trim if not empty
+      const params = { search: input };
+  
+      console.log("Filtering with params:", params);
+  
+      // Use asynchronous API request only if the searchInput is not empty
+      const response = input
+        ? await this.http.get<any[]>("https://ssl.app.sr/api/display", { params }).toPromise()
+        : [];
+  
       console.log("Search input:", searchInput);
-      console.log("Filtered packages:", response); // Log the API response to inspect the pakket_id values
-
+      console.log("Filtered packages:", response);
+  
       // Update the filteredPakketten array with the updated response from the API
       this.filteredPakketten = response.map((item) => ({
         id: item.id,
-        pakket_id: item.pakket_id, // Include the pakket_id field in the filtered packages
+        pakket_id: item.pakket_id,
         klant_id: item.klant_id,
         ontvanger_id: item.ontvanger_id,
         volume: item.volume,
@@ -160,19 +173,23 @@ export class PakkettenPage implements OnInit {
         locatie: item.locatie,
         number: item.number,
       }));
+  
       console.log(this.filteredPakketten, "the pakketten");
-
+  
       this.noMatchingPackages = this.filteredPakketten.length === 0; // Update the flag based on the search result
+      this.loadingData = false;
     } catch (error) {
       console.log("Error filtering packages:", error);
     } finally {
+      // Dismiss loading indicator
       await loading.dismiss();
       const endTime = new Date().getTime();
       const elapsedTime = endTime - startTime;
       console.log(`Time taken to load data: ${elapsedTime} milliseconds`);
     }
   }
-
+  
+  
   async doChangeStatus(paketId: string, status_id: number): Promise<boolean> {
     console.log(
       "doChangeStatus called with paketId:",
@@ -205,7 +222,7 @@ export class PakkettenPage implements OnInit {
 
         this.typingTimer = setTimeout(() => {
           this.filterPackages(this.storedSearchInput);
-        }, 500); // Set a delay of 500 milliseconds (adjust as needed)
+        }, 1000); // Set a delay of 1000 milliseconds (adjust as needed)
       }
 
       console.log("doChangeStatus completed successfully");
@@ -537,9 +554,24 @@ export class PakkettenPage implements OnInit {
   }
 
   async addNewPackage() {
-    // Implement your logic here, for example, opening a modal
-    console.log("Add New Package button clicked!");
-    this.presentNewPackageModal();
+    const modal = await this.modalController.create({
+      component: NewPackageModalComponent,
+      componentProps: {
+        existingPackages: this.pakketten,
+      },
+    });
+
+    modal.onDidDismiss().then(async (data) => {
+      if (data && data.data && data.data.newPackage) {
+        // Fetch the updated list from the server after adding a new package
+        await this.filterPackages();
+
+        // Reset the search input
+        this.input = "";
+      }
+    });
+
+    return await modal.present();
   }
 
   // Method to present the new package modal
@@ -549,14 +581,13 @@ export class PakkettenPage implements OnInit {
       componentProps: {
         existingPackages: this.filteredPakketten, // Pass the existing packages to check for duplicates
       },
-      cssClass: "custom-modal-css", // You can define your own modal CSS class
+      cssClass: "custom-modal-css", //
     });
 
     modal.onDidDismiss().then((result) => {
       // Handle the result if needed (data returned from the modal)
       if (result.data) {
         console.log("New package data:", result.data.newPackage);
-        // You can process the new package data here
       }
     });
 

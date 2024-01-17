@@ -38,7 +38,6 @@
     "axios": "^1.4.0",
     "canvas": "^2.11.2",
     "canvas-constructor": "^7.0.0",
-    "core-js": "^2.5.4",
     "esc-pos-encoder": "^1.2.0",
     "esc-pos-encoder-ionic": "^1.1.1",
     "ionicons": "^7.1.2",
@@ -77,10 +76,5 @@
   "license": "ISC",
   "config": {
     "strict-ssl": false
-  },
-  "cordova": {
-    "plugins": {
-      "cordova-plugin-splashscreen": {}
-    }
   }
 }
