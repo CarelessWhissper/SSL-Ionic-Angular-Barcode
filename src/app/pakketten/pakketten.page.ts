@@ -593,4 +593,9 @@ export class PakkettenPage implements OnInit {
 
     await modal.present();
   }
+
+  clearSearch() {
+    this.input = ''; // Clear the search input
+    this.loadData();
+  }
 }

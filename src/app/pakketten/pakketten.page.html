@@ -25,9 +25,12 @@
   <ion-searchbar
   class="custom-searchbar"
   [(ngModel)]="input"
- 
+  (ionClear)="clearSearch()"
+
   (keydown)="onKeyDown($event)"
 ></ion-searchbar>
+
+
 </ion-header>
 
 <ion-content>
