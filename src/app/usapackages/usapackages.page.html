@@ -1,0 +1,93 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button
+        class="goBack"
+        text=""
+        icon="chevron-back-outline"
+      ></ion-back-button>
+    </ion-buttons>
+    <ion-title>Paketten overzicht USA-SR</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button class="sorting-button" (click)="presentSortingOptions()">
+        <ion-icon slot="icon-only" name="funnel-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    
+  </ion-toolbar>
+  <ion-searchbar
+    class="custom-searchbar"
+    [(ngModel)]="searchTerm"
+    (ionInput)="onSearch()"
+    (ionClear)="onClear()"
+    animated="true"
+    show-clear-button="focus"
+  ></ion-searchbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngFor="let pakket of pakkettenUsaData; let i = index" class="custom-card">
+    
+    <ion-card-header (click)="toggleCard(pakket)">
+      <ion-card-title class="card-title">{{ pakket.pakket_id }}</ion-card-title>
+      <ion-card-subtitle>{{ pakket.tracking }}</ion-card-subtitle>
+      <ion-card-title class="status-value"
+        >{{ pakket?.status_name }}</ion-card-title
+      >
+    </ion-card-header>
+    <ion-card-content *ngIf="pakket.showCardContent">
+      <ion-list>
+        <ion-item>
+          <ion-col size="4">
+            <div class="data-label" >Afzender</div>
+          </ion-col>
+          <ion-col size="8" class="data-value verzender">
+            {{ pakket?.verzender }}
+          </ion-col>
+        </ion-item>
+        <ion-item>
+          <ion-col size="4">
+            <div class="data-label">Ontvanger</div>
+          </ion-col>
+          <ion-col size="8" class="data-value verzender">
+            {{ pakket?.ontvanger }}
+          </ion-col>
+        </ion-item>
+        <ion-item>
+          <ion-col size="4">
+            <div class="data-label">Ontv.Land</div>
+          </ion-col>
+          <ion-col size="8" class="data-value verzender">
+            {{ pakket?.ontvanger_land }}
+          </ion-col>
+        </ion-item>
+        <ion-item>
+          <ion-col size="4">
+            <div class="data-label">Gewicht</div>
+          </ion-col>
+          <ion-col size="8" class="data-value verzender">
+            {{ pakket?.volume }}
+          </ion-col>
+        </ion-item>
+        <ion-item>
+          <ion-col size="4">
+            <div class="data-label">Invoer Datum</div>
+          </ion-col>
+          <ion-col size="8" class="data-value verzender">
+            {{ pakket?.invoer | date: 'dd MMM yyyy' }}
+          </ion-col>
+        </ion-item>
+      </ion-list>
+      <div class="button-container">
+        <ion-button *ngIf="!pakket.ontvanger" (click)="presentModal(pakket.pakket_id)">
+          <ion-icon name="settings-outline" style="padding-right: 5px;"></ion-icon> Edit
+        </ion-button>
+        <ion-button *ngIf="pakket.ontvanger" (click)="confirmUpdateStatusClick(pakket.pakket_id)">
+          Update Status
+        </ion-button>
+        
+      </div>
+     
+    </ion-card-content>
+  </ion-card>
+</ion-content>

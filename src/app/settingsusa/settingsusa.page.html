@@ -1,0 +1,109 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="" icon="chevron-back-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Instellingen</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="background"></div>
+ 
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title class="ion-text-center">Account gegevens</ion-card-title>
+      <ion-row>
+        <ion-col style="padding-left: 0px !important">
+          <ion-label color="sucess">Name:</ion-label>
+        </ion-col>
+        <ion-col style="text-align: right">
+          <ion-card-subtitle><b>{{name}}</b></ion-card-subtitle>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col style="padding-left: 0px !important">
+          <ion-label color="sucess">Email:</ion-label>
+        </ion-col>
+        <ion-col style="text-align: right">
+          <ion-card-subtitle><b>{{email}}</b></ion-card-subtitle>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col style="padding-left: 0px !important">
+          <ion-label color="sucess">Role:</ion-label>
+        </ion-col>
+        <ion-col style="text-align: right">
+          <ion-card-subtitle><b>{{role}}</b></ion-card-subtitle>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col style="padding-left: 0px !important">
+          <ion-label color="sucess">Locatie:</ion-label>
+        </ion-col>
+        <ion-col style="text-align: right">
+          <ion-card-subtitle><b>{{locatie}}</b></ion-card-subtitle>
+        </ion-col>
+      </ion-row>
+    </ion-card-header>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title class="ion-text-center">Module informatie</ion-card-title>
+      <ion-row>
+        <ion-col style="padding-left: 0px !important">
+          <ion-label color="sucess">Aantal pakketten</ion-label>
+        </ion-col>
+        <ion-col style="text-align: right">
+          <ion-card-subtitle><b> {{ numberOfObjects }}</b></ion-card-subtitle>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col style="padding-left: 0px !important">
+          <ion-label color="sucess">Onlangs gemaakt</ion-label>
+        </ion-col>
+        <ion-col style="text-align: right">
+          <ion-card-subtitle><b>{{latestCreatedPakketId}}</b></ion-card-subtitle>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col style="padding-left: 0px !important">
+          <ion-label color="sucess">Recent geüpdatet</ion-label>
+        </ion-col>
+        <ion-col style="text-align: right">
+          <ion-card-subtitle><b>{{ latestUpdatedPakketId }}</b></ion-card-subtitle>
+        </ion-col>
+      </ion-row>
+      
+    </ion-card-header>
+  </ion-card>
+
+  <ion-card>
+    <ion-item lines="none" style="padding-bottom: 5px !important">
+      <ion-label>
+        <ion-icon slot="start" [name]="mode ? 'moon' : 'sunny'"></ion-icon>
+        Dark mode: {{ mode ? 'Aan' : 'Uit' }}
+      </ion-label>
+      <ion-toggle
+        slot="end"
+        (ionChange)="toggleDarkMode($event)"
+        [checked]="mode"
+      ></ion-toggle>
+    </ion-item>
+  </ion-card>
+
+  
+
+  <section>
+    <ion-button
+      color="danger"
+      class="logout-button"
+      shape="round"
+      expand="block"
+      (click)="logout()"
+    >
+      Log out
+    </ion-button>
+  </section>
+</ion-content>

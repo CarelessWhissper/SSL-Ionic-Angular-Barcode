@@ -501,21 +501,17 @@ export class SettingsPage implements OnInit {
       });
   }
 
-  logout() {
-    const itemsToRemove = [
-      "login",
-      // "status",
-      "selectedStatus",
-      // "currentStatus",
-      // "palletNumber",
-    ];
-
-    itemsToRemove.forEach(async (item) => {
-      await this.storage.remove(item);
-      console.log(`${item} removed from Ionic Storage`);
-    });
-
-    console.log("Ionic Storage cleared.");
-    this.router.navigateByUrl("/login");
+  async logout() {
+    try {
+      // Clear all stored data from Ionic Storage
+      await this.storage.clear();
+      console.log("All data removed from Ionic Storage.");
+  
+      // Navigate to the login page after clearing the data
+      this.router.navigateByUrl("/login");
+    } catch (error) {
+      console.error("Error clearing Ionic Storage:", error);
+    }
   }
+  
 }

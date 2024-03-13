@@ -8,6 +8,8 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Router } from "@angular/router";
 import { Location } from "@angular/common";
 import { Storage } from "@ionic/storage";
+import { LocationService } from "../location-service.service";
+
 
 @Component({
   selector: "app-scanner",
@@ -20,6 +22,8 @@ export class ScannerPage implements OnInit {
   isDarkMode: boolean;
   private colorSchemeListener: () => void;
   loodLocatieNumber: any;
+  userData: any;
+  showMenu: boolean = false;
 
   constructor(
     private barcodeScanner: BarcodeScanner,
@@ -30,7 +34,8 @@ export class ScannerPage implements OnInit {
     private http: HttpClient,
     private storage: Storage,
     private toastController: ToastController,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private locationService:LocationService
   ) {
     this.platform.backButton.subscribeWithPriority(666666, () => {
       if (this.router.url === "/scanner") {
@@ -43,6 +48,12 @@ export class ScannerPage implements OnInit {
 
   ngOnInit() {
     this.getStatus();
+
+    //subscribe to change in user location
+    this.locationService.getUserLocation().subscribe(location =>{
+      //display menu's based on user's location
+      this.showMenu = (location === 'usa');
+    })
   }
 
   async showToast(message: string, color: string) {
@@ -60,9 +71,9 @@ export class ScannerPage implements OnInit {
       const response = await this.http
         .get("https://ssl.app.sr/api/get-status")
         .toPromise();
-      console.log(response);
+    //  console.log(response);
       const sth = response;
-      console.log(sth, "this is the response with sth");
+    //  console.log(sth, "this is the response with sth");
       // console.log(response.pallet_data.pakket_id,)
     } catch (error) {
       console.log(error);
@@ -75,11 +86,11 @@ export class ScannerPage implements OnInit {
   }
 
   async scan() {
-    console.log("scan called");
+  //  console.log("scan called");
     const storedStatus = localStorage.getItem("selectedStatus");
     const currentStatus = storedStatus ? JSON.parse(storedStatus) : null;
 
-    console.log("currentStatus from storage:", currentStatus);
+   // console.log("currentStatus from storage:", currentStatus);
     this.status = currentStatus;
 
     if (!currentStatus) {
@@ -96,10 +107,10 @@ export class ScannerPage implements OnInit {
 
       try {
         const barcodeData = await this.barcodeScanner.scan(options);
-        console.log("This barcode data:", barcodeData);
+    //    console.log("This barcode data:", barcodeData);
         this.postBarcodeData(barcodeData.text);
       } catch (err) {
-        console.log("Error", err);
+   //     console.log("Error", err);
       }
     }
   }
@@ -110,12 +121,12 @@ export class ScannerPage implements OnInit {
     const sth: string | null = await this.storage.get("scan_resp");
     const sthElse: string | null = await this.storage.get("scan_resp2");
 
-    console.log("the data in storage is: ", sth);
-    console.log("the data in storage is: ", sthElse);
+  //  console.log("the data in storage is: ", sth);
+  //  console.log("the data in storage is: ", sthElse);
 
     this.storage.get("status").then(async (response) => {
-      console.log(sth, "check this response");
-      console.log(sthElse, "check this response too");
+    //  console.log(sth, "check this response");
+    //  console.log(sthElse, "check this response too");
 
       // Create a payload with the pakket_id and lood_locatie_number
       const payload = {
@@ -124,7 +135,7 @@ export class ScannerPage implements OnInit {
         lood_locatie_number: loodLocatieNumber,
       };
 
-      console.log("what's in the payload: ", payload);
+    //  console.log("what's in the payload: ", payload);
 
       try {
         const updateResponse: any = await this.http
@@ -136,7 +147,7 @@ export class ScannerPage implements OnInit {
         // Update the storage with the modified response object
         this.storage.set("status", response);
 
-        console.log("Lood locatie number updated successfully");
+    //    console.log("Lood locatie number updated successfully");
 
         // Show a success toast message
         this.showToast("Lood locatie number updated successfully", "success");
@@ -218,7 +229,7 @@ export class ScannerPage implements OnInit {
           handler: (data) => {
             const loodLocatieNumber = data.loodLocatieNumber;
             // Handle the entered number (e.g., save it or perform further actions)
-            console.log("Entered Lood Locatie Number:", loodLocatieNumber);
+        //    console.log("Entered Lood Locatie Number:", loodLocatieNumber);
 
             // Now you can save the loodLocatieNumber using your onsaveLoodlocatienumber function
             this.onsaveLoodlocatienumber(loodLocatieNumber);
@@ -249,15 +260,12 @@ export class ScannerPage implements OnInit {
 
         // Make the HTTP POST request with the requestBody
         const response: any = await this.http
-          .post(
-            "https://ssl.app.sr/api/barcode-update-status",
-            requestBody
-          )
+          .post("https://ssl.app.sr/api/barcode-update-status", requestBody)
           .toPromise();
 
-        console.log("Response:", response);
+      //  console.log("Response:", response);
 
-        console.log("the package was updated from", locatie);
+       // console.log("the package was updated from", locatie);
 
         if (response && response.message) {
           this.storage.set("scan_resp", response.pakket_id);
@@ -291,11 +299,11 @@ export class ScannerPage implements OnInit {
       }
     } catch (error) {
       this.sameStatusAlert(error);
-      console.log("Error: ", error);
+     // console.log("Error: ", error);
 
       if (error instanceof HttpErrorResponse) {
-        console.log("Error status:", error.status);
-        console.log("Error body:", error.error);
+       // console.log("Error status:", error.status);
+       // console.log("Error body:", error.error);
 
         if (error.error && error.error.message) {
           const errorMessage = error.error.message;
@@ -423,6 +431,14 @@ export class ScannerPage implements OnInit {
 
   settings() {
     this.router.navigateByUrl("/settings");
+  }
+
+  settingsusa(){
+    this.router.navigateByUrl("/settingsusa");
+  }
+
+  usaPaketten(){
+    this.router.navigateByUrl("/usapackages");
   }
 
   async exitAlert() {

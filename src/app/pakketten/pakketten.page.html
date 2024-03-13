@@ -23,14 +23,11 @@
   </ion-toolbar>
 
   <ion-searchbar
-  class="custom-searchbar"
-  [(ngModel)]="input"
-  (ionClear)="clearSearch()"
-
-  (keydown)="onKeyDown($event)"
-></ion-searchbar>
-
-
+    class="custom-searchbar"
+    [(ngModel)]="input"
+    (ionClear)="clearSearch()"
+    (keydown)="onKeyDown($event)"
+  ></ion-searchbar>
 </ion-header>
 
 <ion-content>
@@ -41,89 +38,107 @@
       (click)="toggleCardExpansion(pakket.pakket_id)"
       [ngClass]="{'expanded': expandedCardId === pakket.pakket_id}"
     >
-      <div class="data-table">
-        <ion-card-header>
-          <ion-card-title class="card-title"
-            >{{ pakket?.pakket_id }}</ion-card-title
-          >
-          <ion-card-title class="status-value"
-            >{{ pakket?.status_name }}</ion-card-title
-          >
-          <ion-card-title class="lood-value" *ngIf="pakket?.number"
-            >{{ pakket?.number }}</ion-card-title
-          >
-          <ion-card-title class="volume-value"
-            >{{pakket?.volume}}kg</ion-card-title
-          >
-        </ion-card-header>
-        <ion-card-content *ngIf="expandedCardId === pakket.pakket_id">
-          <ion-row class="label-value-row">
-            <ion-col size="4">
-              <div class="data-label">Afzender</div>
-            </ion-col>
-            <ion-col size="8" class="data-value verzender">
-              {{ pakket?.verzender }}
-            </ion-col>
-          </ion-row>
-          <ion-row class="label-value-row">
-            <ion-col size="4">
-              <div class="data-label">Ontvanger</div>
-            </ion-col>
-            <ion-col size="8" class="data-value ontvanger">
-              {{ pakket?.ontvanger }}
-            </ion-col>
-          </ion-row>
-          <ion-row class="label-value-row">
-            <ion-col size="4">
-              <div class="data-label">Adres</div>
-            </ion-col>
-            <ion-col size="8" class="data-value bestemming">
-              {{ pakket?.bestemming }}
-            </ion-col>
-          </ion-row>
-        </ion-card-content>
+      <ion-card-header>
+        <ion-card-title class="card-title"
+          >{{ pakket.pakket_id }}</ion-card-title
+        >
 
-        <ion-row class="card-buttons">
-          <ion-col>
-            <ion-button
-              class="aanpassen-btn"
-              fill="clear"
-              (click)="showConfirmationDialog(pakket.id, pakket.status_id)"
-            >
-              <ion-icon name="sync" style="margin-right: 4px"></ion-icon> Status
-              Aanpassen
-            </ion-button>
+        <ion-card-title class="status-value"
+          >{{ pakket?.status_name }}</ion-card-title
+        >
+        <ion-card-subtitle>{{ pakket.number }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content *ngIf="expandedCardId === pakket.pakket_id">
+        <ion-row class="label-value-row">
+          <ion-col size="4">
+            <div class="data-label">Afzender</div>
+          </ion-col>
+          <ion-col size="8" class="data-value verzender">
+            {{ pakket?.verzender }}
           </ion-col>
         </ion-row>
-      </div>
+        <ion-row class="label-value-row">
+          <ion-col size="4">
+            <div class="data-label">Ontvanger</div>
+          </ion-col>
+          <ion-col size="8" class="data-value verzender">
+            {{ pakket?.ontvanger }}
+          </ion-col>
+        </ion-row>
+        <ion-row class="label-value-row">
+          <ion-col size="4">
+            <div class="data-label">Adres</div>
+          </ion-col>
+          <ion-col size="8" class="data-value verzender">
+            {{ pakket?.bestemming }}
+          </ion-col>
+        </ion-row>
+        <ion-row class="label-value-row">
+          <ion-col size="4">
+            <div class="data-label">Volume</div>
+          </ion-col>
+          <ion-col size="8" class="data-value verzender">
+            {{ pakket?.volume }}
+          </ion-col>
+        </ion-row>
+      </ion-card-content>
+
+      <ion-row class="card-buttons">
+        <ion-col>
+          <ion-button
+            class="aanpassen-btn"
+            fill="clear"
+            (click)="showConfirmationDialog(pakket.id, pakket.status_id)"
+          >
+            <ion-icon name="sync" style="margin-right: 4px"></ion-icon>
+            <span style="text-transform: capitalize">Status aanpassen</span>
+          </ion-button>
+        </ion-col>
+        <ion-col class="ion-text-right" style="padding-right: 30px">
+          <ion-button
+            *ngIf="pakket?.number"
+            fill="clear"
+            (click)="openEditNumberModal(pakket, pakket.pakket_id)"
+            style="
+              color: inherit;
+              --background: transparent;
+              --border-radius: 0;
+              --border-color: transparent;
+            "
+          >
+            <ion-icon
+              name="create-outline"
+              style="margin-right: 4px"
+            ></ion-icon>
+            <span style="text-transform: capitalize" *ngIf="pakket?.number"
+              >Edit</span
+            >
+          </ion-button>
+        </ion-col>
+      </ion-row>
     </ion-card>
   </ion-list>
   <!-- Display no matching packages section -->
-<div *ngIf="noMatchingPackages" class="no-matching-packages-container">
+  <div *ngIf="noMatchingPackages" class="no-matching-packages-container">
+    <!-- Image -->
+    <img src="../../assets/bg.png" alt="No matching packages image" />
 
-  <!-- Image -->
-  <img src="../../assets/bg.png" alt="No matching packages image" />
+    <!-- Big bold text -->
+    <p class="big-bold-text">Pakket niet gevonden</p>
 
-  <!-- Big bold text -->
-  <p class="big-bold-text">
-    Pakket niet gevonden
-  </p>
+    <!-- Small descriptive text -->
+    <p class="small-descriptive-text">
+      Het pakket dat u zoekt is niet te vinden in het systeem.
+    </p>
 
-  <!-- Small descriptive text -->
-  <p class="small-descriptive-text">
-    Het pakket dat u zoekt is niet te vinden in het systeem.
-  </p>
-
-  <!-- Button -->
-  <ion-row style="justify-content: center"*ngIf="isAankomstInSR()">
-    <ion-col size="12" class="ion-text-center">
-      <ion-button (click)="addNewPackage()" class="custom-button">
-        Voeg pakket toe
-        <ion-icon name="add-outline"></ion-icon>
-      </ion-button>
-    </ion-col>
-  </ion-row>
-</div>
-
-
+    <!-- Button -->
+    <ion-row style="justify-content: center" *ngIf="isAankomstInSR()">
+      <ion-col size="12" class="ion-text-center">
+        <ion-button (click)="addNewPackage()" class="custom-button">
+          Voeg pakket toe
+          <ion-icon name="add-outline"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
 </ion-content>

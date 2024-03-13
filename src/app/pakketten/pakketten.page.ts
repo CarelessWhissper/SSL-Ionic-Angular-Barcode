@@ -14,6 +14,9 @@ import { NewPackageModalComponent } from "./new-package-modal/new-package-modal.
 import { debounceTime } from "rxjs/operators";
 import { Subject } from "rxjs";
 
+import { EditnumberComponent } from "../editnumber/editnumber.component";
+import { NavController } from "@ionic/angular";
+
 @Component({
   selector: "app-pakketten",
   templateUrl: "./pakketten.page.html",
@@ -22,9 +25,14 @@ import { Subject } from "rxjs";
 export class PakkettenPage implements OnInit {
   pakketten: any[];
   input: string;
+  pakket_id: string;
   filteredPakketten: any[];
   noMatchingPackages = false;
   expandedCardId: string | null = null;
+
+  isEditingNumber: boolean = false;
+  editedNumber: string = "";
+  pakket: any;
 
   constructor(
     public http: HttpClient,
@@ -33,7 +41,8 @@ export class PakkettenPage implements OnInit {
     private popoverController: PopoverController,
     private storage: Storage,
     private cdr: ChangeDetectorRef,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private navController: NavController
   ) {}
 
   async ngOnInit() {
@@ -52,14 +61,13 @@ export class PakkettenPage implements OnInit {
   private searchInputSubject = new Subject<string>();
 
   loadingData: boolean = false;
- 
+
   onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       clearTimeout(this.typingTimer); // Clear the previous timer
       this.searchInputSubject.next(this.input); // Trigger the search immediately
     }
   }
-  
 
   async loadData() {
     this.loadingData = true;
@@ -70,7 +78,7 @@ export class PakkettenPage implements OnInit {
 
     try {
       const location = await this.getLocation();
-      let apiUrl;
+      let apiUrl: string;
 
       switch (location.toLowerCase()) {
         case "amsterdam":
@@ -85,8 +93,11 @@ export class PakkettenPage implements OnInit {
         case "utrecht":
           apiUrl = "https://ssl.app.sr/api/Utrecht";
           break;
+        case "usa":
+          apiUrl = "https://ssl.app.sr/api/usa";
+          break;
         default:
-          apiUrl = "https://ssl.app.sr/api/packages"; // Default URL for "suriname" and "nederland"
+          apiUrl = "https://ssl.app.sr/tester_app/api/packages"; // Default URL for "suriname" and "nederland"
           break;
       }
 
@@ -121,7 +132,7 @@ export class PakkettenPage implements OnInit {
   }
 
   // Handle the search input change event
- 
+
   // Filter packages based on the search input using the API
 
   private typingTimer: any;
@@ -131,32 +142,34 @@ export class PakkettenPage implements OnInit {
       // Data is still loading, do not perform search
       return;
     }
-  
+
     console.log("Filtering packages...");
     this.loadingData = true;
-  
+
     const startTime = new Date().getTime();
     const loading = await this.loadingController.create({
       message: "Zoeken...",
     });
-  
+
     // Show loading indicator immediately
     loading.present();
-  
+
     try {
       const input = searchInput ? searchInput.trim() : ""; // Trim if not empty
       const params = { search: input };
-  
+
       console.log("Filtering with params:", params);
-  
+
       // Use asynchronous API request only if the searchInput is not empty
       const response = input
-        ? await this.http.get<any[]>("https://ssl.app.sr/api/display", { params }).toPromise()
+        ? await this.http
+            .get<any[]>("https://ssl.app.sr/tester_app/api/display", { params })
+            .toPromise()
         : [];
-  
+
       console.log("Search input:", searchInput);
       console.log("Filtered packages:", response);
-  
+
       // Update the filteredPakketten array with the updated response from the API
       this.filteredPakketten = response.map((item) => ({
         id: item.id,
@@ -173,9 +186,9 @@ export class PakkettenPage implements OnInit {
         locatie: item.locatie,
         number: item.number,
       }));
-  
+
       console.log(this.filteredPakketten, "the pakketten");
-  
+
       this.noMatchingPackages = this.filteredPakketten.length === 0; // Update the flag based on the search result
       this.loadingData = false;
     } catch (error) {
@@ -188,8 +201,7 @@ export class PakkettenPage implements OnInit {
       console.log(`Time taken to load data: ${elapsedTime} milliseconds`);
     }
   }
-  
-  
+
   async doChangeStatus(paketId: string, status_id: number): Promise<boolean> {
     console.log(
       "doChangeStatus called with paketId:",
@@ -294,15 +306,12 @@ export class PakkettenPage implements OnInit {
   //   await alert.present();
   // }
 
-
-
-
   async showConfirmationDialog(id: string, status: number) {
     console.log(
-        "showConfirmationDialog called with id:",
-        id,
-        "and status_id:",
-        status
+      "showConfirmationDialog called with id:",
+      id,
+      "and status_id:",
+      status
     );
 
     // Get the corresponding pakket from the data source (this.filteredPakketten) using id
@@ -315,10 +324,12 @@ export class PakkettenPage implements OnInit {
 
     // Retrieve the selected status from local storage
     const selectedStatus = JSON.parse(localStorage.getItem("selectedStatus"));
-    const selectedStatusId = selectedStatus ? parseInt(selectedStatus.id, 10) : 0; // Parse to integer
+    const selectedStatusId = selectedStatus
+      ? parseInt(selectedStatus.id, 10)
+      : 0; // Parse to integer
     const selectedStatusName = selectedStatus
-        ? selectedStatus.name
-        : "Unknown Status";
+      ? selectedStatus.name
+      : "Unknown Status";
 
     console.log("what is the selected status really: ", selectedStatus);
     console.log("what is the selected statusId really: ", selectedStatusId);
@@ -326,29 +337,31 @@ export class PakkettenPage implements OnInit {
     console.log("selectedStatusId:", selectedStatusId); // New debug statement
 
     const alert = await this.alertController.create({
-        header: `Wilt u de status "${currentStatusName}" wijzigen van het pakket ${pakket_id} naar de status "${selectedStatusName}"?`,
-        buttons: [
-            {
-                text: "Ja",
-                handler: () => {
-                    console.log(status);
-                    if (selectedStatusId == 10) {
-                        // Show pallet nummer input
-                        this.showPalletInput(id, selectedStatusId);
-                    } else if (selectedStatusId === 11) {
-                        // Lood locatie input
-                        console.log("status is 11");
-                        this.showLoodLocatieInput(id, selectedStatusId);
-                    } else {
-                        this.doChangeStatus(id, selectedStatusId);
-                    }
-                },
-            },
-            {
-                text: "Nee",
-                role: "cancel",
-            },
-        ],
+      header: `Bevestiging`,
+      message: `Wilt u de status van pakket ${pakket_id} wijzigen van "${currentStatusName}" naar "${selectedStatusName}"?
+      `,
+      buttons: [
+        {
+          text: "Nee",
+          role: "cancel",
+        },
+        {
+          text: "Ja",
+          handler: () => {
+            console.log(status);
+            if (selectedStatusId == 10) {
+              // Show pallet nummer input
+              this.showPalletInput(id, selectedStatusId);
+            } else if (selectedStatusId === 11) {
+              // Lood locatie input
+              console.log("status is 11");
+              this.showLoodLocatieInput(id, selectedStatusId);
+            } else {
+              this.doChangeStatus(id, selectedStatusId);
+            }
+          },
+        },
+      ],
     });
 
     console.log("the selected package is: ", pakket_id);
@@ -357,11 +370,11 @@ export class PakkettenPage implements OnInit {
     localStorage.setItem("selected_paket", pakket_id);
 
     try {
-        await alert.present(); // Attempt to present the alert dialog
+      await alert.present(); // Attempt to present the alert dialog
     } catch (error) {
-        console.error('Error presenting alert:', error); // Handle error if alert presentation fails
+      console.error("Error presenting alert:", error); // Handle error if alert presentation fails
     }
-}
+  }
 
   async showPalletInput(id: string, status_id: number) {
     const alert = await this.alertController.create({
@@ -426,37 +439,36 @@ export class PakkettenPage implements OnInit {
 
   async showLoodLocatieInput(id: string, status_id: number) {
     try {
-        const alert = await this.alertController.create({
-            header: "Voer lood locatie nummer in",
-            inputs: [
-                {
-                    name: "loodLocatie",
-                    type: "text",
-                    placeholder: "",
-                },
-            ],
-            buttons: [
-                {
-                    text: "OK",
-                    handler: (data) => {
-                        const loodLocatie = data.loodLocatie;
-                        this.doChangeStatusWithLoodLocatie(loodLocatie);
-                    },
-                },
-                {
-                    text: "Cancel",
-                    role: "cancel",
-                },
-            ],
-        });
+      const alert = await this.alertController.create({
+        header: "Voer lood locatie nummer in",
+        inputs: [
+          {
+            name: "loodLocatie",
+            type: "text",
+            placeholder: "",
+          },
+        ],
+        buttons: [
+          {
+            text: "OK",
+            handler: (data) => {
+              const loodLocatie = data.loodLocatie;
+              this.doChangeStatusWithLoodLocatie(loodLocatie);
+            },
+          },
+          {
+            text: "Cancel",
+            role: "cancel",
+          },
+        ],
+      });
 
-        console.log("Showing lood locatie input dialog...");
-        await alert.present();
+      console.log("Showing lood locatie input dialog...");
+      await alert.present();
     } catch (error) {
-        console.error("Error while showing lood locatie input dialog:", error);
+      console.error("Error while showing lood locatie input dialog:", error);
     }
-}
-
+  }
 
   async doChangeStatusWithLoodLocatie(loodLocatie: String) {
     const apiURL = "https://ssl.app.sr/api/save-aankomst2";
@@ -632,7 +644,7 @@ export class PakkettenPage implements OnInit {
     const selectedStatus = localStorage.getItem("selectedStatus");
     if (selectedStatus) {
       const parsedStatus = JSON.parse(selectedStatus);
-      console.log("hehexD",selectedStatus);
+      console.log("hehexD", selectedStatus);
       return parsedStatus.name === "Aankomst in SR";
     }
     return false; // Default to false if selectedStatus is not found or cannot be parsed
@@ -680,7 +692,26 @@ export class PakkettenPage implements OnInit {
   }
 
   clearSearch() {
-    this.input = ''; // Clear the search input
+    this.input = ""; // Clear the search input
     this.loadData();
+  }
+
+  async openEditNumberModal(pakket: any) {
+    const modal = await this.modalController.create({
+      component: EditnumberComponent, // Adjust the component name accordingly
+      componentProps: {
+        number: pakket.number, // Pass the current number to the modal
+        pakket_id: pakket.pakket_id,
+        navController: this.navController,
+      },
+    });
+
+    modal.onDidDismiss().then((data) => {
+      if (data && data.data && data.data.updatedNumber) {
+        pakket.number = data.data.updatedNumber; // Update the number if it was changed in the modal
+      }
+    });
+
+    return await modal.present();
   }
 }

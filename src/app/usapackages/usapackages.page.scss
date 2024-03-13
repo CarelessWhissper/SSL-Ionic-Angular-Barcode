@@ -1,0 +1,45 @@
+/* styles.css or styles.scss */
+
+.custom-card {
+  margin: 10px;
+  padding: 15px;
+  border-radius: 10px;
+ 
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+}
+
+.custom-card .card-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.custom-card .card-subtitle {
+  font-size: 14px;
+  color: #888;
+}
+
+.custom-card .status-value {
+  font-size: 12px;
+  color: #007bff; /* Change color based on your design */
+}
+.data-label{
+  font-style: normal!important;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px; /* Adjust margin as needed */
+}
+
+.button-container ion-button {
+  --background: #007bff; /* Change background color */
+  --color: #ffffff; /* Change text color */
+  --border-radius: 10px; /* Adjust border radius */
+  --padding-start: 10px; /* Adjust padding */
+  --padding-end: 10px; /* Adjust padding */
+}
+
+.button-container ion-button:hover {
+  --background: #0056b3; /* Change background color on hover */
+}

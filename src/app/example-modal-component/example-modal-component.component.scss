@@ -1,0 +1,52 @@
+/* Custom CSS for Ion Label */
+ion-label {
+  font-weight: bold;
+  color: #222;
+  font-size: 18px;
+}
+
+/* Custom CSS for Ion Input */
+ion-input {
+  border-radius: 6px;
+ 
+  padding: 12px;
+}
+
+/* Custom CSS for Save Button */
+.save-button {
+  margin-top: 20px;
+  --border-radius: 8px;
+  --background: #ff5722;
+  --color: #fff;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+}
+
+
+.custom-label {
+  text-align: center !important;
+  font-size: 12px; 
+}
+
+/* Custom styles for the dropdown list */
+.custom-dropdown {
+  
+  border-radius: 5px; /* Add some border radius for rounded corners */
+  max-height: 200px; /* Set a maximum height for scrolling */
+  overflow-y: auto; /* Enable vertical scrolling if needed */
+}
+
+/* Custom styles for the dropdown list items */
+.custom-dropdown ion-item {
+  padding: 10px; /* Add padding to the items */
+}
+
+/* Custom hover effect for dropdown items */
+.custom-dropdown ion-item:hover {
+  background-color: #f0f0f0; /* Change background color on hover */
+}
+
+/* Custom styles for the dropdown list items when selected */
+.custom-dropdown ion-item.selected {
+  background-color: #e0e0e0; /* Change background color when selected */
+}

@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title style="padding-top: 10px">Edit Loodlocatie nummer</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  
+  <ion-list>
+    <ion-title class="ion-text-center">Pakket information</ion-title>
+
+    <ion-item>
+      <ion-input
+        type="text"
+        [(ngModel)]="pakket_id"
+        placeholder="#1234"
+        disabled
+      >
+        <ion-label style="padding-left: 16px">Pakket ID:</ion-label>
+      </ion-input>
+    </ion-item>
+
+
+    <ion-item style="padding-top: 5px">
+      <ion-input type="text" [(ngModel)]="number">
+        <ion-label style="padding-left: 16px">Loodlocatie:</ion-label>
+      </ion-input>
+    </ion-item>
+  </ion-list>
+
+  <ion-button
+    class="save-button"
+    size="small"
+    expand="block"
+    (click)="saveData()"
+    >Save</ion-button
+  >
+</ion-content>

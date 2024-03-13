@@ -27,6 +27,16 @@ const routes: Routes = [
     path: 'settings',
     loadChildren: () => import('./settings/settings.module').then(m => m.SettingsPageModule),
   },
+  {
+    path: 'usapackages',
+    loadChildren: () => import('./usapackages/usapackages.module').then( m => m.UsapackagesPageModule)
+  },
+  {
+    path: 'settingsusa',
+    loadChildren: () => import('./settingsusa/settingsusa.module').then( m => m.SettingsusaPageModule)
+  },
+
+  
 ];
 
 @NgModule({

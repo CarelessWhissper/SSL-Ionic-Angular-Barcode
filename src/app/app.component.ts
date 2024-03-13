@@ -70,7 +70,11 @@ export class AppComponent implements OnInit {
       "currentStatus",
       "palletNumber",
       "loodLocatieNumber",
+      'login'
+     
     ];
+
+    
 
     itemsToRemove.forEach((item) => {
       localStorage.removeItem(item);

@@ -1,5 +1,5 @@
 $dark-theme-background-color: #15202b;
-$dark-theme-text-color: #faf9f6;
+$dark-theme-text-color: #F8F4EA;
 
 :root {
   /*
@@ -274,10 +274,23 @@ body[color-theme="dark"] .custom-searchbar {
   color: #d9edf7 !important;
 }
 
+body[color-theme="light"] .toolbarUSA {
+  --ion-background-color: #BBE2EC;
+  
+}
+
+body[color-theme="light"] .save-button {
+ background-color: #BBE2EC;
+  
+}
+
+
+
 body[color-theme="light"] .custom-searchbar {
   color: black !important;
   background: #F5F5F5 !important;
 }
+
 
 body[color-theme="dark"] .logo-home {
   background-image: url("https://s.hs-data.com/bilder/spieler/gross/13029.jpg");
@@ -353,7 +366,22 @@ body[color-theme=""] .logo-img2 {
   font-size: 17.5px; /* You can adjust the font size to your preference */
 }
 
-.data-label, .data-value {
+ .data-value {
   /* Optionally, you can style the label and value separately */
   font-weight: bold; /* Example: bold for labels */
+}
+
+.data-label{
+  font-weight: normal;
+}
+
+
+.native-input.sc-ion-input-md {
+  padding-left: unset;
+  padding-right: unset;
+  -webkit-padding-start: var(--padding-start);
+  padding-inline-start: var(--padding-start);
+  -webkit-padding-end: var(--padding-end);
+  padding-inline-end: var(--padding-end);
+  padding-left: 16px;
 }
