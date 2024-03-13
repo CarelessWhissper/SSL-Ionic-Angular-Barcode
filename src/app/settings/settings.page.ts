@@ -63,16 +63,19 @@ export class SettingsPage implements OnInit {
   ) {
     this.currentId = null;
 
-    this.storage.get("mode").then((mode) => {
-      if (mode) {
-        document.body.setAttribute("color-theme", "dark");
-      } else {
-        document.body.setAttribute("color-theme", "light");
-      }
-      this.mode = mode;
-    }).catch((error) => {
-      console.error("Error retrieving mode from storage:", error);
-    });
+    this.storage
+      .get("mode")
+      .then((mode) => {
+        if (mode) {
+          document.body.setAttribute("color-theme", "dark");
+        } else {
+          document.body.setAttribute("color-theme", "light");
+        }
+        this.mode = mode;
+      })
+      .catch((error) => {
+        console.error("Error retrieving mode from storage:", error);
+      });
 
     const storedStatusString = localStorage.getItem("selectedStatus");
     if (storedStatusString) {
@@ -90,6 +93,7 @@ export class SettingsPage implements OnInit {
           this.email = data.email;
           this.role = data.role;
           this.locatie = data.locatie;
+          console.log("Location obtained:", this.locatie); // Add this log
         } else {
           // Handle missing data
           console.log("no data found");
@@ -100,9 +104,6 @@ export class SettingsPage implements OnInit {
         // Handle the error, e.g., show an error message to the user
       }
     );
-
-    // Call the function to filter the status list based on the user's location
-    this.filterStatusList();
 
     this.storage.get("status").then((response) => {
       if (response && response.status) {
@@ -139,35 +140,55 @@ export class SettingsPage implements OnInit {
     // Get the current status from the query parameter or browser storage
     this.activatedRoute.queryParams.subscribe((params) => {
       const statusId = params["statusId"];
-      const storedStatus = localStorage.getItem("selectedStatus");
+      const storedStatusString = localStorage.getItem("selectedStatus");
+      let storedStatus;
 
+      if (storedStatusString) {
+        storedStatus = JSON.parse(storedStatusString);
+      }
+
+      console.log("Status ID from query parameter:", statusId);
+      console.log("Stored status from localStorage:", storedStatus);
+
+      // Check if statusId is undefined and storedStatus is null or empty
+      if (statusId !== undefined && !storedStatus) {
+        // Create a new status object from the query parameter and set it in local storage
+        const newStatus = { id: statusId, name: "Unknown" }; // You may want to set a default name
+        localStorage.setItem("selectedStatus", JSON.stringify(newStatus));
+        storedStatus = JSON.stringify(newStatus); // Update the storedStatus variable
+      }
+
+      // Check if statusId is present and retrieve the corresponding status
       if (statusId) {
         const selectedStatus = this.statusList.find(
           (status) => status.id === +statusId
         );
         if (selectedStatus) {
-          this.currentStatus = selectedStatus;
-          this.selectedStatusId = selectedStatus.id;
-
-          localStorage.setItem(
-            "selectedStatus",
-            JSON.stringify(this.currentStatus)
-          );
-          localStorage.setItem(
-            "currentStatus",
-            JSON.stringify(this.currentStatus)
-          );
-          console.log("The status has been saved:", this.currentStatus);
+          // Update currentStatus if it's different from selectedStatus
+          if (
+            !this.currentStatus ||
+            this.currentStatus.id !== selectedStatus.id
+          ) {
+            this.currentStatus = selectedStatus;
+            localStorage.setItem(
+              "selectedStatus",
+              JSON.stringify(this.currentStatus)
+            );
+            console.log(
+              "Current status updated from query parameter:",
+              this.currentStatus
+            );
+          }
         }
       } else if (storedStatus) {
-        this.currentStatus = JSON.parse(storedStatus);
-        this.selectedStatusId = this.currentStatus
-          ? this.currentStatus.id
-          : null;
-        console.log(
-          "The status has been retrieved from browser storage:",
-          this.currentStatus
-        );
+        // Update currentStatus if it's different from storedStatus
+        if (!this.currentStatus || this.currentStatus.id !== storedStatus.id) {
+          this.currentStatus = storedStatus;
+          console.log(
+            "Current status updated from localStorage:",
+            this.currentStatus
+          );
+        }
       }
 
       // Retrieve the stored pallet number from browser storage
@@ -201,7 +222,7 @@ export class SettingsPage implements OnInit {
       if (
         this.currentStatus &&
         (this.currentStatus.id === 11 ||
-          this.currentStatus.name === "Aankomst-NL")
+          this.currentStatus.name === "Aankomst in SR")
       ) {
         this.showLoodFields = true;
       } else {
@@ -210,6 +231,9 @@ export class SettingsPage implements OnInit {
     });
 
     this.loadPalletNumberFromStorage();
+
+    // // Call the function to filter the status list based on the user's location
+    this.filterStatusList();
   }
 
   loadPalletNumberFromStorage() {
@@ -227,110 +251,108 @@ export class SettingsPage implements OnInit {
   }
 
   filterStatusList() {
-    // Make API call to retrieve status list
-    this.http
-      .get<any>("https://ssl.app.sr/api/get-status")
-      .subscribe((data) => {
-        // Filter the status list based on the user's location
+    console.log("Making HTTP request to retrieve status list...");
+    this.http.get<any>("https://ssl.app.sr/api/get-status").subscribe(
+      (data) => {
+        console.log("Received data:", data);
+        // Clear the status list
+        this.statusList = [];
+
+        // Filter status list based on location
         if (this.locatie === "surinamehoofd") {
-          this.statusList = data.status.filter((status) =>
-            [1, 2, 3, 11].includes(status.id)
+          // Filter statuses for Surinamehoofd
+          this.statusList = data.status.filter((status: any) =>
+            [1, 2, 3, 11].includes(+status.id)
           );
         } else if (
-          this.locatie === "nederland" ||
-          this.locatie === "amsterdam" ||
-          this.locatie === "rotterdam" ||
-          this.locatie === "denhaag" ||
-          this.locatie === "utrecht"
+          [
+            "nederland",
+            "amsterdam",
+            "rotterdam",
+            "denhaag",
+            "utrecht",
+          ].includes(this.locatie)
         ) {
+          // Filter statuses for Dutch cities
           const customOrder = [9, 10, 4];
           this.statusList = data.status.filter((status: { id: number }) =>
-            customOrder.includes(status.id)
+            customOrder.includes(+status.id)
           );
           this.statusList.sort(
-            (a, b) => customOrder.indexOf(a.id) - customOrder.indexOf(b.id)
+            (a, b) => customOrder.indexOf(+a.id) - customOrder.indexOf(+b.id)
           );
         } else {
-          this.statusList = [];
+          console.log("No status data available for the current location.");
         }
-
-        // Update dynamicLoodLocatieNumber with the retrieved value
-        if (data.pallet_data && data.pallet_data.lood_locatie_nummer) {
-          console.log(
-            "Response lood_locatie_nummer:",
-            data.pallet_data.lood_locatie_nummer
-          );
-          this.loodLocatieNumber = data.pallet_data.lood_locatie_nummer;
-          console.log("Updated number is: ", this.loodLocatieNumber);
-
-          // Update the currentStatus object with the updated loodLocatieNumber
-          if (this.currentStatus) {
-            this.currentStatus.loodLocatieNumber = this.loodLocatieNumber;
-          }
-        }
-      });
+        console.log("Filtered status list:", this.statusList);
+      },
+      (error) => {
+        console.error("Error occurred while fetching status data:", error);
+      }
+    );
   }
 
   onChangeStatus() {
+    console.log("Selected Status ID:", this.selectedStatusId); // Log the selected status ID
+    console.log("Status List:", this.statusList); // Log the status list
+
+    // Show/hide Palletiseren fields based on the selected status
     if (this.selectedStatusId === 10) {
-      // Palletiseren status is selected
       this.showPalletiserenFields();
     } else {
-      // Other status is selected
       this.hidePalletiserenFields();
     }
 
-    this.saveButtonClicked = false;
+    // Find the selected status from the status list
     const selectedStatus = this.statusList.find(
       (status) => status.id === this.selectedStatusId
     );
-    this.selectedStatusName = selectedStatus ? selectedStatus.name : "";
 
-    try {
-      if (this.selectedStatusId) {
-        // Save the selected status in component variable
-        this.currentStatus = selectedStatus;
-        console.log("The status has been saved:", this.currentStatus);
+    // Handle the selected status
+    if (selectedStatus) {
+      this.currentStatus = selectedStatus;
+      console.log("The status has been saved:", this.currentStatus);
+      localStorage.setItem(
+        "selectedStatus",
+        JSON.stringify(this.currentStatus)
+      );
 
-        // Update the query parameter with the selected status
-        const queryParams = this.currentStatus
-          ? { statusId: this.currentStatus.id }
-          : {};
-        this.router.navigate([], {
-          queryParams,
-          queryParamsHandling: "merge",
-        });
-
-        if (this.currentStatus.name === "Palletiseren") {
-          console.log("Palletiseren has been selected");
-          this.showFields = true;
-          this.showLoodFields = false;
-          this.currentStatus.palletNumber = this.palletNumber; // Assign the current palletNumber to currentStatus
-        } else if (
-          this.currentStatus &&
-          (this.currentStatus.id === 11 ||
-            this.currentStatus.name === "Aankomst-SR")
-        ) {
-          console.log("Aankomst status with the id of 11 has been selected");
-          this.showLoodFields = true;
-          this.showFields = false;
-        } else {
-          console.log("Neither Palletiseren nor Aankomst has been selected");
-          this.showFields = false;
-          this.showLoodFields = false;
-          this.currentLoodLocatie = this.loodLocatieNumber;
-        }
+      // Handle different statuses
+      if (this.currentStatus.name === "Palletiseren") {
+        console.log("Palletiseren has been selected");
+        this.showFields = true;
+        this.showLoodFields = false;
+        this.currentStatus.palletNumber = this.palletNumber;
+      } else if (
+        this.currentStatus.id === 11 ||
+        this.currentStatus.name === "Aankomst in SR"
+      ) {
+        console.log("Aankomst status with the id of 11 has been selected");
+        this.showLoodFields = true;
+        this.showFields = false;
       } else {
-        // Placeholder option selected, set currentStatus to null
-        this.currentStatus = null;
-        // Hide the palletiseren fields or perform any other necessary actions
-        this.router.navigate([], {
-          queryParams: { statusId: null }, // Update the query parameter to null
-          queryParamsHandling: "merge",
-        });
+        console.log("Neither Palletiseren nor Aankomst has been selected");
+        this.showFields = false;
+        this.showLoodFields = false;
+        this.currentLoodLocatie = this.loodLocatieNumber;
       }
-    } catch (error) {
-      console.error(error);
+
+      // Update the query parameter with the selected status
+      const queryParams = this.currentStatus
+        ? { statusId: this.currentStatus.id }
+        : {};
+      this.router.navigate([], {
+        queryParams,
+        queryParamsHandling: "merge",
+      });
+    } else {
+      // Placeholder option selected, set currentStatus to null
+      this.currentStatus = null;
+      // Hide the palletiseren fields or perform any other necessary actions
+      this.router.navigate([], {
+        queryParams: { statusId: null },
+        queryParamsHandling: "merge",
+      });
     }
   }
 
@@ -384,6 +406,8 @@ export class SettingsPage implements OnInit {
     this.storage.get("status").then((response) => {
       if (response && response.pallet_data && response.pallet_data.pakket_id) {
         const currentId = response.pallet_data.pakket_id;
+
+        console.log("the currentId is for package",currentId);
 
         // Retrieve the user-inputted loodLocatieNumber from the component property
         const loodLocatieNumber = this.loodLocatieNumber;
@@ -462,16 +486,19 @@ export class SettingsPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.storage.get("mode").then((mode) => {
-      if (mode) {
-        document.body.setAttribute("color-theme", "dark");
-      } else {
-        document.body.setAttribute("color-theme", "light");
-      }
-      this.mode = mode;
-    }).catch((error) => {
-      console.error("Error retrieving mode from storage:", error);
-    });
+    this.storage
+      .get("mode")
+      .then((mode) => {
+        if (mode) {
+          document.body.setAttribute("color-theme", "dark");
+        } else {
+          document.body.setAttribute("color-theme", "light");
+        }
+        this.mode = mode;
+      })
+      .catch((error) => {
+        console.error("Error retrieving mode from storage:", error);
+      });
   }
 
   logout() {

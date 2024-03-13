@@ -71,7 +71,7 @@ export class ScannerPage implements OnInit {
 
   async ionViewDidEnter() {
     this.status = localStorage.getItem("currentStatus");
-    console.log("the current status: ", this.status);
+    console.log("the current status for scanning is: ", this.status);
   }
 
   async scan() {
@@ -130,26 +130,19 @@ export class ScannerPage implements OnInit {
         const updateResponse: any = await this.http
           .post(apiURL, payload)
           .toPromise();
-      
+
         console.log("Update request successful:", updateResponse);
-      
-        // if (response.pallet_data) {
-        //   // Modify the response object directly
-        //   response.pallet_data.lood_locatie_nummer = loodLocatieNumber;
-        // } else {
-        //   console.warn("pallet_data is missing in the response.");
-        // }
-      
+
         // Update the storage with the modified response object
         this.storage.set("status", response);
-      
+
         console.log("Lood locatie number updated successfully");
-      
+
         // Show a success toast message
         this.showToast("Lood locatie number updated successfully", "success");
       } catch (error) {
         console.error("Update request failed:", error);
-      
+
         // Show an error toast message for HTTP request failure
         this.showToast("Failed to update lood locatie number", "danger");
       }
@@ -240,48 +233,61 @@ export class ScannerPage implements OnInit {
   async postBarcodeData(data: any) {
     console.log("Data object:", data);
 
-    const barcode = {
-      barcode: data,
-      status: this.status ? this.status.id : null,
-    };
-
-    console.log("Posting barcode data: ", barcode);
-
     try {
-      const response: any = await this.http
-        .post("https://ssl.app.sr/api/barcode-update-status", barcode)
-        .toPromise();
+      // Retrieve locatie from local storage
+      const userData = await this.storage.get("login");
 
-      console.log("response :", response);
+      if (userData && userData.locatie) {
+        const locatie = userData.locatie;
 
-      if (response && response.message) {
-        this.storage.set("scan_resp", response.pakket_id);
-        this.storage.set("scan_resp2", response.id);
+        // Construct the request body
+        const requestBody = {
+          barcode: data,
+          status: this.status ? this.status.id : null,
+          locatie: locatie, // Include locatie in the request body
+        };
 
-        console.log("the package name ", response.pakket_id);
-        console.log("the package id: ", response.id);
+        // Make the HTTP POST request with the requestBody
+        const response: any = await this.http
+          .post(
+            "https://ssl.app.sr/api/barcode-update-status",
+            requestBody
+          )
+          .toPromise();
 
-        //id is undefined here
+        console.log("Response:", response);
 
-        this.alert(response); // Assuming the response is a string or a specific value indicating success
+        console.log("the package was updated from", locatie);
 
-        const toast = await this.toastController.create({
-          message: "Barcode data posted successfully",
-          duration: 7000,
-          color: "success",
-          position: "bottom",
-        });
-        toast.present();
+        if (response && response.message) {
+          this.storage.set("scan_resp", response.pakket_id);
+          this.storage.set("scan_resp2", response.id);
+
+          console.log("The package name ", response.pakket_id);
+          console.log("The package id: ", response.id);
+
+          this.alert(response); // Assuming the response is a string or a specific value indicating success
+
+          const toast = await this.toastController.create({
+            message: "Barcode data posted successfully",
+            duration: 7000,
+            color: "success",
+            position: "bottom",
+          });
+          toast.present();
+        } else {
+          console.log("Invalid response format: ", response);
+
+          const toast = await this.toastController.create({
+            message: "Invalid response format",
+            duration: 7000,
+            color: "danger",
+            position: "bottom",
+          });
+          toast.present();
+        }
       } else {
-        console.log("Invalid response format: ", response);
-
-        const toast = await this.toastController.create({
-          message: "Invalid response format",
-          duration: 7000,
-          color: "danger",
-          position: "bottom",
-        });
-        toast.present();
+        console.log("Locatie not found in local storage");
       }
     } catch (error) {
       this.sameStatusAlert(error);
@@ -314,6 +320,102 @@ export class ScannerPage implements OnInit {
       }
     }
   }
+
+  // async postBarcodeData(data: any) {
+  //   console.log("Data object:", data);
+
+  //   try {
+  //     // Retrieve locatie from local storage
+  //     const userData = await this.storage.get("login");
+
+  //     if (userData && userData.locatie) {
+  //       const locatie = userData.locatie;
+
+  //       // Construct the request body
+  //       const requestBody = {
+  //         barcode: data.barcode,
+  //         status: this.status ? this.status.id : null,
+  //         locatie: locatie, // Include locatie in the request body
+  //       };
+
+  //       // Make the HTTP POST request with the requestBody
+  //       const response: any = await this.http
+  //         .post(
+  //           "https://ssl.app.sr/tester_app/api/barcode-update-status",
+  //           requestBody
+  //         )
+  //         .toPromise();
+
+  //       console.log("Response:", response);
+  //       console.log("the package was updated from", locatie);
+
+  //       // Handle response and display toast messages as needed
+  //       if (response && response.message) {
+  //         // Handle success response
+  //         this.storage.set("scan_resp", response.pakket_id);
+  //         this.storage.set("scan_resp2", response.id);
+
+  //         console.log("The package name ", response.pakket_id);
+  //         console.log("The package id: ", response.id);
+
+  //         this.alert(response); // Assuming the response is a string or a specific value indicating success
+
+  //         const toast = await this.toastController.create({
+  //           message: "Barcode data posted successfully",
+  //           duration: 7000,
+  //           color: "success",
+  //           position: "bottom",
+  //         });
+  //         toast.present();
+
+  //         console.log("this update was triggered hehe xD");
+  //       } else {
+  //         // Handle invalid response format
+  //         console.log("Invalid response format: ", response);
+
+  //         const toast = await this.toastController.create({
+  //           message: "Invalid response format",
+  //           duration: 7000,
+  //           color: "danger",
+  //           position: "bottom",
+  //         });
+  //         toast.present();
+  //       }
+  //     } else {
+  //       console.log("Locatie not found in local storage");
+  //     }
+  //   } catch (error) {
+  //     // Handle errors and display appropriate toast messages
+  //     this.sameStatusAlert(error);
+  //     console.log("Error: ", error);
+
+  //     if (error instanceof HttpErrorResponse) {
+  //       console.log("Error status:", error.status);
+  //       console.log("Error body:", error.error);
+
+  //       if (error.error && error.error.message) {
+  //         const errorMessage = error.error.message;
+  //         // Display the specific error message to the user
+  //         const toast = await this.toastController.create({
+  //           message: errorMessage,
+  //           duration: 7000,
+  //           color: "danger",
+  //           position: "bottom",
+  //         });
+  //         toast.present();
+  //       } else {
+  //         // Display a generic error message
+  //         const toast = await this.toastController.create({
+  //           message: "Error posting barcode data",
+  //           duration: 7000,
+  //           color: "danger",
+  //           position: "bottom",
+  //         });
+  //         toast.present();
+  //       }
+  //     }
+  //   }
+  // }
 
   pakketten() {
     this.router.navigateByUrl("/pakketten");

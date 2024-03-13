@@ -234,12 +234,75 @@ export class PakkettenPage implements OnInit {
     }
   }
 
+  // async showConfirmationDialog(id: string, status: number) {
+  //   console.log(
+  //     "showConfirmationDialog called with id:",
+  //     id,
+  //     "and status_id:",
+  //     status
+  //   );
+
+  //   // Get the corresponding pakket from the data source (this.filteredPakketten) using id
+  //   const pakket = this.filteredPakketten.find((pakket) => pakket.id === id);
+
+  //   // Check if the pakket is found and get the pakket_id
+  //   const pakket_id = pakket ? pakket.pakket_id : null;
+
+  //   const currentStatusName = pakket ? pakket.status_name : "";
+
+  //   // Retrieve the selected status from local storage
+  //   const selectedStatus = JSON.parse(localStorage.getItem("selectedStatus"));
+  //   const selectedStatusId = selectedStatus ? selectedStatus.id : 0;
+  //   const selectedStatusName = selectedStatus
+  //     ? selectedStatus.name
+  //     : "Unknown Status";
+
+  //   console.log("what is the selected status really: ", selectedStatus);
+  //   console.log("what is the selected statusId really: ", selectedStatusId);
+
+  //   const alert = await this.alertController.create({
+  //     header: `Wilt u de status "${currentStatusName}" wijzigen van het pakket ${pakket_id} naar de status "${selectedStatusName}"?`,
+  //     buttons: [
+  //       {
+  //         text: "Ja",
+  //         handler: () => {
+  //           console.log(status);
+  //           if (selectedStatusId == 10) {
+  //             //show pallet nummer input
+  //             this.showPalletInput(id, selectedStatusId);
+  //           } else if (selectedStatusId === 11) {
+  //             //lood locatie input
+  //             console.log("status is 10 btw");
+  //             this.showLoodLocatieInput(id, selectedStatusId);
+  //           } else {
+  //             this.doChangeStatus(id, selectedStatusId);
+  //           }
+  //         },
+  //       },
+  //       {
+  //         text: "Nee",
+  //         role: "cancel",
+  //       },
+  //     ],
+  //   });
+
+  //   console.log("the  selected package is: ", pakket_id);
+  //   console.log("the  selected packageID is: ", id);
+  //   localStorage.setItem("selected_pakket_id", id);
+  //   localStorage.setItem("selected_paket", pakket_id);
+
+  //   await alert.present();
+  // }
+
+
+
+
   async showConfirmationDialog(id: string, status: number) {
     console.log(
-      "showConfirmationDialog called with id:",
-      id,
-      "and status_id:",
-      status
+        "showConfirmationDialog called with id:",
+        id,
+        "and status_id:",
+        status
     );
 
     // Get the corresponding pakket from the data source (this.filteredPakketten) using id
@@ -252,47 +315,54 @@ export class PakkettenPage implements OnInit {
 
     // Retrieve the selected status from local storage
     const selectedStatus = JSON.parse(localStorage.getItem("selectedStatus"));
-    const selectedStatusId = selectedStatus ? selectedStatus.id : 0;
+    const selectedStatusId = selectedStatus ? parseInt(selectedStatus.id, 10) : 0; // Parse to integer
     const selectedStatusName = selectedStatus
-      ? selectedStatus.name
-      : "Unknown Status";
+        ? selectedStatus.name
+        : "Unknown Status";
 
     console.log("what is the selected status really: ", selectedStatus);
     console.log("what is the selected statusId really: ", selectedStatusId);
 
+    console.log("selectedStatusId:", selectedStatusId); // New debug statement
+
     const alert = await this.alertController.create({
-      header: `Wilt u de status "${currentStatusName}" wijzigen van het pakket ${pakket_id} naar de status "${selectedStatusName}"?`,
-      buttons: [
-        {
-          text: "Ja",
-          handler: () => {
-            console.log(status);
-            if (selectedStatusId == 10) {
-              //show pallet nummer input
-              this.showPalletInput(id, selectedStatusId);
-            } else if (selectedStatusId === 11) {
-              //lood locatie input
-              console.log("status is 10 btw");
-              this.showLoodLocatieInput(id, selectedStatusId);
-            } else {
-              this.doChangeStatus(id, selectedStatusId);
-            }
-          },
-        },
-        {
-          text: "Nee",
-          role: "cancel",
-        },
-      ],
+        header: `Wilt u de status "${currentStatusName}" wijzigen van het pakket ${pakket_id} naar de status "${selectedStatusName}"?`,
+        buttons: [
+            {
+                text: "Ja",
+                handler: () => {
+                    console.log(status);
+                    if (selectedStatusId == 10) {
+                        // Show pallet nummer input
+                        this.showPalletInput(id, selectedStatusId);
+                    } else if (selectedStatusId === 11) {
+                        // Lood locatie input
+                        console.log("status is 11");
+                        this.showLoodLocatieInput(id, selectedStatusId);
+                    } else {
+                        this.doChangeStatus(id, selectedStatusId);
+                    }
+                },
+            },
+            {
+                text: "Nee",
+                role: "cancel",
+            },
+        ],
     });
 
-    console.log("the  selected package is: ", pakket_id);
-    console.log("the  selected packageID is: ", id);
+    console.log("the selected package is: ", pakket_id);
+    console.log("the selected packageID is: ", id);
     localStorage.setItem("selected_pakket_id", id);
     localStorage.setItem("selected_paket", pakket_id);
 
-    await alert.present();
-  }
+    try {
+        await alert.present(); // Attempt to present the alert dialog
+    } catch (error) {
+        console.error('Error presenting alert:', error); // Handle error if alert presentation fails
+    }
+}
+
   async showPalletInput(id: string, status_id: number) {
     const alert = await this.alertController.create({
       header: "Voer pallet nummer in",
@@ -355,33 +425,38 @@ export class PakkettenPage implements OnInit {
   }
 
   async showLoodLocatieInput(id: string, status_id: number) {
-    const alert = await this.alertController.create({
-      header: "Voer lood locatie nummer in",
-      inputs: [
-        {
-          name: "loodLocatie",
-          type: "text",
-          placeholder: "",
-        },
-      ],
-      buttons: [
-        {
-          text: "OK",
-          handler: (data) => {
-            // Handle the data. You can make the POST request here.
-            const loodLocatie = data.loodLocatie;
-            this.doChangeStatusWithLoodLocatie(loodLocatie);
-          },
-        },
-        {
-          text: "Cancel",
-          role: "cancel",
-        },
-      ],
-    });
+    try {
+        const alert = await this.alertController.create({
+            header: "Voer lood locatie nummer in",
+            inputs: [
+                {
+                    name: "loodLocatie",
+                    type: "text",
+                    placeholder: "",
+                },
+            ],
+            buttons: [
+                {
+                    text: "OK",
+                    handler: (data) => {
+                        const loodLocatie = data.loodLocatie;
+                        this.doChangeStatusWithLoodLocatie(loodLocatie);
+                    },
+                },
+                {
+                    text: "Cancel",
+                    role: "cancel",
+                },
+            ],
+        });
 
-    await alert.present();
-  }
+        console.log("Showing lood locatie input dialog...");
+        await alert.present();
+    } catch (error) {
+        console.error("Error while showing lood locatie input dialog:", error);
+    }
+}
+
 
   async doChangeStatusWithLoodLocatie(loodLocatie: String) {
     const apiURL = "https://ssl.app.sr/api/save-aankomst2";
@@ -551,6 +626,16 @@ export class PakkettenPage implements OnInit {
       this.expandedCardId = cardId; // Expand the clicked card
     }
     console.log("expandedCardId:", this.expandedCardId);
+  }
+
+  isAankomstInSR(): boolean {
+    const selectedStatus = localStorage.getItem("selectedStatus");
+    if (selectedStatus) {
+      const parsedStatus = JSON.parse(selectedStatus);
+      console.log("hehexD",selectedStatus);
+      return parsedStatus.name === "Aankomst in SR";
+    }
+    return false; // Default to false if selectedStatus is not found or cannot be parsed
   }
 
   async addNewPackage() {

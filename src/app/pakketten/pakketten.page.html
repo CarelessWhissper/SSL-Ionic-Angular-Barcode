@@ -98,19 +98,24 @@
       </div>
     </ion-card>
   </ion-list>
-  <div *ngIf="noMatchingPackages" class="no-matching-packages-container">
-    <p style="display: flex; justify-content: center; font-weight: bold">
-      pakket niet gevonden
-    </p>
+  <!-- Display no matching packages section -->
+<div *ngIf="noMatchingPackages" class="no-matching-packages-container">
 
-    <img src="../../assets/bg.png" alt="No matching packages image" />
-  </div>
-  <!-- Display a button when no matching packages are found -->
-  
-  <ion-row
-    *ngIf="noMatchingPackages && getSelectedStatus()?.id == 11"
-    style="justify-content: center"
-  >
+  <!-- Image -->
+  <img src="../../assets/bg.png" alt="No matching packages image" />
+
+  <!-- Big bold text -->
+  <p class="big-bold-text">
+    Pakket niet gevonden
+  </p>
+
+  <!-- Small descriptive text -->
+  <p class="small-descriptive-text">
+    Het pakket dat u zoekt is niet te vinden in het systeem.
+  </p>
+
+  <!-- Button -->
+  <ion-row style="justify-content: center"*ngIf="isAankomstInSR()">
     <ion-col size="12" class="ion-text-center">
       <ion-button (click)="addNewPackage()" class="custom-button">
         Voeg pakket toe
@@ -118,5 +123,7 @@
       </ion-button>
     </ion-col>
   </ion-row>
+</div>
+
 
 </ion-content>
