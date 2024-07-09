@@ -1,5 +1,5 @@
 $dark-theme-background-color: #15202b;
-$dark-theme-text-color: #F8F4EA;
+$dark-theme-text-color: #f8f4ea;
 
 :root {
   /*
@@ -145,18 +145,12 @@ body[color-theme="dark"].data-label {
   --ion-background-color: #faf9f6;
 }
 body[color-theme="dark"] .data-value {
- color: #faf9f6;
-
-
-}
-
-
-body[color-theme="dark"] .data-label {
-  
   color: #faf9f6;
 }
 
-
+body[color-theme="dark"] .data-label {
+  color: #faf9f6;
+}
 
 body[color-theme="dark"] ion-card:hover {
   --ion-background-color: #22303c;
@@ -172,7 +166,6 @@ body[color-theme="dark"] .view-btn {
 
 body[color-theme="dark"] .aanpassen-btn {
   color: #fefdfc;
-  
 }
 body[color-theme="dark"] .sorting-button {
   color: #faf9f6;
@@ -233,7 +226,6 @@ body[color-theme="dark"] {
   }
 }
 
-
 body[color-theme="dark"] item-item {
   color: $dark-theme-text-color;
 }
@@ -251,6 +243,10 @@ body[color-theme="dark"] ion-content .form {
 
 body[color-theme="dark"] ion-card-subtitle {
   color: $dark-theme-text-color;
+}
+
+body[color-theme="light"] ion-card-subtitle {
+  font-weight: bold;
 }
 body[color-theme="dark"] ion-card.custom-card {
   border-style: solid;
@@ -275,22 +271,26 @@ body[color-theme="dark"] .custom-searchbar {
 }
 
 body[color-theme="light"] .toolbarUSA {
-  --ion-background-color: #BBE2EC;
-  
+  --ion-background-color: #bbe2ec;
 }
 
 body[color-theme="light"] .save-button {
- background-color: #BBE2EC;
-  
+  background-color: #bbe2ec;
 }
 
 
+body[color-theme="light"] .pop {
+  background-color: #fff;
+}
+
+body[color-theme="dark"] .pop {
+  background-color: #15202b;
+}
 
 body[color-theme="light"] .custom-searchbar {
   color: black !important;
-  background: #F5F5F5 !important;
+  background: #f5f5f5 !important;
 }
-
 
 body[color-theme="dark"] .logo-home {
   background-image: url("https://s.hs-data.com/bilder/spieler/gross/13029.jpg");
@@ -361,20 +361,18 @@ body[color-theme=""] .logo-img2 {
   display: none; /* or 'inline' or 'inline-block' based on your layout preference */
 }
 
-
 .data-row {
   font-size: 17.5px; /* You can adjust the font size to your preference */
 }
 
- .data-value {
+.data-value {
   /* Optionally, you can style the label and value separately */
   font-weight: bold; /* Example: bold for labels */
 }
 
-.data-label{
+.data-label {
   font-weight: normal;
 }
-
 
 .native-input.sc-ion-input-md {
   padding-left: unset;

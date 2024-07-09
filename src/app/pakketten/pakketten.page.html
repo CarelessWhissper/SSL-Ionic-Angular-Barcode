@@ -8,7 +8,7 @@
       ></ion-back-button>
     </ion-buttons>
 
-    <ion-title> pakketten </ion-title>
+    <ion-title>{{ pageTitle }}</ion-title>
 
     <ion-buttons slot="primary">
       <ion-button class="sorting-button" (click)="presentSortingOptions()">
@@ -34,88 +34,86 @@
   <ion-list>
     <ion-card
       *ngFor="let pakket of filteredPakketten"
-      class="custom-card data-table-card"
+      class="custom-card"
       (click)="toggleCardExpansion(pakket.pakket_id)"
       [ngClass]="{'expanded': expandedCardId === pakket.pakket_id}"
     >
       <ion-card-header>
-        <ion-card-title class="card-title"
-          >{{ pakket.pakket_id }}</ion-card-title
-        >
-
+        <ion-card-title class="card-title">{{ pakket.pakket_id }}</ion-card-title>
+        <ion-card-subtitle>{{ pakket?.number }}</ion-card-subtitle>
         <ion-card-title class="status-value"
           >{{ pakket?.status_name }}</ion-card-title
         >
-        <ion-card-subtitle>{{ pakket.number }}</ion-card-subtitle>
+      
       </ion-card-header>
       <ion-card-content *ngIf="expandedCardId === pakket.pakket_id">
-        <ion-row class="label-value-row">
-          <ion-col size="4">
-            <div class="data-label">Afzender</div>
-          </ion-col>
-          <ion-col size="8" class="data-value verzender">
-            {{ pakket?.verzender }}
-          </ion-col>
-        </ion-row>
-        <ion-row class="label-value-row">
-          <ion-col size="4">
-            <div class="data-label">Ontvanger</div>
-          </ion-col>
-          <ion-col size="8" class="data-value verzender">
-            {{ pakket?.ontvanger }}
-          </ion-col>
-        </ion-row>
-        <ion-row class="label-value-row">
-          <ion-col size="4">
-            <div class="data-label">Adres</div>
-          </ion-col>
-          <ion-col size="8" class="data-value verzender">
-            {{ pakket?.bestemming }}
-          </ion-col>
-        </ion-row>
-        <ion-row class="label-value-row">
-          <ion-col size="4">
-            <div class="data-label">Volume</div>
-          </ion-col>
-          <ion-col size="8" class="data-value verzender">
-            {{ pakket?.volume }}
-          </ion-col>
-        </ion-row>
-      </ion-card-content>
+        <ion-list>
+          <ion-item class="item">
+            <ion-col size="4">
+              <div class="data-label" >Afzender</div>
+            </ion-col>
+            <ion-col size="8" class="data-value verzender">
+              {{ pakket?.verzender }}
+            </ion-col>
+          </ion-item>
+          <ion-item>
+            <ion-col size="4">
+              <div class="data-label">Ontvanger</div>
+            </ion-col>
+            <ion-col size="8" class="data-value verzender">
+              {{ pakket?.ontvanger }}
+            </ion-col>
+          </ion-item>
+          <ion-item>
+            <ion-col size="4">
+              <div class="data-label">Adres</div>
+            </ion-col>
+            <ion-col size="8" class="data-value verzender">
+              {{ pakket?.bestemming }}
+            </ion-col>
+          </ion-item>
+          <ion-item>
+            <ion-col size="4">
+              <div class="data-label">Volume</div>
+            </ion-col>
+            <ion-col size="8" class="data-value verzender">
+              {{ pakket?.volume }}
+            </ion-col>
+          </ion-item>
+        </ion-list>
+       
 
-      <ion-row class="card-buttons">
-        <ion-col>
-          <ion-button
-            class="aanpassen-btn"
-            fill="clear"
-            (click)="showConfirmationDialog(pakket.id, pakket.status_id)"
-          >
-            <ion-icon name="sync" style="margin-right: 4px"></ion-icon>
-            <span style="text-transform: capitalize">Status aanpassen</span>
-          </ion-button>
-        </ion-col>
-        <ion-col class="ion-text-right" style="padding-right: 30px">
-          <ion-button
-            *ngIf="pakket?.number"
-            fill="clear"
-            (click)="openEditNumberModal(pakket, pakket.pakket_id)"
-            style="
-              color: inherit;
-              --background: transparent;
-              --border-radius: 0;
-              --border-color: transparent;
-            "
-          >
-            <ion-icon
-              name="create-outline"
-              style="margin-right: 4px"
-            ></ion-icon>
-            <span style="text-transform: capitalize" *ngIf="pakket?.number"
-              >Edit</span
+        <ion-row class="card-buttons" style="padding-top: 10px;">
+          <ion-col size="6"style="padding-left: 0px !important;padding-right:15px">
+            <ion-button
+              class="aanpassen-btn"
+              fill="clear"
+              (click)="showConfirmationDialog(pakket.id, pakket.status_id)"
+              (click)="stopEventPropagation($event)"
             >
-          </ion-button>
-        </ion-col>
-      </ion-row>
+              <ion-icon name="sync" style="margin-right: 4px"></ion-icon>
+              <span style="text-transform: capitalize">Status aanpassen</span>
+            </ion-button>
+          </ion-col>
+      
+          <ion-col size="6" class="ion-text-right">
+            <ion-button
+              *ngIf="pakket?.number"
+              fill="clear"
+              (click)="openEditNumberModal(pakket, pakket.pakket_id)"
+              style="color: inherit; --background: transparent; --border-radius: 0; --border-color: transparent;"
+              (click)="stopEventPropagation($event)"
+            >
+              <ion-icon name="create-outline" style="margin-right: 4px"></ion-icon>
+              <span style="text-transform: capitalize" *ngIf="pakket?.number">Edit</span>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+
+        
+      </ion-card-content>
+      
+      
     </ion-card>
   </ion-list>
   <!-- Display no matching packages section -->

@@ -71,47 +71,7 @@ export class LoginPage implements OnInit {
       this.buttonDisabled = false;
     }
   }
-  //  DoLogin() {
-  //   this.loader();
-  //   this.validation = null;
-  //   console.log("Login Clicked");
-  //   var headers = new HttpHeaders();
-  //   headers.append("Accept", "application/json");
-  //   headers.append("Content-Type", "application/json");
-  //   const requestOptions = { headers: headers };
 
-  //   var data = {
-  //     email: this.email,
-  //     password: this.password,
-  //   };
-  //   console.log(data);
-
-  //   this.http
-  //     .post("https://ssl.app.sr/api/login", data, requestOptions)
-
-  //     .subscribe(
-  //       async (Response) => {
-  //         // After successfully logging in and getting the user data
-  //         const userData = Response;
-        
-
-  //         this.router.navigate(["scanner"]);
-  //         console.log(Response);
-  //         this.storage.set('login', userData).then(() => {
-  //           console.log('User data saved to local storage.',userData);
-  //         });
-  //         this.loadingController.dismiss();
-  //       },
-  //       async (error) => {
-  //         if (error.status == 200) {
-  //           this.loadingController.dismiss();
-  //         } else {
-  //           this.validation = 1;
-  //           this.loadingController.dismiss();
-  //         }
-  //       }
-  //     );
-  // }
 
 
   async DoLogin() {

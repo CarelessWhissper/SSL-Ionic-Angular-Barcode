@@ -2,7 +2,7 @@
 ion-label {
   font-weight: bold;
   color: #222;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 /* Custom CSS for Ion Input */
@@ -49,4 +49,19 @@ ion-input {
 /* Custom styles for the dropdown list items when selected */
 .custom-dropdown ion-item.selected {
   background-color: #e0e0e0; /* Change background color when selected */
+}
+/* Custom styles for the disabled input */
+/* Custom styles for the label */
+.custom-label {
+  padding-left: 16px;
+  font-size: 16px;
+}
+
+/* Custom styles for the input */
+.custom-input {
+  font-weight: bold;
+  color: #333;
+  border: none; /* Remove the default border */
+  background-color: transparent; /* Make it appear as readonly */
+  padding: 0; /* Remove default padding */
 }

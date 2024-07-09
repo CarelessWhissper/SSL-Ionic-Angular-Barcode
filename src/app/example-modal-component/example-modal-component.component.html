@@ -10,9 +10,8 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <h3 class="ion-text-center">Ontvanger information</h3>
   <ion-list>
-    <ion-title class="ion-text-center">Ontvanger information</ion-title>
-
     <ion-item>
       <ion-input
         type="text"
@@ -30,11 +29,13 @@
     </ion-label>
 
     <ion-list class="custom-dropdown">
-      <ion-item *ngFor="let option of filteredOptions" (click)="selectOption(option)">
+      <ion-item
+        *ngFor="let option of filteredOptions"
+        (click)="selectOption(option)"
+      >
         {{ option.name }}
       </ion-item>
     </ion-list>
-    
 
     <!-- Grouped Address and Plaats inputs -->
     <ion-item>
@@ -72,24 +73,18 @@
       ></ion-input>
     </ion-item>
   </ion-list>
-
+  <h3 class="ion-text-center">Pakket information</h3>
   <ion-list>
-    <ion-title class="ion-text-center">Pakket information</ion-title>
-
     <ion-item>
+      <ion-label class="custom-label">Pakket ID:</ion-label>
       <ion-input
         type="text"
         [(ngModel)]="pakket_id"
         placeholder="#1234"
+        class="custom-input"
         disabled
-        style="font-weight: bold;"
-      >
-        <ion-label style="padding-left: 16px">Pakket ID:</ion-label>
-      </ion-input>
+      ></ion-input>
     </ion-item>
-    
-    
-    
     
 
     <ion-item>

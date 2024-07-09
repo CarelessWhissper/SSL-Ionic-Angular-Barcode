@@ -19,6 +19,8 @@ import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
 
 import { NewPackageModalModule } from "./pakketten/new-package-modal/new-package-modal.module";
 
+
+
 @NgModule({
   declarations: [AppComponent],
   imports: [

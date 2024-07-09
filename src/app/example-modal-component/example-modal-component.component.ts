@@ -3,6 +3,11 @@ import { ModalController, ToastController,AlertController  } from "@ionic/angula
 import { HttpClient } from "@angular/common/http";
 import { debounceTime } from 'rxjs/operators';
 import { Subject } from "rxjs";
+import { DataReloadService } from "../data-reload.service";
+
+
+
+
 
 
 @Component({
@@ -27,7 +32,7 @@ export class ExampleModalComponentComponent implements OnInit {
   id: string;
   tracking: string;
 
-  packageurl = "https://ssl.app.sr/tester_app/api/usa";
+  packageurl = "https://ssl.app.sr/api/usa";
 
   isValidName: boolean = true;
   isValidTelefoon: boolean = true;
@@ -39,7 +44,10 @@ private searchTermChanged = new Subject<string>();
     private modalCtrl: ModalController,
     private http: HttpClient,
     private toastController: ToastController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private dataReloadService: DataReloadService
+   
+   
   ) {}
 
   moreInfo() {
@@ -74,7 +82,7 @@ private searchTermChanged = new Subject<string>();
     ).subscribe(searchTerm => {
       if (searchTerm.length >= 4) {
         this.http
-          .get<any>("https://ssl.app.sr/tester_app/api/getOntvangers", {
+          .get<any>("https://ssl.app.sr/api/getOntvangers", {
             params: { search_term: searchTerm },
           })
           .subscribe(
@@ -156,6 +164,7 @@ private searchTermChanged = new Subject<string>();
 
   cancel() {
     this.modalCtrl.dismiss(null, "Cancel");
+    this.dataReloadService.triggerReload();
   }
 
   confirm() {
@@ -184,13 +193,14 @@ private searchTermChanged = new Subject<string>();
       // Send a POST request to your backend API to save the data
       this.http
         .post<any>(
-          "https://ssl.app.sr/tester_app/api/updateOntvangerPakket",
+          "https://ssl.app.sr/api/updateOntvangerPakket",
           formData
         )
         .subscribe(
           (response) => {
             console.log("Data saved successfully:", response);
             this.presentToast("Data saved successfully", "success");
+           
           },
           (error) => {
             console.error("Error saving data:", error);

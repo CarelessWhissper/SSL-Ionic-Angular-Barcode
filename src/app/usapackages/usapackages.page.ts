@@ -5,6 +5,8 @@ import { ExampleModalComponentComponent } from "../example-modal-component/examp
 import { ModalController } from "@ionic/angular";
 import { SortingOptionsComponent } from "./SortingsOptionsComponentUsa";
 import { PopoverController } from "@ionic/angular";
+import { DataReloadService } from "../data-reload.service";
+
 
 @Component({
   selector: "app-usapackages",
@@ -53,13 +55,20 @@ export class UsapackagesPage implements OnInit {
     private modalController: ModalController,
     public toastController: ToastController,
     public popoverController: PopoverController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private dataReloadService: DataReloadService
+    
   ) {
     this.loadSearchOptions();
   }
 
   ngOnInit() {
     this.loadDataFromApi();
+    this.dataReloadService.reload$.subscribe(() => {
+      // Call the method to reload the data
+      this.loadDataFromApi();
+      console.log("Data reloaded");
+    });
   }
 
   async onSearch(): Promise<void> {
@@ -85,7 +94,7 @@ export class UsapackagesPage implements OnInit {
     });
     await loading.present();
 
-    let apiUrl = "https://ssl.app.sr/tester_app/api/usa";
+    let apiUrl = "https://ssl.app.sr/api/usa";
 
     // Append the search term as a query parameter if it is provided
     if (searchTerm && searchTerm.length >= 3) {
@@ -113,6 +122,14 @@ export class UsapackagesPage implements OnInit {
       }
     );
   }
+
+  // async loadDataFromApi(searchTerm: string | null = null): Promise<void> {
+  //   this.dataInjection.loadDataFromApi(searchTerm).then(data=>{
+  //     console.log("the loaded data",data)
+  //   }).catch(error=>{
+  //     console.error("error loading data",error);
+  //   })
+  // }
 
   async presentModal(pakket_id: string) {
     const modal = await this.modalController.create({
@@ -144,7 +161,7 @@ export class UsapackagesPage implements OnInit {
 
   loadSearchOptions() {
     this.http
-      .get<any>("https://ssl.app.sr/tester_app/api/getOntvangers")
+      .get<any>("https://ssl.app.sr/api/getOntvangers")
       .subscribe(
         (response) => {
           if (response.success && Array.isArray(response.data)) {
@@ -192,7 +209,7 @@ export class UsapackagesPage implements OnInit {
 
     try {
       const response = await this.http
-        .post<any>("https://ssl.app.sr/tester_app/api/update-usa", requestData)
+        .post<any>("https://ssl.app.sr/api/update-usa", requestData)
         .toPromise();
       console.log("Update successful:", response);
 
@@ -267,7 +284,7 @@ export class UsapackagesPage implements OnInit {
     try {
       const response = await this.http
         .post<any>(
-          "https://ssl.app.sr/tester_app/api/updateUsaStatus",
+          "https://ssl.app.sr/api/updateUsaStatus",
           requestData
         )
         .toPromise();

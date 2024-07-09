@@ -9,6 +9,7 @@ import { PakkettenPageRoutingModule } from './pakketten-routing.module';
 import { PakkettenPage } from './pakketten.page';
 import { SortingOptionsComponent } from './SortingOptionsComponent';
 import { EditnumberComponent } from '../editnumber/editnumber.component';
+import { DataReloadService } from '../data-reload.service';
 
 
 @NgModule({
@@ -19,6 +20,7 @@ import { EditnumberComponent } from '../editnumber/editnumber.component';
     PakkettenPageRoutingModule
   ],
   declarations: [PakkettenPage, SortingOptionsComponent,EditnumberComponent],
-  entryComponents: [SortingOptionsComponent,EditnumberComponent] 
+  entryComponents: [SortingOptionsComponent,EditnumberComponent],
+  providers:[DataReloadService]
 })
 export class PakkettenPageModule {}

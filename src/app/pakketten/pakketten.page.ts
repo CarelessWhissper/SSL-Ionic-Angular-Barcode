@@ -16,6 +16,7 @@ import { Subject } from "rxjs";
 
 import { EditnumberComponent } from "../editnumber/editnumber.component";
 import { NavController } from "@ionic/angular";
+import { DataReloadService } from "../data-reload.service";
 
 @Component({
   selector: "app-pakketten",
@@ -33,6 +34,7 @@ export class PakkettenPage implements OnInit {
   isEditingNumber: boolean = false;
   editedNumber: string = "";
   pakket: any;
+  pageTitle: string;
 
   constructor(
     public http: HttpClient,
@@ -42,13 +44,22 @@ export class PakkettenPage implements OnInit {
     private storage: Storage,
     private cdr: ChangeDetectorRef,
     private modalController: ModalController,
-    private navController: NavController
-  ) {}
+    private navController: NavController,
+    private dataReloadService: DataReloadService
+  ) {
+    this.setPageTitle();
+  }
 
   async ngOnInit() {
     await this.loadData();
     this.searchInputSubject.pipe(debounceTime(300)).subscribe(async (input) => {
       await this.filterPackages(input);
+    });
+
+    this.dataReloadService.reload$.subscribe(() => {
+      // Call the method to reload the data
+      this.loadData();
+      console.log("Data reloaded");
     });
   }
 
@@ -97,7 +108,7 @@ export class PakkettenPage implements OnInit {
           apiUrl = "https://ssl.app.sr/api/usa";
           break;
         default:
-          apiUrl = "https://ssl.app.sr/tester_app/api/packages"; // Default URL for "suriname" and "nederland"
+          apiUrl = "https://ssl.app.sr/api/packages"; // Default URL for "suriname" and "nederland"
           break;
       }
 
@@ -120,9 +131,20 @@ export class PakkettenPage implements OnInit {
     }
   }
 
+  async setPageTitle() {
+    const location = await this.getLocation();
+    if (location === 'surinamehoofd') {
+      this.pageTitle = 'Pakketten SR-NED';
+    } else {
+      this.pageTitle = 'Pakketten NED-SR';
+    }
+  }
+
   async getLocation(): Promise<string> {
     const data = await this.storage.get("login");
     const locatie = data ? data.locatie : null;
+
+    console.log("current locatie", locatie);
 
     if (locatie === null) {
       console.log("Geen pakketten beschikbaar");
@@ -163,7 +185,7 @@ export class PakkettenPage implements OnInit {
       // Use asynchronous API request only if the searchInput is not empty
       const response = input
         ? await this.http
-            .get<any[]>("https://ssl.app.sr/tester_app/api/display", { params })
+            .get<any[]>("https://ssl.app.sr/api/display", { params })
             .toPromise()
         : [];
 
@@ -713,5 +735,9 @@ export class PakkettenPage implements OnInit {
     });
 
     return await modal.present();
+  }
+
+  stopEventPropagation(event: Event) {
+    event.stopPropagation();
   }
 }

@@ -10,16 +10,17 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  
-  <ion-list>
-    <ion-title class="ion-text-center">Pakket information</ion-title>
+  <h3 class="ion-text-center">Pakket information</h3>
 
+  <ion-list>
+    
     <ion-item>
-      <ion-input
+      <ion-input id="pakketIdInput"
         type="text"
         [(ngModel)]="pakket_id"
         placeholder="#1234"
-        disabled
+         disabled
+        class="custom-input"
       >
         <ion-label style="padding-left: 16px">Pakket ID:</ion-label>
       </ion-input>

@@ -74,7 +74,7 @@ export class SettingsusaPage implements OnInit {
   }
 
   loadData() {
-    this.http.get<any>('https://ssl.app.sr/tester_app/api/recent').subscribe(
+    this.http.get<any>('https://ssl.app.sr/api/recent').subscribe(
       (data: any) => {
         this.latestCreatedPakketId = data.latest_created_pakket_id;
         this.latestUpdatedPakketId = data.latest_updated_pakket_id;

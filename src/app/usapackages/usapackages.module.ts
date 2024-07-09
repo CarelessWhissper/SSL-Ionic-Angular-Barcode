@@ -9,6 +9,7 @@ import { UsapackagesPageRoutingModule } from "./usapackages-routing.module";
 import { UsapackagesPage } from "./usapackages.page";
 import { ExampleModalComponentComponent } from "../example-modal-component/example-modal-component.component";
 import { SortingOptionsComponent } from "./SortingsOptionsComponentUsa";
+import { DataReloadService } from "../data-reload.service";
 
 @NgModule({
   imports: [
@@ -23,5 +24,7 @@ import { SortingOptionsComponent } from "./SortingsOptionsComponentUsa";
     SortingOptionsComponent,
   ],
   entryComponents: [ExampleModalComponentComponent, SortingOptionsComponent],
+  providers:[DataReloadService]
+  
 })
 export class UsapackagesPageModule {}

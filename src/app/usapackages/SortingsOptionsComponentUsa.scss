@@ -1,32 +1,33 @@
 .pop {
-    background-color: #fff; /* Set the background color */
-    border-radius: 8px; /* Add border radius for rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
-    padding: 16px; /* Add padding to the popover */
-  }
-  
-  .sorting-options-header {
-    font-weight: bold;
-    margin-bottom: 16px; /* Add space below the header */
-  }
-  
-  .sorting-option {
-    display: flex;
-    align-items: center;
-    padding: 12px 0; /* Add padding to the sorting options */
-  }
-  
-  .sorting-option ion-icon {
-    margin-right: 8px; /* Add space between the icon and the label */
-  }
-  
-  .sorting-option ion-label {
-    font-size: 16px;
-  }
-  
-  /* Add hover effect to sorting options */
-  .sorting-option:hover {
-    background-color: #f0f0f0;
-    cursor: pointer;
-  }
-  
+  background-color: #fff; /* Set the background color */
+  border-radius: 8px; /* Add border radius for rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  padding: 10px; /* Add padding to the popover */
+}
+
+.sorting-options-header {
+  font-weight: bold;
+  margin-bottom: 5px; /* Add space below the header */
+  font-size: 22px;
+ 
+}
+
+.sorting-option {
+  display: flex;
+  align-items: center;
+  padding: 10px 0; /* Add padding to the sorting options */
+}
+
+.sorting-option ion-icon {
+  margin-right: 8px; /* Add space between the icon and the label */
+}
+
+.sorting-option ion-label {
+  font-size: 18px;
+}
+
+/* Add hover effect to sorting options */
+.sorting-option:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
