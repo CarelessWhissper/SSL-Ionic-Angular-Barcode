@@ -69,7 +69,7 @@ export class ScannerPage implements OnInit {
   async getStatus() {
     try {
       const response = await this.http
-        .get("https://ssl.app.sr/api/get-status")
+        .get("https://ssl.app.sr/tester_app/api/get-status")
         .toPromise();
     //  console.log(response);
       const sth = response;
@@ -116,7 +116,7 @@ export class ScannerPage implements OnInit {
   }
 
   async onsaveLoodlocatienumber(loodLocatieNumber: string) {
-    const apiURL = "https://ssl.app.sr/api/save-aankomst";
+    const apiURL = "https://ssl.app.sr/tester_app/api/save-aankomst";
 
     const sth: string | null = await this.storage.get("scan_resp");
     const sthElse: string | null = await this.storage.get("scan_resp2");
@@ -248,24 +248,28 @@ export class ScannerPage implements OnInit {
       // Retrieve locatie from local storage
       const userData = await this.storage.get("login");
 
-      if (userData && userData.locatie) {
+      console.log("User Data:", userData);
+
+      if (userData && userData.locatie && userData.userId) {
         const locatie = userData.locatie;
+        const user_id = userData.userId;
 
         // Construct the request body
         const requestBody = {
           barcode: data,
           status: this.status ? this.status.id : null,
           locatie: locatie, // Include locatie in the request body
+          user_id: user_id // Include user_id in the request body
         };
+
+        console.log("Request Body:", requestBody);
 
         // Make the HTTP POST request with the requestBody
         const response: any = await this.http
-          .post("https://ssl.app.sr/api/barcode-update-status", requestBody)
+          .post("https://ssl.app.sr/tester_app/api/barcode-update-status", requestBody)
           .toPromise();
 
-      //  console.log("Response:", response);
-
-       // console.log("the package was updated from", locatie);
+    
 
         if (response && response.message) {
           this.storage.set("scan_resp", response.pakket_id);

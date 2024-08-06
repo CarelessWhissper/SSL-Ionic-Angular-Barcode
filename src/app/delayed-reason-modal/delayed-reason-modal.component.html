@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <ion-text color="primary">Pakket: {{ pakket.pakket_id }}</ion-text>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full">
+    <ion-radio-group [(ngModel)]="selectedReason">
+      <ion-list-header>
+        <ion-label>Kies een reden voor vertraging</ion-label>
+      </ion-list-header>
+
+      <ion-item *ngFor="let reason of delayReasons">
+        <ion-label>{{ reason }}</ion-label>
+        <ion-radio slot="start" [value]="reason"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+
+  <div class="modal-footer">
+    <ion-button expand="block" (click)="confirm()" style="text-transform: capitalize;">
+      Bevestig Vertraging
+    </ion-button>
+  </div>
+</ion-content>

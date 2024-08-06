@@ -1,5 +1,5 @@
-import { Component, OnInit } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { Component, OnInit, NgZone } from "@angular/core";
+import { HttpClient, HttpParams } from '@angular/common/http';
 import {
   LoadingController,
   AlertController,
@@ -8,6 +8,7 @@ import {
 import { Storage } from "@ionic/storage";
 import { SortingOptionsComponent } from "./SortingOptionsComponent";
 import { ChangeDetectorRef } from "@angular/core";
+import { ToastController } from "@ionic/angular";
 
 import { ModalController } from "@ionic/angular";
 import { NewPackageModalComponent } from "./new-package-modal/new-package-modal.component";
@@ -17,6 +18,8 @@ import { Subject } from "rxjs";
 import { EditnumberComponent } from "../editnumber/editnumber.component";
 import { NavController } from "@ionic/angular";
 import { DataReloadService } from "../data-reload.service";
+
+import { DelayedReasonModalComponent } from "../delayed-reason-modal/delayed-reason-modal.component";
 
 @Component({
   selector: "app-pakketten",
@@ -30,11 +33,16 @@ export class PakkettenPage implements OnInit {
   filteredPakketten: any[];
   noMatchingPackages = false;
   expandedCardId: string | null = null;
-
+  loadingData: boolean = false;
+  pageSize: number = 10; // Number of packages to load per request
+  offset: number = 0; // Start at the beginning
+  hasMorePackages: boolean = true; // Track if more packages are available
   isEditingNumber: boolean = false;
   editedNumber: string = "";
   pakket: any;
   pageTitle: string;
+  userId: any;
+  role:any;
 
   constructor(
     public http: HttpClient,
@@ -45,7 +53,9 @@ export class PakkettenPage implements OnInit {
     private cdr: ChangeDetectorRef,
     private modalController: ModalController,
     private navController: NavController,
-    private dataReloadService: DataReloadService
+    private dataReloadService: DataReloadService,
+    private toastController: ToastController,
+    private zone: NgZone
   ) {
     this.setPageTitle();
   }
@@ -71,8 +81,6 @@ export class PakkettenPage implements OnInit {
   // Define a subject for the search input changes
   private searchInputSubject = new Subject<string>();
 
-  loadingData: boolean = false;
-
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === "Enter") {
       clearTimeout(this.typingTimer); // Clear the previous timer
@@ -80,49 +88,48 @@ export class PakkettenPage implements OnInit {
     }
   }
 
-  async loadData() {
+  async loadData(initialLoad: boolean = true) {
+    if (initialLoad) {
+      this.offset = 0;
+      this.pakketten = [];
+      this.filteredPakketten = [];
+      this.hasMorePackages = true;
+    }
+
     this.loadingData = true;
     const loading = await this.loadingController.create({
       message: "Pakketten worden geladen...",
+      spinner: "circles",
     });
     await loading.present();
 
     try {
-      const location = await this.getLocation();
-      let apiUrl: string;
+      const data = await this.storage.get("login");
 
-      switch (location.toLowerCase()) {
-        case "amsterdam":
-          apiUrl = "https://ssl.app.sr/api/amsterdam";
-          break;
-        case "rotterdam":
-          apiUrl = "https://ssl.app.sr/api/Rotterdam";
-          break;
-        case "denhaag":
-          apiUrl = "https://ssl.app.sr/api/DenHaag";
-          break;
-        case "utrecht":
-          apiUrl = "https://ssl.app.sr/api/Utrecht";
-          break;
-        case "usa":
-          apiUrl = "https://ssl.app.sr/api/usa";
-          break;
-        default:
-          apiUrl = "https://ssl.app.sr/api/packages"; // Default URL for "suriname" and "nederland"
-          break;
-      }
-
-      const params = {
-        search: "all",
-        location: location,
-      };
+      const params = new HttpParams()
+        .set('search', 'all')
+        .set('userId', data.userId)
+        .set('role', data.role)
+        .set('limit', this.pageSize.toString())
+        .set('offset', this.offset.toString());
 
       const response = await this.http
-        .get<any[]>(apiUrl, { params })
+        .get<{ count: number; data: any[] }>(
+          "https://ssl.app.sr/tester_app/api/packages",
+          { params }
+        )
         .toPromise();
 
-      this.pakketten = response;
-      this.filteredPakketten = response; // Initially set filteredPakketten to all packages
+      if (response.data.length < this.pageSize) {
+        this.hasMorePackages = false; // No more packages to load
+      }
+
+      this.zone.run(() => {
+        this.pakketten = [...this.pakketten, ...response.data];
+        this.filteredPakketten = [...this.filteredPakketten, ...response.data];
+      });
+
+      this.offset += this.pageSize; // Update the offset for the next load
     } catch (error) {
       console.log("Error retrieving packages:", error);
     } finally {
@@ -131,12 +138,33 @@ export class PakkettenPage implements OnInit {
     }
   }
 
+  async loadMore(event: any) {
+    if (this.hasMorePackages && !this.loadingData) {
+      await this.loadData(false);
+    }
+    event.target.complete();
+    if (!this.hasMorePackages) {
+      event.target.disabled = true; // Disable infinite scroll if no more packages
+    }
+  }
+  
+
+  async applySearch(searchTerm: string) {
+    this.offset = 0; // Reset offset for new search
+    this.pakketten = [];
+    this.hasMorePackages = true; // Reset pagination
+    await this.loadData(true);
+  }
+  
+  
+
+
   async setPageTitle() {
     const location = await this.getLocation();
-    if (location === 'surinamehoofd') {
-      this.pageTitle = 'Pakketten SR-NED';
+    if (location === "surinamehoofd") {
+      this.pageTitle = "Pakketten SR-NED";
     } else {
-      this.pageTitle = 'Pakketten NED-SR';
+      this.pageTitle = "Pakketten NED-SR";
     }
   }
 
@@ -161,66 +189,40 @@ export class PakkettenPage implements OnInit {
 
   async filterPackages(searchInput?: string) {
     if (this.loadingData) {
-      // Data is still loading, do not perform search
       return;
     }
 
-    console.log("Filtering packages...");
     this.loadingData = true;
 
-    const startTime = new Date().getTime();
     const loading = await this.loadingController.create({
       message: "Zoeken...",
     });
-
-    // Show loading indicator immediately
-    loading.present();
+    await loading.present();
 
     try {
-      const input = searchInput ? searchInput.trim() : ""; // Trim if not empty
-      const params = { search: input };
+      const data = await this.storage.get("login");
+      const params = {
+        search: searchInput ? searchInput.trim() : "",
+        userId: data.userId,
+        role: data.role,
+      };
 
-      console.log("Filtering with params:", params);
+      console.log("the search term is", searchInput);
 
-      // Use asynchronous API request only if the searchInput is not empty
-      const response = input
-        ? await this.http
-            .get<any[]>("https://ssl.app.sr/api/display", { params })
-            .toPromise()
-        : [];
+      const response = await this.http
+        .get<{ count: number; data: any[] }>(
+          "https://ssl.app.sr/tester_app/api/packages",
+          { params }
+        )
+        .toPromise();
 
-      console.log("Search input:", searchInput);
-      console.log("Filtered packages:", response);
-
-      // Update the filteredPakketten array with the updated response from the API
-      this.filteredPakketten = response.map((item) => ({
-        id: item.id,
-        pakket_id: item.pakket_id,
-        klant_id: item.klant_id,
-        ontvanger_id: item.ontvanger_id,
-        volume: item.volume,
-        status_id: item.status_id,
-        ontvanger: item.ontvanger,
-        verzender: item.verzender,
-        status_name: item.status_name,
-        bestemming: item.bestemming,
-        verzendadres: item.verzendadres,
-        locatie: item.locatie,
-        number: item.number,
-      }));
-
-      console.log(this.filteredPakketten, "the pakketten");
-
-      this.noMatchingPackages = this.filteredPakketten.length === 0; // Update the flag based on the search result
-      this.loadingData = false;
+      this.filteredPakketten = response.data;
+      this.noMatchingPackages = this.filteredPakketten.length === 0;
     } catch (error) {
       console.log("Error filtering packages:", error);
     } finally {
-      // Dismiss loading indicator
       await loading.dismiss();
-      const endTime = new Date().getTime();
-      const elapsedTime = endTime - startTime;
-      console.log(`Time taken to load data: ${elapsedTime} milliseconds`);
+      this.loadingData = false;
     }
   }
 
@@ -246,7 +248,7 @@ export class PakkettenPage implements OnInit {
       await loading.present();
 
       const response = await this.http
-        .post("https://ssl.app.sr/api/update-status", data)
+        .post("https://ssl.app.sr/tester_app/api/update-status", data)
         .toPromise();
       console.log("API response:", response);
 
@@ -260,6 +262,7 @@ export class PakkettenPage implements OnInit {
       }
 
       console.log("doChangeStatus completed successfully");
+      this.loadData();
       return true;
     } catch (error) {
       console.error("Error changing status:", error);
@@ -267,66 +270,6 @@ export class PakkettenPage implements OnInit {
       return false;
     }
   }
-
-  // async showConfirmationDialog(id: string, status: number) {
-  //   console.log(
-  //     "showConfirmationDialog called with id:",
-  //     id,
-  //     "and status_id:",
-  //     status
-  //   );
-
-  //   // Get the corresponding pakket from the data source (this.filteredPakketten) using id
-  //   const pakket = this.filteredPakketten.find((pakket) => pakket.id === id);
-
-  //   // Check if the pakket is found and get the pakket_id
-  //   const pakket_id = pakket ? pakket.pakket_id : null;
-
-  //   const currentStatusName = pakket ? pakket.status_name : "";
-
-  //   // Retrieve the selected status from local storage
-  //   const selectedStatus = JSON.parse(localStorage.getItem("selectedStatus"));
-  //   const selectedStatusId = selectedStatus ? selectedStatus.id : 0;
-  //   const selectedStatusName = selectedStatus
-  //     ? selectedStatus.name
-  //     : "Unknown Status";
-
-  //   console.log("what is the selected status really: ", selectedStatus);
-  //   console.log("what is the selected statusId really: ", selectedStatusId);
-
-  //   const alert = await this.alertController.create({
-  //     header: `Wilt u de status "${currentStatusName}" wijzigen van het pakket ${pakket_id} naar de status "${selectedStatusName}"?`,
-  //     buttons: [
-  //       {
-  //         text: "Ja",
-  //         handler: () => {
-  //           console.log(status);
-  //           if (selectedStatusId == 10) {
-  //             //show pallet nummer input
-  //             this.showPalletInput(id, selectedStatusId);
-  //           } else if (selectedStatusId === 11) {
-  //             //lood locatie input
-  //             console.log("status is 10 btw");
-  //             this.showLoodLocatieInput(id, selectedStatusId);
-  //           } else {
-  //             this.doChangeStatus(id, selectedStatusId);
-  //           }
-  //         },
-  //       },
-  //       {
-  //         text: "Nee",
-  //         role: "cancel",
-  //       },
-  //     ],
-  //   });
-
-  //   console.log("the  selected package is: ", pakket_id);
-  //   console.log("the  selected packageID is: ", id);
-  //   localStorage.setItem("selected_pakket_id", id);
-  //   localStorage.setItem("selected_paket", pakket_id);
-
-  //   await alert.present();
-  // }
 
   async showConfirmationDialog(id: string, status: number) {
     console.log(
@@ -562,6 +505,44 @@ export class PakkettenPage implements OnInit {
         break;
     }
   }
+  async openDelayModal(pakket: any) {
+    const modal = await this.modalController.create({
+      component: DelayedReasonModalComponent,
+      componentProps: { pakket: pakket }, // Pass the pakket object to the modal
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data) {
+      this.confirmDelay(pakket.id, data);
+    }
+  }
+
+  async confirmDelay(pakketId: number, reason: string) {
+    const statusId = 14; // Status ID for delayed
+    this.http
+      .post("https://ssl.app.sr/tester_app/api/update-status", {
+        id: pakketId,
+        status_id: statusId,
+        delay_reason: reason, // Make sure this matches the backend parameter
+      })
+      .subscribe(
+        async (response) => {
+          console.log("Package set to delayed:", response);
+          // Update the UI to reflect the new status
+          await this.showToast(
+            "Package has been delayed successfully",
+            "success"
+          );
+          this.loadData();
+        },
+        async (error) => {
+          console.error("Error setting package to delayed:", error);
+          await this.showToast("Failed to update package status.", "danger");
+        }
+      );
+  }
 
   currentSortOrder: "asc" | "desc" = "asc";
 
@@ -739,5 +720,15 @@ export class PakkettenPage implements OnInit {
 
   stopEventPropagation(event: Event) {
     event.stopPropagation();
+  }
+
+  async showToast(message: string, color: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      color: color,
+      position: "bottom",
+    });
+    toast.present();
   }
 }

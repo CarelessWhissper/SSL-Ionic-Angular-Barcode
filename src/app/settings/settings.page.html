@@ -4,7 +4,13 @@
       <ion-back-button text="" icon="chevron-back-outline"></ion-back-button>
     </ion-buttons>
     <ion-title>Instellingen</ion-title>
+    <ion-buttons slot="end" *ngIf="showGlobeIcon">
+      <ion-button (click)="presentLocationOptions()">
+        <ion-icon name="globe-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
+  
 </ion-header>
 <ion-content>
   <div class="background"></div>

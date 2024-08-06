@@ -1,0 +1,51 @@
+ion-header {
+    --background: #f8f8f8;
+    --border-color: #ccc;
+  
+    ion-title {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  
+    ion-button {
+      ion-icon {
+        font-size: 1.5em;
+      }
+    }
+  }
+  
+  ion-content {
+    padding: 1em;
+  
+    .modal-footer {
+      margin-top: 1.5em;
+      ion-button {
+        --background: #3880ff;
+        --color: #fff;
+        --border-radius: 8px;
+        --padding-top: 0.7em;
+        --padding-bottom: 0.7em;
+        font-size: 1.1em;
+      }
+    }
+  }
+  
+  ion-radio-group {
+    ion-list-header {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.5em;
+    }
+  
+    ion-item {
+      --inner-padding-start: 10px;
+      ion-label {
+        font-size: 1em;
+      }
+      ion-radio {
+        --color-checked: #3880ff;
+      }
+    }
+  }
+  

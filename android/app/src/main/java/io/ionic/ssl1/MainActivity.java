@@ -1,4 +1,4 @@
-package io.ionic.ssl;
+package io.ionic.ssl1;
 
 import com.getcapacitor.BridgeActivity;
 

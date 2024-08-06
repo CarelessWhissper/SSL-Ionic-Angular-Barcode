@@ -8,7 +8,7 @@
       ></ion-back-button>
     </ion-buttons>
 
-    <ion-title>{{ pageTitle }}</ion-title>
+    <ion-title>{{ pageTitle }} </ion-title>
 
     <ion-buttons slot="primary">
       <ion-button class="sorting-button" (click)="presentSortingOptions()">
@@ -39,18 +39,29 @@
       [ngClass]="{'expanded': expandedCardId === pakket.pakket_id}"
     >
       <ion-card-header>
-        <ion-card-title class="card-title">{{ pakket.pakket_id }}</ion-card-title>
-        <ion-card-subtitle>{{ pakket?.number }}</ion-card-subtitle>
-        <ion-card-title class="status-value"
-          >{{ pakket?.status_name }}</ion-card-title
-        >
-      
+        <ion-row>
+          <ion-col size="8">
+            <ion-card-title class="card-title">{{ pakket.pakket_id }}</ion-card-title>
+            <ion-card-subtitle>{{ pakket?.number }}</ion-card-subtitle>
+            <ion-card-title class="status-value">{{ pakket?.status_name }}</ion-card-title>
+          </ion-col>
+          <ion-col size="4" class="ion-text-right">
+            <ion-button
+              class="status-icon-btn"
+              fill="clear"
+              (click)="openDelayModal(pakket)"
+              (click)="stopEventPropagation($event)"
+            >
+              <ion-icon name="time-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
       </ion-card-header>
       <ion-card-content *ngIf="expandedCardId === pakket.pakket_id">
         <ion-list>
           <ion-item class="item">
             <ion-col size="4">
-              <div class="data-label" >Afzender</div>
+              <div class="data-label">Afzender</div>
             </ion-col>
             <ion-col size="8" class="data-value verzender">
               {{ pakket?.verzender }}
@@ -81,10 +92,9 @@
             </ion-col>
           </ion-item>
         </ion-list>
-       
 
         <ion-row class="card-buttons" style="padding-top: 10px;">
-          <ion-col size="6"style="padding-left: 0px !important;padding-right:15px">
+          <ion-col size="6" style="padding-left: 0px !important; padding-right: 15px;">
             <ion-button
               class="aanpassen-btn"
               fill="clear"
@@ -95,7 +105,7 @@
               <span style="text-transform: capitalize">Status aanpassen</span>
             </ion-button>
           </ion-col>
-      
+
           <ion-col size="6" class="ion-text-right">
             <ion-button
               *ngIf="pakket?.number"
@@ -109,27 +119,17 @@
             </ion-button>
           </ion-col>
         </ion-row>
-
-        
       </ion-card-content>
-      
-      
     </ion-card>
   </ion-list>
+
   <!-- Display no matching packages section -->
   <div *ngIf="noMatchingPackages" class="no-matching-packages-container">
-    <!-- Image -->
     <img src="../../assets/bg.png" alt="No matching packages image" />
-
-    <!-- Big bold text -->
     <p class="big-bold-text">Pakket niet gevonden</p>
-
-    <!-- Small descriptive text -->
     <p class="small-descriptive-text">
       Het pakket dat u zoekt is niet te vinden in het systeem.
     </p>
-
-    <!-- Button -->
     <ion-row style="justify-content: center" *ngIf="isAankomstInSR()">
       <ion-col size="12" class="ion-text-center">
         <ion-button (click)="addNewPackage()" class="custom-button">
@@ -139,4 +139,12 @@
       </ion-col>
     </ion-row>
   </div>
+
+  <!-- Infinite Scroll -->
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Meer pakketten laden..."
+    ></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

@@ -1,11 +1,11 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy } from "@angular/router";
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from "@angular/forms";
 import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
-import { CommonModule } from '@angular/common'; // Import CommonModule
+import { CommonModule } from "@angular/common"; // Import CommonModule
 
 import { AppComponent } from "./app.component";
 import { AppRoutingModule } from "./app-routing.module";
@@ -15,14 +15,12 @@ import { HttpClientModule } from "@angular/common/http";
 import { IonicStorageModule } from "@ionic/storage";
 import { BarcodeScanner } from "@ionic-native/barcode-scanner/ngx";
 
-
-
 import { NewPackageModalModule } from "./pakketten/new-package-modal/new-package-modal.module";
 
-
+import { DelayedReasonModalComponent } from "./delayed-reason-modal/delayed-reason-modal.component";
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, DelayedReasonModalComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
@@ -32,7 +30,6 @@ import { NewPackageModalModule } from "./pakketten/new-package-modal/new-package
     FormsModule,
     CommonModule,
     NewPackageModalModule,
-    
   ],
   providers: [
     Camera,
@@ -40,6 +37,9 @@ import { NewPackageModalModule } from "./pakketten/new-package-modal/new-package
     SplashScreen,
     BarcodeScanner,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+  ],
+  entryComponents: [
+    DelayedReasonModalComponent, // Add the component here for dynamic loading
   ],
   bootstrap: [AppComponent],
 })

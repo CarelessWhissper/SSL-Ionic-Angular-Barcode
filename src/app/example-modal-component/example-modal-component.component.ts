@@ -118,26 +118,7 @@ private searchTermChanged = new Subject<string>();
     }
   }
 
-  // filterNames(searchTerm: string) {
-  //   if (searchTerm.length >= 4) {
-  //     this.http
-  //       .get<any>("https://ssl.app.sr/tester_app/api/getOntvangers", {
-  //         params: { search_term: searchTerm },
-  //       })
-  //       .subscribe(
-  //         (response) => {
-  //           console.log("Filtered options:", response);
-  //           // Assign the 'data' array from the response to 'filteredOptions'
-  //           this.filteredOptions = response.data;
-  //         },
-  //         (error) => {
-  //           console.error("Error fetching search options:", error);
-  //         }
-  //       );
-  //   } else {
-  //     this.filteredOptions = [];
-  //   }
-  // }
+  
 
   filterNames(searchTerm: string) {
     // Push the new search term to the subject

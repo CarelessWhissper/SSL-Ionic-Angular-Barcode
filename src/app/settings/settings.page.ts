@@ -4,12 +4,14 @@ import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { ToastController } from "@ionic/angular";
 import { Observable, from } from "rxjs";
+import { ActionSheetController } from "@ionic/angular";
 @Component({
   selector: "app-settings",
   templateUrl: "./settings.page.html",
   styleUrls: ["./settings.page.scss"],
 })
 export class SettingsPage implements OnInit {
+  userId:number;
   name: any;
   email: any;
   role: any;
@@ -34,7 +36,7 @@ export class SettingsPage implements OnInit {
   dynamicLoodLocatieNumber: number;
   selectedStatusName: string;
   showPalletNumber: boolean = false;
-
+  showGlobeIcon: boolean = false;
   // Show palletiseren fields
   showPalletiserenFields() {
     this.showFields = true;
@@ -59,7 +61,8 @@ export class SettingsPage implements OnInit {
     private router: Router,
     private http: HttpClient,
     private activatedRoute: ActivatedRoute,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private actionSheetController: ActionSheetController
   ) {
     this.currentId = null;
 
@@ -86,24 +89,7 @@ export class SettingsPage implements OnInit {
   dataObservable: Observable<any>;
 
   ngOnInit() {
-    this.storage.get("login").then(
-      (data) => {
-        if (data) {
-          this.name = data.name;
-          this.email = data.email;
-          this.role = data.role;
-          this.locatie = data.locatie;
-          console.log("Location obtained:", this.locatie); // Add this log
-        } else {
-          // Handle missing data
-          console.log("no data found");
-        }
-      },
-      (error) => {
-        console.error("Error fetching data from storage:", error);
-        // Handle the error, e.g., show an error message to the user
-      }
-    );
+    this.loadUserData();
 
     this.storage.get("status").then((response) => {
       if (response && response.status) {
@@ -231,9 +217,22 @@ export class SettingsPage implements OnInit {
     });
 
     this.loadPalletNumberFromStorage();
+  }
 
-    // // Call the function to filter the status list based on the user's location
-    this.filterStatusList();
+  loadUserData() {
+    this.storage.get("login").then((data) => {
+      if (data) {
+        this.userId = data.userId;
+        this.name = data.name;
+        this.email = data.email;
+        this.role = data.role;
+        this.locatie = data.locatie;
+        this.showGlobeIcon =
+          this.role === "admin" || this.role === "superadmin";
+        this.filterStatusList();
+        console.log("User data loaded:", data);
+      }
+    });
   }
 
   loadPalletNumberFromStorage() {
@@ -250,47 +249,49 @@ export class SettingsPage implements OnInit {
     }
   }
 
-  filterStatusList() {
-    console.log("Making HTTP request to retrieve status list...");
-    this.http.get<any>("https://ssl.app.sr/api/get-status").subscribe(
-      (data) => {
-        console.log("Received data:", data);
-        // Clear the status list
-        this.statusList = [];
+  
 
-        // Filter status list based on location
-        if (this.locatie === "surinamehoofd") {
-          // Filter statuses for Surinamehoofd
-          this.statusList = data.status.filter((status: any) =>
-            [1, 2, 3, 11].includes(+status.id)
-          );
-        } else if (
-          [
-            "nederland",
-            "amsterdam",
-            "rotterdam",
-            "denhaag",
-            "utrecht",
-          ].includes(this.locatie)
-        ) {
-          // Filter statuses for Dutch cities
-          const customOrder = [9, 10, 4];
-          this.statusList = data.status.filter((status: { id: number }) =>
-            customOrder.includes(+status.id)
-          );
-          this.statusList.sort(
-            (a, b) => customOrder.indexOf(+a.id) - customOrder.indexOf(+b.id)
-          );
+  filterStatusList() {
+    console.log('Making HTTP request to retrieve status list...');
+    this.http.get<any>('https://ssl.app.sr/tester_app/api/get-status').subscribe(
+      (data) => {
+        console.log('Received data:', data);
+        const allStatuses = data.status;
+  
+        const usaLocation = ['usa'];
+        const usaStatusIds = [5, 6, 7, 12];
+        
+        const nederlandLocations = ['nederland', 'amsterdam', 'rotterdam', 'denhaag', 'utrecht'];
+        const surinamehoofdStatusIds = [1, 2, 3, 11, 12];
+        const nederlandStatusIds = [9, 10, 4, 12];
+  
+        // Ensure that status.id is treated as a number during comparison
+        if (this.locatie === 'surinamehoofd') {
+          this.statusList = allStatuses
+            .filter((status: any) => surinamehoofdStatusIds.includes(Number(status.id)))
+            .sort((a: any, b: any) => surinamehoofdStatusIds.indexOf(Number(a.id)) - surinamehoofdStatusIds.indexOf(Number(b.id)));
+        } else if (nederlandLocations.includes(this.locatie)) {
+          this.statusList = allStatuses
+            .filter((status: any) => nederlandStatusIds.includes(Number(status.id)))
+            .sort((a: any, b: any) => nederlandStatusIds.indexOf(Number(a.id)) - nederlandStatusIds.indexOf(Number(b.id)));
+        } else if (usaLocation.includes(this.locatie)) {
+          this.statusList = allStatuses
+            .filter((status: any) => usaStatusIds.includes(Number(status.id)))
+            .sort((a: any, b: any) => usaStatusIds.indexOf(Number(a.id)) - usaStatusIds.indexOf(Number(b.id)));
         } else {
-          console.log("No status data available for the current location.");
+          this.statusList = []; // Handle other locations if needed
+          console.log("No items in list");
         }
-        console.log("Filtered status list:", this.statusList);
+  
+        console.log('Filtered status list:', this.statusList);
       },
       (error) => {
-        console.error("Error occurred while fetching status data:", error);
+        console.error('Error occurred while fetching status data:', error);
       }
     );
   }
+  
+  
 
   onChangeStatus() {
     console.log("Selected Status ID:", this.selectedStatusId); // Log the selected status ID
@@ -407,7 +408,7 @@ export class SettingsPage implements OnInit {
       if (response && response.pallet_data && response.pallet_data.pakket_id) {
         const currentId = response.pallet_data.pakket_id;
 
-        console.log("the currentId is for package",currentId);
+        console.log("the currentId is for package", currentId);
 
         // Retrieve the user-inputted loodLocatieNumber from the component property
         const loodLocatieNumber = this.loodLocatieNumber;
@@ -506,12 +507,109 @@ export class SettingsPage implements OnInit {
       // Clear all stored data from Ionic Storage
       await this.storage.clear();
       console.log("All data removed from Ionic Storage.");
-  
+
       // Navigate to the login page after clearing the data
       this.router.navigateByUrl("/login");
     } catch (error) {
       console.error("Error clearing Ionic Storage:", error);
     }
   }
-  
+
+  /*  
+     location switcher for admin users
+   
+   */
+
+  async updateLocation(newLocation: string) {
+    const email = this.email; // Assuming the email is stored in this.email
+    this.http
+      .post("https://ssl.app.sr/tester_app/api/update-admin-location", {
+        email,
+        location: newLocation,
+      })
+      .subscribe(
+        async (response: any) => {
+          // Show success toast
+          const toast = await this.toastController.create({
+            message: "Location updated successfully",
+            duration: 2000,
+            color: "success",
+          });
+          toast.present();
+
+          // Update the component state with the new location
+          this.locatie = newLocation;
+
+          // Optionally, update the storage with the new location
+          const updatedUserData = {
+            name: this.name,
+            email: this.email,
+            role: this.role,
+            locatie: newLocation,
+          };
+          await this.storage.set("login", updatedUserData);
+
+          // Call filterStatusList to update the status list based on the new location
+          this.filterStatusList();
+        },
+        async (error: any) => {
+          // Show error toast
+          const toast = await this.toastController.create({
+            message: "Failed to update location: " + error.error.message,
+            duration: 2000,
+            color: "danger",
+          });
+          toast.present();
+        }
+      );
+  }
+
+  async presentLocationOptions() {
+    const actionSheet = await this.actionSheetController.create({
+      header: "Selecteer Locatie",
+      buttons: [
+        {
+          text: "Surinamehoofd",
+          handler: () => {
+            this.updateLocation("surinamehoofd");
+          },
+        },
+        {
+          text: "Amsterdam",
+          handler: () => {
+            this.updateLocation("amsterdam");
+          },
+        },
+        {
+          text: "Utrecht",
+          handler: () => {
+            this.updateLocation("utrecht");
+          },
+        },
+        {
+          text: "Rotterdam",
+          handler: () => {
+            this.updateLocation("rotterdam");
+          },
+        },
+        {
+          text: "Den Haag",
+          handler: () => {
+            this.updateLocation("denhaag");
+          },
+        },
+        {
+          text: "USA",
+          handler: () => {
+            this.updateLocation("usa");
+          },
+        },
+        {
+          text: "Cancel",
+          role: "cancel",
+        },
+      ],
+    });
+    await actionSheet.present();
+  }
 }

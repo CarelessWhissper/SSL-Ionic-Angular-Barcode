@@ -1,8 +1,8 @@
 import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "io.ionic.ssl",
-  appName: "SSL-Scanner",
+  appId: "io.ionic.ssl1",
+  appName: "scanner-app",
   webDir: "www",
   bundledWebRuntime: false,
   cordova: {

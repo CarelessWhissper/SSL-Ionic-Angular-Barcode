@@ -22,6 +22,7 @@ export class LoginPage implements OnInit {
   password: any;
   buttonDisabled: any;
   store: Storage;
+  userId:number;
 
   constructor(
     public http: HttpClient,
@@ -86,15 +87,24 @@ export class LoginPage implements OnInit {
     var data = {
       email: this.email,
       password: this.password,
+      
     };
-    console.log(data);
+    
   
     this.http
-      .post("https://ssl.app.sr/api/login", data, requestOptions)
+      .post("https://ssl.app.sr/tester_app/api/login", data, requestOptions)
       .subscribe(
-        async (Response) => {
+        async (Response:any) => {
           // After successfully logging in and getting the user data
-          const userData = Response;
+          const userData = {
+            name: Response.name,
+            email: Response.email,
+            role: Response.role,
+            locatie: Response.locatie,
+            userId: Response.id 
+          };
+
+          
   
           // Show loading animation
           const loading = await this.loadingController.create({
